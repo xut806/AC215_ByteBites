@@ -3,3 +3,9 @@ secrets/
 fine-tuning/finetuned_model/**
 .DS_Store
 
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore all pycache directories in any subdirectory
+**/__pycache__/
