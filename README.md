@@ -57,7 +57,6 @@ We have three containers for this project and each container serves a specific p
   - `docker-entrypoint.sh`: Entry point script for the container.
 
 - **Instructions**: 
-  - Add an `.env` file that's parallel to 
   - In the `/preprocessing` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python data_preprocessing.py` to start the data preprocessing.
 
@@ -74,7 +73,7 @@ We have three containers for this project and each container serves a specific p
   - `compare_models.py`: Contains the logic to compare the performance of the fine-tuned model with the base model.
 
 - **Instructions**:
-  - In the fine-tuning directory, run `sh docker-shell.sh` to start the container.
+  - In the `/fine-tuning` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python fine_tune.py` to start the fine-tuning. You may choose not to run this step, because we have already fine-tuned and copied the model to the container. (However, due to the size of the model, we did not push it to Github.)
   - You can run `python compare_models.py` to compare the performance of the fine-tuned model with the base model.
 
@@ -89,5 +88,5 @@ We have three containers for this project and each container serves a specific p
   - docker-entrypoint.sh: Entry point script for the container.
 
 - **Instructions**:
-  - In the RAG directory, run `sh docker-shell.sh` to start the container.
+  - In the `/rag` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python rag.py` to start the RAG server and see the results.
