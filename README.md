@@ -44,7 +44,7 @@ Our repo is structured as follows:
 
 Please make sure to create an `.env` file that contains your Huggingface Access Token (`HUGGINGFACE_TOKEN`) as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
-## Containers
+## Virtual Environment Setup & Containers
 
 We have three containers for this project and each container serves a specific purpose within the project, including data preprocessing, fine-tuning, and RAG (Retrieval-Augmented Generation).
 
@@ -61,6 +61,10 @@ We have three containers for this project and each container serves a specific p
 - **Instructions**: 
   - In the `/preprocessing` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python data_preprocessing.py` to start the data preprocessing.
+
+- **Screenshot**: 
+
+  ![image](./screenshots/llm-data-preprocessor.png) 
 
 ### Container 2: Fine-Tuning
 
@@ -80,6 +84,10 @@ We have three containers for this project and each container serves a specific p
   - Once the container is running, run `python fine_tune.py` to start the fine-tuning. You may choose not to run this step, because we have already fine-tuned and copied the model to the container. (However, due to the size of the model, we did not push it to Github.)
   - You can run `python compare_models.py` to compare the performance of the fine-tuned model with the base model.
 
+- **Screenshot**: 
+
+  ![image](./screenshots/llm-fine-tuner.png)   
+
 ### Container 3: RAG (Retrieval-Augmented Generation)
 
 - **Purpose**: To implement the RAG workflow for generating recipes based on user queries.
@@ -93,3 +101,7 @@ We have three containers for this project and each container serves a specific p
 - **Instructions**:
   - In the `/rag` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python rag.py` to start the RAG server and see the results.
+
+- Screenshot: 
+
+  ![image](./screenshots/llm-rag-server.png)  
