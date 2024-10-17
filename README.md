@@ -42,7 +42,7 @@ Our repo is structured as follows:
 │    └── recipe.json
 ```
 
-Please make sure to create an `.env` file as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
+Please make sure to create an `.env` file that contains your Huggingface Access Token (`HUGGINGFACE_TOKEN`) as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
 ## Containers
 
@@ -71,8 +71,9 @@ We have three containers for this project and each container serves a specific p
   - `Pipfile`: Manages Python packages.
   - `fine_tune.py`: Contains the fine-tuning logic.
   - `utils.py`: Contains the utility functions for fine-tuning.
+  - `upload.py`: Upload the model.safetensors file of the finetuned model to GCP bucket.
   - `docker-entrypoint.sh`: Entry point script for the container.
-  - `compare_models.py`: Contains the logic to compare the performance of the fine-tuned model with the base model.
+  - `compare_models.py`: Contains the logic to load the finetuned model from the model.safetensors file from the GCP bucket, then compare the performance of the fine-tuned model with the base model.
 
 - **Instructions**:
   - In the `/fine-tuning` directory, run `sh docker-shell.sh` to start the container.
