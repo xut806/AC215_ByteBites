@@ -5,42 +5,44 @@
 Our repo is structured as follows:
 
 ```
-├── preprocessing/          # Preprocessing raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.        
-│   ├── data_preprocessing.py    
-│   ├── docker-shell.sh   
-│   ├── docker-entrypoint.sh  
-│   ├── Dockerfile   
-│   ├── Pipfile   
-│   └── Pipfile.lock
-│
 ├── reports/                 # Application mock-up and interactive prototype
-│   ├── AC215_webapp_prototype.pdf          
-│   └── prototype_link.md
+│    ├── AC215_webapp_prototype.pdf          
+│    └── prototype_link.md
+├── src/                     # Source code directory
+│    ├── preprocessing/       #  Preprocessing raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.        
+│         ├── data_preprocessing.py    
+│         ├── docker-shell.sh   
+│         ├── docker-entrypoint.sh  
+│         ├── Dockerfile   
+│         ├── Pipfile   
+│         └── Pipfile.lock
 │
-├── fine-tuning/             # Fine-tuning LLM using the preprocessed recipe data.
-│   ├── utils.py   
-│   ├── fine_tune.py    
-│   ├── compare_models.py   
-│   ├── docker-shell.sh   
-│   ├── docker-entrypoint.sh  
-│   ├── Dockerfile   
-│   ├── Pipfile   
-│   └── Pipfile.lock
+│    ├── fine-tuning/             # Fine-tuning LLM using the preprocessed recipe data.
+│         ├── utils.py   
+│         ├── fine_tune.py    
+│         ├── compare_models.py   
+│         ├── docker-shell.sh   
+│         ├── docker-entrypoint.sh  
+│         ├── Dockerfile   
+│         ├── Pipfile   
+│         └── Pipfile.lock
 │
-├── rag/                     # Implementing RAG workflow for generating recipes based on user queries
-│   ├── rag.py   
-│   ├── docker-shell.sh   
-│   ├── docker-entrypoint.sh  
-│   ├── Dockerfile   
-│   ├── Pipfile   
-│   └── Pipfile.lock
-├── .env
+│    ├── rag/                     # Implementing RAG workflow for generating recipes based on user queries
+│         ├── rag.py   
+│         ├── docker-shell.sh   
+│         ├── docker-entrypoint.sh  
+│         ├── Dockerfile   
+│         ├── Pipfile   
+│         └── Pipfile.lock
+│    └── .env
 ├── .gitignore
 ├── README.md
 ├── LICENSE
+├── secrets/                      # Secrets directory
+│    └── recipe.json
 ```
 
-Please make sure to create an `.env` file in the location as shown above after cloning the repo.
+Please make sure to create an `.env` file as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
 ## Containers
 
