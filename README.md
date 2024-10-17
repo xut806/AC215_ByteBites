@@ -1,5 +1,16 @@
 # ByteBites: Recipe Generation
 
+## Project Info
+In our project, we aim to develop a web application that integrates LLMs with Nutritional Science and provides a user-friendly interface to personalize recipe suggestions based on available ingredients while providing nutritional insights for the user. 
+
+### Team Members
+| Name         | GitHub Profile                   |
+|--------------|----------------------------------|
+| Grace Guo     | [@gguo78](https://github.com/gguo78) |
+| Yilin Qi       | [@yilinnq](https://github.com/yilinnq) |
+| Victoria Xu   | [@xut806](https://github.com/xut806) |
+
+
 ## Directory Structure
 
 Our repo is structured as follows:
@@ -44,13 +55,22 @@ Our repo is structured as follows:
 
 Please make sure to create an `.env` file that contains your Huggingface Access Token (`HUGGINGFACE_TOKEN`) as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
+
+
+## Table of Contents
+1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
+2. [Data Versioning Strategy](#data-versioning-strategy)
+3. [LLM: Fine-tuning](#llm-fine-tuning)
+4. [LLM: RAG](#llm-rag)
+
+
 ## Virtual Environment Setup & Containers
 
 We have three containers for this project and each container serves a specific purpose within the project, including data preprocessing, fine-tuning, and RAG (Retrieval-Augmented Generation).
 
 ### Container 1: Data Preprocessing
 
-- **Purpose**: To process raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.
+- **Purpose**: To process raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning and rag tasks. 
 
 - **Files**:
   - `Dockerfile`: Defines the environment and dependencies for data preprocessing.
@@ -102,6 +122,39 @@ We have three containers for this project and each container serves a specific p
   - In the `/rag` directory, run `sh docker-shell.sh` to start the container.
   - Once the container is running, run `python rag.py` to start the RAG server and see the results.
 
-- Screenshot: 
+- **Screenshot**: 
 
   ![image](./screenshots/llm-rag-server.png)  
+
+## Data Versioning Strategy
+
+The raw data we used for our project is the [Food.com Recipes and Interactions](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions?select=RAW_recipes.csv) dataset on Kaggle. The raw dataset lives on a GCS bucket so that it can be downloaded and preprocessed for our finetuning and rag task. The preprocessed data is also stored on the GCS bucket (please check [Container 1: Data Preprocessing](#container-1-data-preprocessing) for details).
+
+For this milestone, we have adopted the GCS bucket versioning feature for data versioning. In particular, we set the max. number of versions per object to 1 and set the expiration timeframe for noncurrent versions to 7 days. 
+
+## LLM: Fine-tuning
+
+- **Overview**: In this Milestone, we perform fine-tuning on the [`facebook/opt-125m`](https://huggingface.co/facebook/opt-125m) model.
+
+- **Fine-tuning data**: We fetch the preprocssed dataset `fine_tuning_data_top_5000.jsonl`, which contains 5000 records, from the GCS bucket. We use 90% of the fetched dataset as training data, and 10% as the validation data. We tokenize the dataset with `max_length=512, truncation=True, padding='max_length'` parameters. Since we are using the  `opt-125m` model as a Causal Language Model, we tokenize both the recipe prompt and recipe steps together as input to the model. 
+
+
+- **Fine-tuning choices**:
+We train for 3 epochs with a learning rate of `5e-5`. The specific training parameters used in fine-tuning are as follows:
+```
+num_train_epochs=3,
+per_device_train_batch_size=2,
+gradient_accumulation_steps=4,
+learning_rate=5e-5,
+logging_dir="/app/logs",
+logging_steps=10,
+save_steps=50,
+eval_strategy="steps",
+eval_steps=50,
+save_total_limit=1,
+fp16=False,
+max_grad_norm=0.3
+```
+We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fine-tuning task since LoRA works best for larger models, yet the `opt-125m` model is quite small. We plan on implementing LoRA for future milestones when we are able to finetune the model on GCP instead of locally.
+
+## LLM: RAG
