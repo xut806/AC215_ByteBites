@@ -8,7 +8,7 @@ In our project, we aim to develop a web application that integrates LLMs with Nu
 |--------------|----------------------------------|
 | Grace Guo     | [@gguo78](https://github.com/gguo78) |
 | Yilin Qi       | [@yilinnq](https://github.com/yilinnq) |
-| Victoria Xu   | [@xut806](https://github.com/xut806) |
+| Xu Tang   | [@xut806](https://github.com/xut806) |
 
 
 ## Directory Structure
@@ -158,3 +158,19 @@ max_grad_norm=0.3
 We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fine-tuning task since LoRA works best for larger models, yet the `opt-125m` model is quite small. We plan on implementing LoRA for future milestones when we are able to finetune the model on GCP instead of locally.
 
 ## LLM: RAG
+
+- **Overview**: In this Milestone, we implement the RAG workflow for generating recipes based on user queries.
+
+- **Dataset**: We use the same preprocessed data for the finetuning task and the RAG task. We load the preprocessed data from the GCS bucket.
+
+- **Model Loading**: We load the `facebook/opt-125m` model with the `opt-125m` tokenizer.
+
+- **RAG choices**: 
+  - **Retriever**: We use the `SparseRetrieval` class to retrieve the most similar recipes from the preprocessed dataset.
+  - **Generator**: We use the `CausalLMGenerator` class to generate the recipes based on the user queries.
+  - **RAG Server**: We use the `RAGServer` class to run the RAG server and generate the recipes based on the user queries.
+  - **parameters**: max_length=1024, temperature=0.7, top_p=0.95, repetition_penalty=1.2, truncation=True, return_full_text=False, do_sample=True.
+
+
+
+
