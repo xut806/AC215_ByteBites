@@ -159,17 +159,25 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
 ## LLM: RAG
 
-- **Overview**: In this Milestone, we implement the RAG workflow for generating recipes based on user queries.
+- **Overview**: In this part, we implement the RAG workflow for generating recipes based on user queries.
 
-- **Dataset**: We use the same preprocessed data for the finetuning task and the RAG task. We load the preprocessed data from the GCS bucket.
+- **Dataset**: The same preprocessed data is used for both finetuning task and RAG task. We first load the preprocessed data from the GCS bucket, then further processes and splits them into manageable chunks using `RecursiveCharacterTextSplitter` with `chunk_size=1000` and `chunk_overlap=200`.
 
 - **Model Loading**: We load the `facebook/opt-125m` model with the `opt-125m` tokenizer.
 
 - **RAG choices**: 
-  - **Retriever**: We use the `SparseRetrieval` class to retrieve the most similar recipes from the preprocessed dataset.
-  - **Generator**: We use the `CausalLMGenerator` class to generate the recipes based on the user queries.
-  - **RAG Server**: We use the `RAGServer` class to run the RAG server and generate the recipes based on the user queries.
-  - **parameters**: max_length=1024, temperature=0.7, top_p=0.95, repetition_penalty=1.2, truncation=True, return_full_text=False, do_sample=True.
+  - **Retriever**: We create retriever from the FAISS vector store (`vectorstore.as_retriever()`) and is configured to retrieve a specified number (`k=3`) of top relevant documents.
+  The generator is set up through the Hugging Face pipeline (HuggingFacePipeline)
+  - **Generator**: We set up the generator through the `HuggingFacePipeline` to generate the recipes based on the user queries.
+  - **parameters**: 
+  - - `max_length=1024` gives a good balance between the length of the generated recipe and the memory usage.
+  - - `temperature=0.7` adds some randomness to the output without making it too chaotic.
+  - -  `top_p=0.95` filters out less likely tokens.
+  - - `repetition_penalty=1.2` makes the model less likely to repeat itself.
+  - - `truncation=True` ensures that the generated text is not cut off abruptly.
+  - - `return_full_text=False` gives only the newly generated text.
+  - - `do_sample=True` allows the model to generate text in a more natural and creative way.
+
 
 
 
