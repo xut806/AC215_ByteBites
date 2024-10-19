@@ -40,6 +40,24 @@ print(f"Using device: {device}")
 # Move the model to the selected device
 model = model.to(device)
 
+print("HuggingFacePipeline created.")
+
+pipe_before = pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    max_length=256,  
+    temperature=0.4,  # Increased to make the generation more creative
+    top_p=0.95,       # Decreased to make the output more focused
+    repetition_penalty=0.8,  # Increased to further avoid repetition
+    device=device,
+    truncation=True,
+    return_full_text=False,
+    do_sample=True
+)
+
+llm_before = HuggingFacePipeline(pipeline=pipe_before)
+
 # Update the pipeline creation
 pipe = pipeline(
     "text-generation",
@@ -56,7 +74,6 @@ pipe = pipeline(
 )
 
 llm = HuggingFacePipeline(pipeline=pipe)
-print("HuggingFacePipeline created.")
 
 # Create a knowledge base from the recipes
 def load_recipes():
@@ -142,6 +159,24 @@ def rag_chain(embedding_model, llm, recipe_chunks, query):
     
     return result
 
+def compare_results(query):
+    print('***Comparing results***')
+    print("\nGenerating recipe with original settings...")
+    recipe_original = rag_chain(embeddings, llm_before, recipes, query)
+    if recipe_original:
+        print("\nGenerated Recipe with Original Settings:")
+        print(recipe_original)
+    else:
+        print("Failed to generate a valid recipe with original settings.")
+
+    print("\nGenerating recipe with updated settings...")
+    recipe_updated = rag_chain(embeddings, llm, recipes, query)
+    if recipe_updated:
+        print("\nGenerated Recipe with Updated Settings:")
+        print(recipe_updated)
+    else:
+        print("Failed to generate a valid recipe with updated settings.")
+
 # Main function
 if __name__ == "__main__":
     query = """Please write a low-sodium meal recipe that takes approximately 55 minutes 
@@ -155,3 +190,6 @@ if __name__ == "__main__":
         print(recipe)
     else:
         print("Failed to generate a valid recipe.")
+    
+    # compare_results(query)
+
