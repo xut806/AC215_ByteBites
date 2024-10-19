@@ -177,8 +177,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
   - - `truncation=True` ensures that the generated text is not cut off abruptly.
   - - `return_full_text=False` gives only the newly generated text.
   - - `do_sample=True` allows the model to generate text in a more natural and creative way.
-
-
-
-
-
+- **Example**:
+ - - query = "Please write a low-sodium meal recipe that takes approximately 55 minutes and includes the following ingredients: tomato, beef. The recipe should be formatted with a clear list of ingredients and cooking instructions."
+ - - One of the retrieved context: 
+   ![image](./screenshots/lm-rag-example.png)
