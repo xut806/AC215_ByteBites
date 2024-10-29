@@ -20,6 +20,14 @@ Our repo is structured as follows:
 │    ├── AC215_webapp_prototype.pdf          
 │    └── prototype_link.md
 ├── src/                     # Source code directory
+│    ├── ocr/                # [New in MS3] Implementing OCR and NER for ingredient recognition from receipt
+│         ├── ocr_ner.py   
+│         ├── ocr_grace.py 
+│         ├── docker-shell.sh   
+│         ├── docker-entrypoint.sh  
+│         ├── Dockerfile   
+│         ├── Pipfile   
+│         └── Pipfile.lock
 │    ├── preprocessing/       #  Preprocessing raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.        
 │         ├── data_preprocessing.py    
 │         ├── docker-shell.sh   
@@ -68,7 +76,18 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 
 We have three containers for this project and each container serves a specific purpose within the project, including data preprocessing, fine-tuning, and RAG (Retrieval-Augmented Generation).
 
-### Container 1: Data Preprocessing
+### Container 1: OCR & NER (NEW IN MS3)
+
+- **Purpose**: To recognize text from receipt images (OCR) and then recognize edible ingredients (NER).
+
+- **Files**:
+  - `Dockerfile`: Defines the environment and dependencies for ocr and ner processing.
+  - `Pipfile`: Manages Python packages.
+  - `ocr_ner.py`: Contains the OCR & NER logic. The pre-trained OCR package, `docTR`, is used for text recognition from receipt images, whereas the pre-trained NER model specific to food entities, `InstaFoodRoBERTa-NER` is used for NER. We uploaded a set of 200 receipt images to a GCS bucket; this script downloads the data from the GCS bucket and then conducts OCR and NER. It uploads the recognized ingredients as a .json file to the GCS bucket.
+  - `ocr_grace.py`: Another version of `ocr_ner.py`, script serving the same function.  
+  - `docker-entrypoint.sh`: Entry point script for the container.
+
+### Container 2: Data Preprocessing
 
 - **Purpose**: To process raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning and rag tasks. 
 
@@ -86,7 +105,7 @@ We have three containers for this project and each container serves a specific p
 
   ![image](./screenshots/llm-data-preprocessor.png) 
 
-### Container 2: Fine-Tuning
+### Container 3: Fine-Tuning
 
 - **Purpose**: To fine-tune the language model using the preprocessed recipe data.
 
@@ -108,7 +127,7 @@ We have three containers for this project and each container serves a specific p
 
   ![image](./screenshots/llm-fine-tuner.png)   
 
-### Container 3: RAG (Retrieval-Augmented Generation)
+### Container 4: RAG (Retrieval-Augmented Generation)
 
 - **Purpose**: To implement the RAG workflow for generating recipes based on user queries.
 
