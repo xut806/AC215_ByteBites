@@ -74,68 +74,10 @@ def process_image(local_image_path):
         'ingredients': ingredients
     }
 
-def verify_results(bucket_name, output_filename):
-    """Verify the results file was created and contains valid data."""
-    try:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(output_filename)
-        
-        # Check if file exists
-        if not blob.exists():
-            return False
-            
-        # Download and verify JSON content
-        json_data = json.loads(blob.download_as_string())
-        
-        if not isinstance(json_data, list):
-            return False
-            
-        return True
-        
-    except Exception as e:
-        return False
-
-def validate_zip_file(zip_data):
-    """Validates if the zip file is readable and contains valid images."""
-    try:
-        with io.BytesIO(zip_data) as zip_buffer:
-            # Check if it's a valid zip file
-            if not zip_buffer.getvalue().startswith(b'PK'):
-                return False
-                
-            with ZipFile(zip_buffer, 'r') as zip_file:
-                # Check if zip file can be opened
-                if zip_file.testzip() is not None:
-                    return False
-                
-                # Check for image files
-                image_files = [f for f in zip_file.filelist 
-                             if f.filename.lower().endswith(('.png', '.jpg', '.jpeg'))
-                             and not f.filename.startswith('__MACOSX/')
-                             and not f.filename.startswith('._')]
-                
-                if not image_files:
-                    return False
-                
-                # Try reading first image to verify accessibility
-                try:
-                    with zip_file.open(image_files[0].filename) as test_image:
-                        test_data = test_image.read()
-                        if not test_data:
-                            return False
-                except Exception:
-                    return False
-                
-        return True
-        
-    except Exception:
-        return False
-
 def main():
     # Configuration
     bucket_name = 'recipe-dataset'
-    file_name = 'receipts/small-receipt-image-dataset-SRD.zip'
+    file_name = 'receipts/large-receipt-image-dataset-SRD.zip'
     output_filename = 'receipts/receipts_ingredients.json'
     
     # Initialize Google Cloud Storage client
@@ -146,10 +88,6 @@ def main():
     blob = bucket.blob(file_name)
     zip_data = blob.download_as_bytes()
     
-    # Validate zip file before processing
-    if not validate_zip_file(zip_data):
-        return
-        
     # Store all results
     all_results = []
     
@@ -159,32 +97,20 @@ def main():
             # List all files in zip
             image_files = [f for f in zip_file.filelist 
                          if f.filename.lower().endswith(('.png', '.jpg', '.jpeg'))
-                         and not f.filename.startswith('__MACOSX/')
-                         and not f.filename.startswith('._')]
-            
-            processed_files = 0
-            failed_files = 0
+                         and not f.filename.startswith('__MACOSX/')]
             
             # Process each image in the zip
             for file_info in image_files:
-                processed_files += 1
-                
                 # Extract image to temporary file
                 with tempfile.NamedTemporaryFile(suffix=os.path.splitext(file_info.filename)[1]) as temp_image:
                     with zip_file.open(file_info.filename) as image_file:
                         temp_image.write(image_file.read())
                         temp_image.flush()
                     
-                    try:
-                        # Process image
-                        results = process_image(temp_image.name)
-                        
-                        # Add filename to results
-                        results['filename'] = file_info.filename
-                        all_results.append(results)
-                    except Exception:
-                        failed_files += 1
-                        continue
+                    # Process image
+                    results = process_image(temp_image.name)
+                    results['filename'] = file_info.filename
+                    all_results.append(results)
             
             # Save all results to a single temporary JSON file
             with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as temp_json:
@@ -194,10 +120,6 @@ def main():
                 # Upload single results file to GCS
                 upload_to_gcs(bucket_name, temp_json.name, output_filename)
                 print(f"Results uploaded to gs://{bucket_name}/{output_filename}")
-    
-    # Verify results at the end
-    if not verify_results(bucket_name, output_filename):
-        print("Script completed with errors!")
 
 if __name__ == "__main__":
     main()
