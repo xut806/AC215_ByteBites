@@ -8,6 +8,8 @@ import zipfile
 import io
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
+from PIL import Image
+import numpy as np
 
 # Google Cloud credentials
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'
@@ -37,8 +39,16 @@ ner_model = AutoModelForTokenClassification.from_pretrained("Dizex/InstaFoodRoBE
 ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
 
 
-def parse_receipt(single_img_doc):
-    result = ocr_model(single_img_doc)
+def parse_receipt(image_bytes):
+    # Convert bytes to numpy array using PIL
+    image = Image.open(io.BytesIO(image_bytes))
+    # Convert to RGB if needed
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    # Convert to numpy array
+    image_array = np.array(image)
+    
+    result = ocr_model(image_array)
     json_output = result.export()
 
     # extract only the words 'value' field of the JSON output (the words on the receipt)
@@ -71,9 +81,13 @@ all_edible_lists = []
 
 for filename, image_bytes in extracted_files.items():
     print(f"Processing: {filename}")
-    result_string, ner_results = parse_receipt(image_bytes)
-    edible_list = convert_ner_entities_to_list(result_string, ner_results)
-    all_edible_lists.append({"filename": filename, "edible_items": edible_list})
+    try:
+        result_string, ner_results = parse_receipt(image_bytes)
+        edible_list = convert_ner_entities_to_list(result_string, ner_results)
+        all_edible_lists.append({"filename": filename, "edible_items": edible_list})
+    except Exception as e:
+        print(f"Error processing {filename}: {str(e)}")
+        continue
 
 # dump OCR+NER recognized ingredients into a .json file
 json_filename = "receipts_ingredients.json"
