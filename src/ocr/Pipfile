@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 google-cloud-storage = "*"
 opencv-python-headless = "*"
-python-doctr = {extras = ["torch", "viz", "html", "contib"]}
+python-doctr = {extras = ["torch", "viz", "html", "contrib"]}
 regex = "*"
 mplcursors = "*"
 matplotlib = "*"

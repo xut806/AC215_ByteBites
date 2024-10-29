@@ -8,8 +8,6 @@ import zipfile
 import io
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
-from PIL import Image
-import numpy as np
 
 # Google Cloud credentials
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'
@@ -20,15 +18,27 @@ client = storage.Client()
 # Load the .zip receipt files from GCP bucket
 bucket_name = 'recipe-dataset'
 file_name = 'receipts/large-receipt-image-dataset-SRD.zip'
-
 bucket = client.get_bucket(bucket_name)
 blob = bucket.blob(file_name)
 data = blob.download_as_bytes()
 
-with zipfile.ZipFile(io.BytesIO(data), 'r') as zip_ref:
-    receipt_files = zip_ref.namelist()  # List all files in the ZIP archive
-    extracted_files = {name: zip_ref.read(name) for name in receipt_files if name.lower().endswith(('.jpg', '.png'))}
+def extract_images_to_temp_dir(zip_path, temp_dir='/tmp/receipts'):
+    """
+    extracts images from the zip file on GCP bucket to a temporary directory.
+    """
+    os.makedirs(temp_dir, exist_ok=True)  # Create temp directory if it doesn't exist
 
+    with zipfile.ZipFile(io.BytesIO(zip_path), 'r') as zip_ref:
+        image_files = [f for f in zip_ref.namelist() if f.lower().endswith(('.jpg', '.png'))]
+        
+        # extract each image to the temporary directory
+        for image_file in image_files:
+            zip_ref.extract(image_file, temp_dir)
+
+    # list of extracted image paths
+    return [os.path.join(temp_dir, f) for f in image_files]
+
+image_paths = extract_images_to_temp_dir(data)
 
 # det_arch = architecture used for text localization; for full list see https://mindee.github.io/doctr/latest/modules/models.html#doctr-models-detection
 # reco_arch = architecture used for text recognition; for full list see https://mindee.github.io/doctr/latest//modules/models.html#doctr-models-recognition
@@ -39,15 +49,12 @@ ner_model = AutoModelForTokenClassification.from_pretrained("Dizex/InstaFoodRoBE
 ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
 
 
-def parse_receipt(image_bytes):
-    # Convert bytes to numpy array using PIL
-    image = Image.open(io.BytesIO(image_bytes))
-    # Convert to RGB if needed
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-    # Convert to numpy array
-    image_array = np.array(image)
-    
+def parse_receipt(image_path):
+    """
+    takes in a path to the image directory and parses images with OCR, returning only the words (non-numerical) on the receipt
+    """
+    print(f"-----OCR Processing {image_path}...-----")
+    image_array = DocumentFile.from_images(image_path)
     result = ocr_model(image_array)
     json_output = result.export()
 
@@ -67,6 +74,7 @@ def parse_receipt(image_bytes):
     return result_string, ner_entity_results
 
 def convert_ner_entities_to_list(text, entities: list[dict]) -> list[str]:
+        print("-----NER edible item recognition...-----")
         ents = []
         for ent in entities:
             e = {"start": ent["start"], "end": ent["end"], "label": ent["entity_group"]}
@@ -77,16 +85,16 @@ def convert_ner_entities_to_list(text, entities: list[dict]) -> list[str]:
 
         return [text[e["start"]:e["end"]] for e in ents]
 
+
 all_edible_lists = []
 
-for filename, image_bytes in extracted_files.items():
-    print(f"Processing: {filename}")
+for image_path in image_paths:
     try:
-        result_string, ner_results = parse_receipt(image_bytes)
+        result_string, ner_results = parse_receipt(image_path)
         edible_list = convert_ner_entities_to_list(result_string, ner_results)
-        all_edible_lists.append({"filename": filename, "edible_items": edible_list})
+        all_edible_lists.append({"filename": image_path, "edible_items": edible_list})
     except Exception as e:
-        print(f"Error processing {filename}: {str(e)}")
+        print(f"Error processing {image_path}: {str(e)}")
         continue
 
 # dump OCR+NER recognized ingredients into a .json file
