@@ -84,8 +84,12 @@ We have three containers for this project and each container serves a specific p
   - `Dockerfile`: Defines the environment and dependencies for ocr and ner processing.
   - `Pipfile`: Manages Python packages.
   - `ocr_ner.py`: Contains the OCR & NER logic. The pre-trained OCR package, `docTR`, is used for text recognition from receipt images, whereas the pre-trained NER model specific to food entities, `InstaFoodRoBERTa-NER` is used for NER. We uploaded a set of 200 receipt images to a GCS bucket; this script downloads the data from the GCS bucket and then conducts OCR and NER. It uploads the recognized ingredients as a .json file to the GCS bucket.
-  - `ocr_grace.py`: Another version of `ocr_ner.py`, script serving the same function.  
+  - `extract_ingredients.py`: Another version of `ocr_ner.py`, script serving the same function.  
   - `docker-entrypoint.sh`: Entry point script for the container.
+
+- **Instructions**:
+  - In the `/ocr` directory, run `sh docker-shell.sh` to start the container.
+  - Once the container is running, run `python ocr_ner.py` or `python extract_ingredients.py` to start the OCR & NER processing.
 
 ### Container 2: Data Preprocessing
 
