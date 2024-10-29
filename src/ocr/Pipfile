@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+google-cloud-storage = "*"
+opencv-python-headless = "*"
+python-doctr = {extras = ["torch", "viz", "html", "contib"]}
+regex = "*"
+mplcursors = "*"
+matplotlib = "*"
+requests = "*"
+tf2onnx = "*"
+transformers = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
