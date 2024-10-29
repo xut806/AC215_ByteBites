@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY Pipfile Pipfile.lock ./
 COPY ocr_ner.py ./
-COPY ocr_grace.py ./
+COPY extract_ingredients.py ./
 COPY docker-entrypoint.sh ./
 
 RUN pip install pipenv && \
