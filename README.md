@@ -17,7 +17,8 @@ Our repo is structured as follows:
 
 ```
 ├── reports/                 # Application mock-up and interactive prototype
-│    ├── AC215_webapp_prototype.pdf          
+│    ├── AC215_webapp_prototype.pdf      
+│    ├── Midterm_Presentation.pdf   # [New in MS3] Presentation slides    
 │    └── prototype_link.md
 ├── src/                     # Source code directory
 │    ├── ocr/                # [New in MS3] Implementing OCR and NER for ingredient recognition from receipt
@@ -28,6 +29,7 @@ Our repo is structured as follows:
 │         ├── Dockerfile   
 │         ├── Pipfile   
 │         └── Pipfile.lock
+│         
 │    ├── preprocessing/       #  Preprocessing raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.        
 │         ├── data_preprocessing.py    
 │         ├── docker-shell.sh   
