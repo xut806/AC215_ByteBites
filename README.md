@@ -18,7 +18,8 @@ Our repo is structured as follows:
 ```
 ├── reports/                 # Application mock-up and interactive prototype
 │    ├── AC215_webapp_prototype.pdf      
-│    ├── Midterm_Presentation.pdf   # [New in MS3] Presentation slides    
+│    ├── Midterm_Presentation.pdf   # [New in MS3] Presentation slides PDF version
+│    ├── Midterm_Presentation.pptx   # [New in MS3] Presentation slides PPTX version  
 │    └── prototype_link.md
 ├── src/                     # Source code directory
 │    ├── ocr/                # [New in MS3] Implementing OCR and NER for ingredient recognition from receipt
