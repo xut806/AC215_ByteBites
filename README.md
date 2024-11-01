@@ -195,14 +195,14 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
   The generator is set up through the Hugging Face pipeline (HuggingFacePipeline)
   - **Generator**: We set up the generator through the `HuggingFacePipeline` to generate the recipes based on the user queries.
   - **parameters**: 
-  - - `max_length=1024` gives a good balance between the length of the generated recipe and the memory usage.
-  - - `temperature=0.7` adds some randomness to the output without making it too chaotic.
-  - -  `top_p=0.95` filters out less likely tokens.
-  - - `repetition_penalty=1.2` makes the model less likely to repeat itself.
-  - - `truncation=True` ensures that the generated text is not cut off abruptly.
-  - - `return_full_text=False` gives only the newly generated text.
-  - - `do_sample=True` allows the model to generate text in a more natural and creative way.
+    - `max_length=1024` gives a good balance between the length of the generated recipe and the memory usage.
+    - `temperature=0.7` adds some randomness to the output without making it too chaotic.
+    - `top_p=0.95` filters out less likely tokens.
+    - `repetition_penalty=1.2` makes the model less likely to repeat itself.
+    - `truncation=True` ensures that the generated text is not cut off abruptly.
+    - `return_full_text=False` gives only the newly generated text.
+    - `do_sample=True` allows the model to generate text in a more natural and creative way.
 - **Example**:
- - - query = "Please write a low-sodium meal recipe that takes approximately 55 minutes and includes the following ingredients: tomato, beef. The recipe should be formatted with a clear list of ingredients and cooking instructions."
- - - One of the retrieved context: 
+   - query = "Please write a low-sodium meal recipe that takes approximately 55 minutes and includes the following ingredients: tomato, beef. The recipe should be formatted with a clear list of ingredients and cooking instructions."
+   - One of the retrieved context: 
    ![image](./screenshots/llm-rag-example.png)
