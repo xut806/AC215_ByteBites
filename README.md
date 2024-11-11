@@ -123,7 +123,8 @@ We have three containers for this project and each container serves a specific p
   - `utils.py`: Contains the utility functions for fine-tuning.
   - `upload.py`: Upload the model.safetensors file of the finetuned model to GCP bucket.
   - `docker-entrypoint.sh`: Entry point script for the container.
-  - **`inference+nutrition.py`**: Loads the finetuned model using the `model.safetensors` file from the `finetuned_model/` folder on our GCP bucket, generates a recipe with our finetuned model, and obtains the nutrition fact of the recipe by calling the USDA API. The generated recipe is uploaded to the `generated_recipe/` folder on our GCP bucket, and the nutrition facts is uploaded to the `nutrition_facts/` folder on our GCP bucket.
+  - **`inference+nutrition.py`**: Loads the finetuned model using the `model.safetensors` file from the `finetuned_model/` folder on our GCP bucket, generates a recipe with our finetuned model, and obtains the nutrition fact of the recipe by calling the USDA API. The generated recipe is uploaded to the `generated_recipe/` folder on our GCP bucket, and the nutrition facts is uploaded to the `nutrition_facts/` folder on our GCP bucket. An example of the nutrition facts uploaded to our GCP bucket:
+      - ![image](./screenshots/nutrition_facts.png) 
   - `compare_models.py`: Contains the logic to load the finetuned model from the `model.safetensors` file from the GCP bucket, then compare the performance of the fine-tuned model with the base model.
 
 - **Instructions**:
