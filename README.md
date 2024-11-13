@@ -1,4 +1,6 @@
 # ByteBites: Recipe Generation
+<img src="./reports/logo2.png" alt="bytebites-logo" width="500"/>
+
 
 ## Project Info
 In our project, we aim to develop a web application that integrates LLMs with Nutritional Science and provides a user-friendly interface to personalize recipe suggestions based on available ingredients while providing nutritional insights for the user. 
