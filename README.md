@@ -70,6 +70,7 @@ Our repo is structured as follows:
 Please make sure to create an `.env` file that contains your Huggingface Access Token (`HUGGINGFACE_TOKEN`) and your USDA API key (`USDA_API_KEY`) as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
 ## Updates 📢
+- [NEW IN MS4] Designed new logos for BiteBytes! (Please check out our `reports/` folder)
 - [NEW IN MS4] Added finetuned model inference and nutrition facts (Please see [Container 3: Fine-Tuning](#container-3-fine-tuning))
 
 ## Table of Contents
