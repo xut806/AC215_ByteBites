@@ -19,12 +19,18 @@ Our repo is structured as follows:
 
 ```
 ├── reports/                 # Application mock-up and interactive prototype
+│    ├── logo.png            # [New in MS4] new ByteBites logo
+│    ├── logo2.png           # [New in MS4] new ByteBites logo 
 │    ├── AC215_webapp_prototype.pdf      
-│    ├── Midterm_Presentation.pdf   # [New in MS3] Presentation slides PDF version
-│    ├── Midterm_Presentation.pptx   # [New in MS3] Presentation slides PPTX version  
+│    ├── Midterm_Presentation.pdf   # Presentation slides PDF version
+│    ├── Midterm_Presentation.pptx   # Presentation slides PPTX version  
 │    └── prototype_link.md
+│    
+├── notebooks/               # [New in MS4] In-progress notebooks demonstrating experiments
+│    ├── rlaif_peft_finetuned_opt125m.ipynb    # We attempt to implement RLAIF (where the LLM labeler is the off-the-shelf llama-3.1-8b model) on top of our finetuned opt125m model with LoRA
+│    
 ├── src/                     # Source code directory
-│    ├── ocr/                # [New in MS3] Implementing OCR and NER for ingredient recognition from receipt
+│    ├── ocr/                # Implementing OCR and NER for ingredient recognition from receipt
 │         ├── ocr_ner.py   
 │         ├── extract_ingredients.py 
 │         ├── docker-shell.sh   
@@ -42,7 +48,7 @@ Our repo is structured as follows:
 │         └── Pipfile.lock
 │
 │    ├── fine-tuning/             # Fine-tuning LLM using the preprocessed recipe data.
-|         ├── inference+nutrition.py  # Please run this script to get the generated recipe and the nutrition facts   
+|         ├── inference+nutrition.py  # [New in MS4] Please run this script to get the generated recipe and the nutrition facts   
 │         ├── utils.py   
 │         ├── fine_tune.py    
 │         ├── compare_models.py   
@@ -72,6 +78,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 ## Updates 📢
 - [NEW IN MS4] Designed new logos for BiteBytes! (Please check out our `reports/` folder)
 - [NEW IN MS4] Added finetuned model inference and nutrition facts (Please see [Container 3: Fine-Tuning](#container-3-fine-tuning))
+- [NEW IN MS4] Experimenting with RLAIF (Please check out our `notebooks/` folder)
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
