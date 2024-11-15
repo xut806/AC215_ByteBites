@@ -44,6 +44,10 @@ image_paths = extract_images_to_temp_dir(data)
 # reco_arch = architecture used for text recognition; for full list see https://mindee.github.io/doctr/latest//modules/models.html#doctr-models-recognition
 ocr_model = ocr_predictor(det_arch='db_resnet50', reco_arch='crnn_vgg16_bn', pretrained=True)
 
+# set a lower threshold for the text detection part so that more text region will be reognized
+ocr_model.det_predictor.model.postprocessor.bin_thresh = 0.2
+
+
 ner_tokenizer = AutoTokenizer.from_pretrained("Dizex/InstaFoodRoBERTa-NER")
 ner_model = AutoModelForTokenClassification.from_pretrained("Dizex/InstaFoodRoBERTa-NER")
 ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
@@ -56,20 +60,23 @@ def parse_receipt(image_path):
     print(f"-----OCR Processing {image_path}...-----")
     image_array = DocumentFile.from_images(image_path)
     result = ocr_model(image_array)
-    json_output = result.export()
+    text = result.render()
 
     # extract only the words 'value' field of the JSON output (the words on the receipt)
     # and eliminate any numbers 
     word_values = []
 
-    for page in json_output['pages']:
-        for block in page['blocks']:
-            for line in block.get('lines', []):
-                for word in line.get('words', []):
-                    if re.match("^[A-Za-z]+$", word['value']):
-                        word_values.append(word['value'])
+
+    for line in text.split('\n'):
+        non_numeric_line = re.sub(r'\b\d+(\.\d+)?\b', '', line).strip() # remove numbers
+        non_numeric_line = re.sub(r'[^a-zA-Z\s]', '', non_numeric_line).strip()  # remove special characters 
+        if non_numeric_line:  
+            word_values.append(non_numeric_line)
 
     result_string = ", ".join(word_values)
+
+    # we use the max aggregation strategy
+    # so that we can use majority-vote approach to determine the final entity type
     ner_entity_results = ner_pipeline(result_string, aggregation_strategy="simple")
     return result_string, ner_entity_results
 
