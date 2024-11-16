@@ -26,10 +26,10 @@ export const Navbar = () => {
           <span className="flex items-center space-x-2 text-2xl font-medium text-pink-500 dark:text-gray-100">
             <span>
               <Image
-                src="/Bytebites.png"
-                width="200"
+                src="/horizontal_logo.png"
+                width="250"
                 alt="logo"
-                height="200"
+                height="250"
                 className="w-25 mt-2"
               />
             </span>
@@ -49,7 +49,7 @@ export const Navbar = () => {
             </SignedOut>
             <SignedIn>
               <div className="flex items-center">
-                <Link href="/dashboard" className="px-4 py-2 text-white bg-pink-600 rounded-md hover:bg-pink-700 transition duration-300">
+                <Link href="/dashboard" className="px-6 py-3 text-lg text-white bg-pink-600 rounded-md hover:bg-pink-700 transition duration-300">
                   Dashboard
                 </Link>
                 <div className="relative ml-4">
@@ -57,8 +57,8 @@ export const Navbar = () => {
                     appearance={{
                       elements: {
                         userButton: {
-                          width: '40px',
-                          height: '40px',
+                          width: '60px',
+                          height: '60px',
                         },
                       },
                     }}
