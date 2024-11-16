@@ -11,7 +11,7 @@ export default function Component({ onGenerate }: SelectIngredientsProps) {
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
   const ingredients = ["Tomatoes", "Chicken", "Bell Peppers", "Onions", "Rice"]
-  const preferences = ["Vegetarian", "Vegan", "GlutenFree", "DairyFree"]
+  const preferences = ["Vegetarian", "Vegan", "Gluten Free", "Dairy Free"]
 
   const handleIngredientChange = (ingredient: string) => {
     setSelectedIngredients(prev =>
@@ -26,8 +26,8 @@ export default function Component({ onGenerate }: SelectIngredientsProps) {
   }
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-center text-2xl font-bold">Select Ingredients</h2>
+    <div className="rounded-lg bg-white p-6 shadow-md max-w-md mx-auto">
+      <h2 className="mb-4 text-center text-2xl font-semibold">Select Ingredients</h2>
       <div className="space-y-10">
         <div className="grid gap-4 sm:grid-cols-2">
           {ingredients.map(ingredient => (
@@ -49,7 +49,7 @@ export default function Component({ onGenerate }: SelectIngredientsProps) {
         <hr className="my-4" />
 
         <div>
-          <h2 className="mb-4 text-center text-2xl font-bold">Select Dietary Preferences</h2>
+          <h2 className="mb-4 text-center text-2xl font-semibold">Select Dietary Preferences</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {preferences.map(preference => (
               <div key={preference} className="flex items-center space-x-2">
