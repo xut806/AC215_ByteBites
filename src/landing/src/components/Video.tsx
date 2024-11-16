@@ -13,7 +13,7 @@ export function Video({ videoId }: Readonly<VideoProps>) {
 
   return (
     <Container>
-      <div className="relative w-full h-[500px] max-w-4xl mx-auto overflow-hidden lg:mb-20 rounded-2xl bg-pink-300 cursor-pointer bg-gradient-to-tr from-purple-400 to-pink-700">
+      <div className="relative w-full h-[500px] max-w-4xl mx-auto overflow-hidden lg:mb-20 rounded-2xl bg-pink-500 cursor-pointer bg-gradient-to-tr from-purple-400 to-pink-700">
         {!playVideo && (
           <button
             onClick={() => setPlayVideo(!playVideo)}

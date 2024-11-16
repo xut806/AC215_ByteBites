@@ -25,9 +25,9 @@ export const Benefits = (props: Readonly<BenefitsProps>) => {
             <div key={index} className="bg-white shadow-lg rounded-lg p-5 m-2 w-full sm:w-1/2 lg:w-1/4">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-center bg-pink-500 rounded-md w-11 h-11 mb-3">
-                  {React.cloneElement(item.icon, {
-                    className: "w-7 h-7 text-pink-50",
-                  })}
+                  <span className="w-7 h-7 text-pink-50">
+                    {React.isValidElement(item.icon) ? item.icon : null}
+                  </span>
                 </div>
                 <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-2">
                   {item.title}

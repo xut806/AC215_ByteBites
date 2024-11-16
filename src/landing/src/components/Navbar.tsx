@@ -26,41 +26,46 @@ export const Navbar = () => {
           <span className="flex items-center space-x-2 text-2xl font-medium text-pink-500 dark:text-gray-100">
             <span>
               <Image
-                src="/img/logo.svg"
-                width="32"
-                alt="N"
-                height="32"
-                className="w-8"
+                src="/Bytebites.png"
+                width="200"
+                alt="logo"
+                height="200"
+                className="w-25 mt-2"
               />
             </span>
-            <span>ByteBites</span>
           </span>
         </Link>
 
         {/* Sign In / User Menu */}
         <div className="gap-3 nav__item mr-2 lg:flex ml-auto lg:ml-0 lg:order-2">
-          <ThemeChanger />
+          {/* <ThemeChanger /> */}
           <div className="hidden mr-3 lg:flex nav__item">
             <SignedOut>
-              <SignInButton className="px-6 py-2 text-white bg-pink-600 rounded-md md:ml-5 hover:bg-pink-700 transition duration-300">
-                Get Started
-              </SignInButton>
+              <div className="px-6 py-2 text-white bg-pink-600 rounded-md md:ml-5 hover:bg-pink-700 transition duration-300">
+                <SignInButton>
+                  Get Started
+                </SignInButton>
+              </div>
             </SignedOut>
             <SignedIn>
-              <div className="relative">
-                <UserButton
-                  className="flex items-center justify-center w-10 h-10 rounded-full"
-                  appearance={{
-                    elements: {
-                      userButton: {
-                        width: '40px',
-                        height: '40px',
+              <div className="flex items-center">
+                <Link href="/dashboard" className="px-4 py-2 text-white bg-pink-600 rounded-md hover:bg-pink-700 transition duration-300">
+                  Dashboard
+                </Link>
+                <div className="relative ml-4">
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        userButton: {
+                          width: '40px',
+                          height: '40px',
+                        },
                       },
-                    },
-                  }}
-                />
-                <div className="absolute right-0">
-                  {/* Add dropdown menu items here */}
+                    }}
+                  />
+                  <div className="absolute right-0">
+                    {/* Add dropdown menu items here */}
+                  </div>
                 </div>
               </div>
             </SignedIn>
@@ -95,15 +100,17 @@ export const Navbar = () => {
 
                 <Disclosure.Panel className="flex flex-wrap w-full my-5 lg:hidden">
                   <>
-                    {navigation.map((item, index) => (
+                    {/* {navigation.map((item, index) => (
                       <Link key={index} href={typeof item === 'string' ? "/" : item.href} className="w-full px-4 py-2 -ml-4 text-gray-500 rounded-md dark:text-gray-300 hover:text-pink-500 focus:text-pink-500 focus:bg-pink-100 dark:focus:bg-gray-800 focus:outline-none">
                           {typeof item === 'string' ? item : item.name}
                       </Link>
-                    ))}
+                    ))} */}
                     <SignedOut>
-                      <SignInButton className="w-full px-6 py-2 mt-3 text-center text-white bg-pink-600 rounded-md lg:ml-5 hover:bg-pink-700 transition duration-300">
-                        Get Started
-                      </SignInButton>
+                      <div className="w-full px-6 py-2 mt-3 text-center text-white bg-pink-600 rounded-md lg:ml-5 hover:bg-pink-700 transition duration-300">
+                        <SignInButton>
+                          Get Started
+                        </SignInButton>
+                      </div>
                     </SignedOut>
                     <SignedIn>
                       <Link href="/dashboard" className="w-full px-6 py-2 mt-3 text-center text-white bg-pink-600 rounded-md lg:ml-5 hover:bg-pink-700 transition duration-300">
@@ -119,13 +126,13 @@ export const Navbar = () => {
         {/* menu  */}
         <div className="hidden text-center lg:flex lg:items-center">
           <ul className="items-center justify-end flex-1 pt-6 list-none lg:pt-0 lg:flex">
-            {navigation.map((item, index) => (
+            {/* {navigation.map((item, index) => (
               <li className="mr-3 nav__item" key={index}>
                 <Link href={typeof item === 'string' ? "/" : item.href} className="inline-block px-4 py-2 text-lg font-normal text-gray-800 no-underline rounded-md dark:text-gray-200 hover:text-pink-500 focus:text-pink-500 focus:bg-pink-100 focus:outline-none dark:focus:bg-gray-800">
                   {typeof item === 'string' ? item : item.name}
                 </Link>
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
 
