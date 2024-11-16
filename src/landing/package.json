@@ -1,7 +1,7 @@
 {
-  "name": "nextly-template",
-  "version": "2.0.0",
-  "description": "Nextly Landing Page Template",
+  "name": "bytebites",
+  "version": "1.0.0",
+  "description": "AI-powered recipe generator",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3templates/nextly-template"
+    "url": "https://github.com/xut806/AC215_ByteBites.git"
   },
   "keywords": [
-    "nextjs",
-    "tailwindcss",
-    "free"
+    "recipe",
+    "food",
+    "generator"
   ],
-  "author": "Surjith S M",
+  "author": "ByteBites",
   "license": "ISC",
   "dependencies": {
     "@clerk/nextjs": "^6.3.0",

@@ -36,7 +36,7 @@ export default function RootLayout({
             <main>
               {children}
             </main>
-            <Footer />
+            {/* <Footer /> */}
             {/* <PopupWidget /> */}
           </ThemeProvider>
         </body>
