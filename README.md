@@ -65,6 +65,9 @@ Our repo is structured as follows:
 │         ├── Dockerfile   
 │         ├── Pipfile   
 │         └── Pipfile.lock
+│     
+│    ├── landing/               # Frontend for the application
+│         ├── .env.local        # Secret keys
 │    └── .env
 ├── .gitignore
 ├── README.md
@@ -85,6 +88,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 2. [Data Versioning Strategy](#data-versioning-strategy)
 3. [LLM: Fine-tuning](#llm-fine-tuning)
 4. [LLM: RAG](#llm-rag)
+5. [Frontend](#frontend)
 
 
 ## Virtual Environment Setup & Containers
@@ -220,3 +224,16 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
    - query = "Please write a low-sodium meal recipe that takes approximately 55 minutes and includes the following ingredients: tomato, beef. The recipe should be formatted with a clear list of ingredients and cooking instructions."
    - One of the retrieved context: 
    ![image](./screenshots/llm-rag-example.png)
+
+## Frontend
+
+- **Overview**: In this part, we implement the frontend including the landing page and dashboard (recipe upload, ingredients selection, meal preference selection，recipe generation). 
+- **Instructions**: 
+  - In the `/landing` directory, run `npm run dev` to start the app on localhost.
+- **Example**: 
+  - Landing Page:
+  ![image](./screenshots/landing-page.png)
+  - Dashboard:
+  ![image](./screenshots/dashboard.png)
+
+
