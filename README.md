@@ -82,6 +82,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Designed new logos for BiteBytes! (Please check out our `reports/` folder)
 - [NEW IN MS4] Added finetuned model inference and nutrition facts (Please see [Container 3: Fine-Tuning](#container-3-fine-tuning))
 - [NEW IN MS4] Experimenting with RLAIF (Please check out our `notebooks/` folder)
+- [NEW IN MS4] Added frontend (Please see [Frontend](#frontend))
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
