@@ -82,14 +82,15 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Designed new logos for BiteBytes! (Please check out our `reports/` folder)
 - [NEW IN MS4] Added finetuned model inference and nutrition facts (Please see [Container 3: Fine-Tuning](#container-3-fine-tuning))
 - [NEW IN MS4] Experimenting with RLAIF (Please check out our `notebooks/` folder)
-- [NEW IN MS4] Added frontend (Please see [Frontend](#frontend))
+- [NEW IN MS4] Added frontend (Please see [Frontend & Backend](#frontend--backend))
+- [NEW IN MS4] Added OCR and NER API (Please see [Frontend & Backend](#frontend--backend))
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
 2. [Data Versioning Strategy](#data-versioning-strategy)
 3. [LLM: Fine-tuning](#llm-fine-tuning)
 4. [LLM: RAG](#llm-rag)
-5. [Frontend](#frontend)
+5. [Frontend & Backend](#frontend--backend)
 
 
 ## Virtual Environment Setup & Containers
@@ -232,9 +233,8 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 - **Instructions**: 
   - First, in the `/api-service` directory, run `sh docker-shell.sh` to start the container.
     - You can also try out the OCR and NER API at `http://localhost:9000/docs`.
-  - Then, in the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost.
-    - You can also try out the frontend app at `http://localhost:3000`.
     - Currently, the OCR and NER API is not hosted on the cloud, so you need to run the container locally.
+  - Then, in the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost (`http://localhost:3000`). 
 - **Example**: 
   - Landing Page:
   ![image](./screenshots/landing-page.png)
