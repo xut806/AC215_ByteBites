@@ -20,7 +20,7 @@ export const Navbar = () => {
 
   return (
     <div className="w-full fixed top-0 left-0 z-50 bg-white">
-      <nav className="container relative flex flex-wrap items-center justify-between p-1 mx-auto lg:justify-between xl:px-1">
+      <nav className="container relative flex flex-wrap items-center justify-between p-2 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">
           <span className="flex items-center space-x-2 text-2xl font-medium text-pink-500 dark:text-gray-100">
@@ -29,8 +29,8 @@ export const Navbar = () => {
                 src="/horizontal_logo.png"
                 width="200"
                 alt="logo"
-                height="100"
-                className="w-25 mt-1"
+                height="200"
+                className="w-50 mt-1"
               />
             </span>
           </span>
@@ -49,7 +49,7 @@ export const Navbar = () => {
             </SignedOut>
             <SignedIn>
               <div className="flex items-center">
-                <Link href="/dashboard" className="px-6 py-3 text-lg text-white bg-pink-600 rounded-md hover:bg-pink-700 transition duration-300">
+                <Link href="/dashboard" className="px-4 py-2 text-white bg-pink-600 rounded-md hover:bg-pink-700 transition duration-300">
                   Dashboard
                 </Link>
                 <div className="relative ml-4">
@@ -57,8 +57,8 @@ export const Navbar = () => {
                     appearance={{
                       elements: {
                         userButton: {
-                          width: '60px',
-                          height: '60px',
+                          width: '40px',
+                          height: '40px',
                         },
                       },
                     }}
@@ -71,7 +71,7 @@ export const Navbar = () => {
             </SignedIn>
           </div>
         </div>
-                
+
         <Disclosure>
           {({ open }) => (
             <>
@@ -122,7 +122,7 @@ export const Navbar = () => {
             </>
           )}
         </Disclosure>
-        
+
         {/* menu  */}
         <div className="hidden text-center lg:flex lg:items-center">
           <ul className="items-center justify-end flex-1 pt-6 list-none lg:pt-0 lg:flex">
@@ -140,4 +140,3 @@ export const Navbar = () => {
     </div>
   );
 }
-

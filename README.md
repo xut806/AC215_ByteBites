@@ -230,7 +230,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
 - **Overview**: In this part, we implement the frontend including the landing page and dashboard (recipe upload, ingredients selection, meal preference selection，recipe generation). 
 - **Instructions**: 
-  - In the `/landing` directory, run `npm run dev` to start the app on localhost.
+  - In the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost.
 - **Example**: 
   - Landing Page:
   ![image](./screenshots/landing-page.png)
