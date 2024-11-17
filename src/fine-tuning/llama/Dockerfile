@@ -14,11 +14,12 @@ RUN set -ex; \
     pip install --no-cache-dir --upgrade pip && \
     pip install pipenv && \
     pipenv install --system --deploy && \
-    mkdir -p /app
+    mkdir -p /app && \
+    mkdir -p /app/logs && \
+    mkdir -p /app/finetuned_models
 
 RUN pipenv sync
+
 COPY llama_finetune.py /app/
-
-
 
 CMD ["python", "/app/llama_finetune.py", "--train"]

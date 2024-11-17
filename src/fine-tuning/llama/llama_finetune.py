@@ -12,7 +12,8 @@ from google.cloud import storage
 from io import BytesIO
 import os
 import subprocess
-
+import shutil
+    
 def check_cuda_version():
     try:
         result = subprocess.run(["nvcc", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -27,7 +28,7 @@ def run_nvidia_smi():
     try:
         # Run the nvidia-smi command
         result = subprocess.run(["nvidia-smi"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        # Print the output
+        
         if result.returncode == 0:
             print(result.stdout)
         else:
@@ -35,16 +36,17 @@ def run_nvidia_smi():
     except FileNotFoundError:
         print("nvidia-smi command not found. Make sure NVIDIA drivers are installed and nvidia-smi is in your PATH.")
 
-# Function to list files in a directory
-def list_files(directory):
+def upload_to_gcs(bucket_name, destination_blob_name, source_file_path):
     try:
-        files = os.listdir(directory)
-        return files
-    except FileNotFoundError:
-        return f"Directory '{directory}' not found."
-    except PermissionError:
-        return f"Permission denied for accessing '{directory}'."
-
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
+        
+        # Upload the file
+        blob.upload_from_filename(source_file_path)
+        print(f"File {source_file_path} uploaded to {destination_blob_name}.")
+    except Exception as e:
+        print(f"Failed to upload {source_file_path} to {bucket_name}/{destination_blob_name}: {e}")
 
 def main(args):
 
@@ -56,15 +58,13 @@ def main(args):
     project_id = 'ai-recipe-441518'
     train_blob_name = 'processed/fine_tuning_llama_train_data.jsonl'
     MODEL_NAME = 'unsloth/Llama-3.2-3B-bnb-4bit'
-    # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/data-service-account.json'
-    wandb_api_key = ""
-    huggingface_token = ""
+
+    wandb_api_key = "" # Add wandb api key
+    huggingface_token = "" # add hf token
     print("Hugging Face Token fetched successfully.")
     os.environ["WANDB_API"] = wandb_api_key
     os.environ["HF_TOKEN"] = huggingface_token
 
-
-    # client = storage.Client.from_service_account_json(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(train_blob_name)
@@ -75,8 +75,9 @@ def main(args):
     print("**train_data: **", train_data)
 
     login(token=os.environ['HF_TOKEN'])
-
-    MAX_SEQ_LENGTH = 5020
+    
+    torch.cuda.empty_cache()
+    MAX_SEQ_LENGTH = 2048
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=MODEL_NAME,
         max_seq_length=MAX_SEQ_LENGTH,
@@ -89,6 +90,7 @@ def main(args):
         r=16,
         lora_alpha=16,
         lora_dropout=0,
+        bias = "none",
         target_modules=["q_proj", "k_proj", "v_proj", "up_proj", "down_proj", "o_proj", "gate_proj"],
         use_rslora=True,
         use_gradient_checkpointing="unsloth",
@@ -97,23 +99,38 @@ def main(args):
     )
 
     model.gradient_checkpointing_enable()
+    
+    learning_rate=3e-4
+    epochs=3
+    batch_size= 4 #4
+    NAME="Llama-3.2-3B-bnb-4bit"
 
     wandb.login(key=os.environ['WANDB_API'])
 
-    wandb.init(project="llama_3b_finetune_gpu")
+    wandb.init(
+        project="ai-recipe",
+        config={
+        "learning_rate": learning_rate,
+        "epochs": epochs,
+        "batch_size": batch_size, #per device
+        "model_name": NAME,
+        },
+        name=NAME,
+    )
+    
     output_dir = "/app/finetuned_model"
     logging_dir = "/app/logs"
 
     training_args = SFTConfig(
-        learning_rate=3e-4,
+        learning_rate=learning_rate,
         lr_scheduler_type="linear",
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,
-        num_train_epochs=1,
+        per_device_train_batch_size=batch_size,
+        gradient_accumulation_steps=4,#4
+        num_train_epochs=epochs,
         fp16=not torch.cuda.is_bf16_supported(),
         bf16=torch.cuda.is_bf16_supported(),
         logging_steps=50,
-        max_steps=3,
+        max_steps=-1,
         optim="adamw_8bit",
         weight_decay=0.01,
         warmup_steps=int(0.1 * (len(train_data) / 2)), # 10% of training steps for warmup
@@ -121,9 +138,9 @@ def main(args):
         logging_dir=logging_dir,
         seed=0,
         remove_unused_columns=True,
-        run_name="test_v0"
+        run_name="test_v0",
+        report_to="wandb" 
     )
-
 
     trainer = SFTTrainer(
         model=model,
@@ -138,20 +155,28 @@ def main(args):
     print("Training start...")
     trainer.train()
     print("Training finished...")
+
+    print("Saveing model to Wandb...")
+    artifact_name = "finetuned_model"
+    artifact = wandb.Artifact(name=artifact_name, type="model")
+    artifact.add_dir(output_dir)
+    wandb.log_artifact(artifact)
     
-    output_files = list_files(output_dir)
-    logging_files = list_files(logging_dir)
+    print("Saving model weights to GCS...")
 
-    # Displaying the results
-    print("Files in output_dir:")
-    print(output_files)
-
-    print("\nFiles in logging_dir:")
-    print(logging_files)
-
+    bucket_name2 = 'ai-recipe-trainer'
+    model_zip_path = "/app/finetuned_model.zip"
+    destination_blob_name = "finetuned_models/finetuned_model.zip"
+    
+    shutil.make_archive(base_name=model_zip_path.replace('.zip', ''), format='zip', root_dir=output_dir)
+    print(f"Model zipped at {model_zip_path}")
+    
+    upload_to_gcs(bucket_name2, destination_blob_name, model_zip_path)
+    
+    print("Model weights successfully uploaded to GCS.")
 
     wandb.finish()
-
+    
 if __name__ == "__main__":
     print("System information...")
     run_nvidia_smi()
