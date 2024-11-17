@@ -3,17 +3,37 @@
 import React, { useState } from "react"
 
 interface UploadRecipeProps {
-  onIngredientsReady: () => void
+  onIngredientsReady: (ingredients: string[]) => void
 }
 
 export default function Component({ onIngredientsReady }: UploadRecipeProps) {
   const [isDragging, setIsDragging] = useState(false)
 
+  const handleFileUpload = async (file: File) => {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const response = await fetch("http://localhost:9000/ocr", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Response data:", data)
+        onIngredientsReady(data.ingredients)
+      } else {
+        console.error("Failed to upload file")
+      }
+    } catch (error) {
+      console.error("Error:", error)
+    }
+  }
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setTimeout(() => {
-        onIngredientsReady()
-      }, 1000)
+      handleFileUpload(event.target.files[0])
     }
   }
 
@@ -30,9 +50,7 @@ export default function Component({ onIngredientsReady }: UploadRecipeProps) {
     e.preventDefault()
     setIsDragging(false)
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setTimeout(() => {
-        onIngredientsReady()
-      }, 1000)
+      handleFileUpload(e.dataTransfer.files[0])
     }
   }
 

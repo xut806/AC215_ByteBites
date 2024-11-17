@@ -1,16 +1,16 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 interface SelectIngredientsProps {
   onGenerate: () => void
+  ingredients: string[]
 }
 
-export default function Component({ onGenerate }: SelectIngredientsProps) {
+export default function Component({ onGenerate, ingredients }: SelectIngredientsProps) {
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
 
-  const ingredients = ["Tomatoes", "Chicken", "Bell Peppers", "Onions", "Rice"]
   const preferences = ["Vegetarian", "Vegan", "Gluten Free", "Dairy Free"]
 
   const handleIngredientChange = (ingredient: string) => {
@@ -26,9 +26,9 @@ export default function Component({ onGenerate }: SelectIngredientsProps) {
   }
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md max-w-md mx-auto">
+    <div className="rounded-lg bg-white p-6 shadow-md mx-auto">
       <h2 className="mb-4 text-center text-2xl font-semibold">Select Ingredients</h2>
-      <div className="space-y-10">
+      <div className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           {ingredients.map(ingredient => (
             <div key={ingredient} className="flex items-center space-x-2">

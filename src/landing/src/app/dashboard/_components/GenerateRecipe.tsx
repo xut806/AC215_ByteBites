@@ -14,7 +14,7 @@ export default function Component({ onStartOver }: GenerateRecipeProps) {
       <h2 className="mb-4 text-center text-2xl font-bold">Your Recipe</h2>
       <p className="mb-6 text-center text-lg text-gray-600">{fakeRecipe}</p>
       <div className="space-y-6">
-        <div className="rounded-lg bg-gray-50 p-6">
+        <div className="rounded-lg bg-gray-50 p-5">
           <p className="text-gray-600">
             (Recipe content would be displayed here after generation by the LLM)
           </p>

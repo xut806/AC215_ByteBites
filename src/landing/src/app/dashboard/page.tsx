@@ -7,10 +7,14 @@ import GenerateRecipe from "./_components/GenerateRecipe"
 
 export default function Component() {
   const [step, setStep] = useState<"main" | "upload" | "select" | "generate">("main")
+  const [ingredients, setIngredients] = useState<string[]>([])
 
   const handleUploadClick = () => setStep("upload")
   const handleSelectClick = () => setStep("select")
-  const handleIngredientsReady = () => setStep("select")
+  const handleIngredientsReady = (newIngredients: string[]) => {
+    setIngredients(newIngredients)
+    setStep("select")
+  }
   const handleGenerateRecipe = () => setStep("generate")
   const handleStartOver = () => setStep("main")
 
@@ -39,7 +43,7 @@ export default function Component() {
         </div>
       )}
       {step === "upload" && <UploadRecipe onIngredientsReady={handleIngredientsReady} />}
-      {step === "select" && <SelectIngredients onGenerate={handleGenerateRecipe} />}
+      {step === "select" && <SelectIngredients onGenerate={handleGenerateRecipe} ingredients={ingredients} />}
       {step === "generate" && <GenerateRecipe onStartOver={handleStartOver} />}
     </div>
   )

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from math import sqrt
 from doctr.models import ocr_predictor
 from doctr.io import DocumentFile
@@ -7,6 +8,15 @@ import regex as re
 
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Initialize OCR and NER models
 ocr_model = ocr_predictor(det_arch='db_resnet50', reco_arch='crnn_vgg16_bn', pretrained=True)
 ocr_model.det_predictor.model.postprocessor.bin_thresh = 0.2
@@ -14,7 +24,6 @@ ocr_model.det_predictor.model.postprocessor.bin_thresh = 0.2
 ner_tokenizer = AutoTokenizer.from_pretrained("Dizex/InstaFoodRoBERTa-NER")
 ner_model = AutoModelForTokenClassification.from_pretrained("Dizex/InstaFoodRoBERTa-NER")
 ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
-
 
 @app.post("/ocr")
 async def extract_ingredients(file: UploadFile = File(...)):
