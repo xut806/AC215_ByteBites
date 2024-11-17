@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+fastapi = "*"
+uvicorn = "*"
+transformers = "*"
+torch = "*"
+google-cloud-storage = "*"
+opencv-python-headless = "*"
+python-doctr = {extras = ["torch", "viz", "html", "contrib"]}
+regex = "*"
+mplcursors = "*"
+matplotlib = "*"
+requests = "*"
+tf2onnx = "*"
+python-multipart = "*"
+
+
+[requires]
+python_version = "3.11"
