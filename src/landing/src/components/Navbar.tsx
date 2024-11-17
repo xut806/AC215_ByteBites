@@ -20,17 +20,17 @@ export const Navbar = () => {
 
   return (
     <div className="w-full fixed top-0 left-0 z-50 bg-white">
-      <nav className="container relative flex flex-wrap items-center justify-between p-2 mx-auto lg:justify-between xl:px-1">
+      <nav className="container relative flex flex-wrap items-center justify-between p-1 mx-auto lg:justify-between xl:px-1">
         {/* Logo  */}
         <Link href="/">
           <span className="flex items-center space-x-2 text-2xl font-medium text-pink-500 dark:text-gray-100">
             <span>
               <Image
                 src="/horizontal_logo.png"
-                width="250"
+                width="200"
                 alt="logo"
-                height="250"
-                className="w-25 mt-2"
+                height="100"
+                className="w-25 mt-1"
               />
             </span>
           </span>

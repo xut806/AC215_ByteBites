@@ -13,7 +13,6 @@ import {
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { PopupWidget }  from "@/components/PopupWidget";
 
 const inter = Montserrat({ subsets: ["latin"] });
 
