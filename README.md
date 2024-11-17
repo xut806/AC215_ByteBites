@@ -226,11 +226,15 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
    - One of the retrieved context: 
    ![image](./screenshots/llm-rag-example.png)
 
-## Frontend
+## Frontend & Backend
 
-- **Overview**: In this part, we implement the frontend including the landing page and dashboard (recipe upload, ingredients selection, meal preference selection，recipe generation). 
+- **Overview**: In this part, we implement the frontend including the landing page and dashboard (recipe upload, ingredients selection, meal preference selection，recipe generation). We also implement the backend to handle the OCR and NER task to extract ingredients from the receipt.
 - **Instructions**: 
-  - In the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost.
+  - First, in the `/api-service` directory, run `sh docker-shell.sh` to start the container.
+    - You can also try out the OCR and NER API at `http://localhost:9000/docs`.
+  - Then, in the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost.
+    - You can also try out the frontend app at `http://localhost:3000`.
+    - Currently, the OCR and NER API is not hosted on the cloud, so you need to run the container locally.
 - **Example**: 
   - Landing Page:
   ![image](./screenshots/landing-page.png)
