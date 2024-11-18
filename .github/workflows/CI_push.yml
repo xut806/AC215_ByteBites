@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         # containers that we have for our app (folders in src/)
-        container: [ "api-service", "fine-tuning", "llm-vm", "ocr-vm", "ocr", "preprocessing", "rag"]
-        python-version: [ "3.11", "3.12" ] 
+        container: [ "api-service", "fine-tuning", "ocr", "preprocessing", "rag"]
+        python-version: [ "3.11"] 
 
     steps:
       # code checkout
