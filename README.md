@@ -243,7 +243,14 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
 ### Setup Instructions
 
-1. **Backend Setup**:
+1. **Docker Compose**: 
+   - You can use Docker Compose to set up both the frontend and backend services. Navigate to `src/`, and run the following command to start both services:
+     ```bash
+     docker-compose up --build
+     ```
+   - This will start the frontend on port 3000 and the backend on port 9000.
+
+2. **Backend Setup**:
    - Navigate to the `api-service/` directory.
    - Build and run the Docker container using the provided shell script:
      ```bash
@@ -251,7 +258,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
      ```
    - The backend service will be available at `http://localhost:9000`. You can access and try out the API endpoints at `http://localhost:9000/docs`.
 
-2. **Frontend Setup**:
+3. **Frontend Setup**:
    - Navigate to the `landing/` directory.
    - Install the necessary dependencies:
      ```bash
@@ -262,13 +269,6 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
      npm run dev
      ```
    - The frontend application will be available at `http://localhost:3000`.
-
-3. **Docker Compose**:
-   - Alternatively, you can use Docker Compose to set up both the frontend and backend services. Go to `src/`, and run the following command to start both services:
-     ```bash
-     docker-compose up --build
-     ```
-   - This will start the frontend on port 3000 and the backend on port 9000.
 
 ### Usage Guidelines
 - **Landing Page**: Access the landing page at `http://localhost:3000`. Here, you can see a landing page and learn about the features of ByteBites. After logging in, you can navigate to the dashboard.
