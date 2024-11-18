@@ -1,10 +1,10 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from math import sqrt
-from doctr.models import ocr_predictor
-from doctr.io import DocumentFile
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 import regex as re
+from doctr.io import DocumentFile
+from doctr.models import ocr_predictor
+from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from transformers import (AutoModelForTokenClassification, AutoTokenizer,
+                          pipeline)
 
 app = FastAPI()
 
