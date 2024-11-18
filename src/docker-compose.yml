@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./landing
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./api-service
+    ports:
+      - "9000:9000"
