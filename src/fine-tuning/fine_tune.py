@@ -2,6 +2,7 @@
 # os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.0'
 
 import os
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -10,14 +11,17 @@ load_dotenv()
 # Set the Google Cloud credentials
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer, TrainingArguments, DataCollatorForLanguageModeling
-from utils import RecipeDataset
-import torch
-import os
-from huggingface_hub import login
-from google.cloud import storage
 import json
+import os
 from io import BytesIO
+
+import torch
+from google.cloud import storage
+from huggingface_hub import login
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          DataCollatorForLanguageModeling, Trainer,
+                          TrainingArguments)
+from utils import RecipeDataset
 
 # Use environment variable for the token
 hf_token = os.getenv("HUGGINGFACE_TOKEN")

@@ -1,16 +1,17 @@
-import sys
-import os
 import json
+import os
+import sys
+
 import torch
-from google.cloud import storage
-from langchain_huggingface import HuggingFacePipeline, HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.schema.output_parser import StrOutputParser
-from langchain.prompts import ChatPromptTemplate
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
+from google.cloud import storage
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.output_parser import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFacePipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 # Add parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

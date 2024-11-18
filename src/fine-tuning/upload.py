@@ -1,5 +1,6 @@
-from google.cloud import storage
 import os
+
+from google.cloud import storage
 
 # Set the Google Cloud credentials
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'

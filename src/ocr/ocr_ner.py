@@ -1,13 +1,14 @@
-from doctr.models import ocr_predictor
-from doctr.io import DocumentFile
-from google.cloud import storage
+import io
 import json
-import regex as re
 import os
 import zipfile
-import io
-from transformers import AutoTokenizer, AutoModelForTokenClassification
-from transformers import pipeline
+
+import regex as re
+from doctr.io import DocumentFile
+from doctr.models import ocr_predictor
+from google.cloud import storage
+from transformers import (AutoModelForTokenClassification, AutoTokenizer,
+                          pipeline)
 
 # Google Cloud credentials
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'

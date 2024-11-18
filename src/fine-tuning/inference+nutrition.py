@@ -1,10 +1,11 @@
 import os
+
+import requests
+import torch
 from dotenv import load_dotenv
 from google.cloud import storage
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
 from safetensors import safe_open
-import requests
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # Load environment variables from .env file
 load_dotenv()
