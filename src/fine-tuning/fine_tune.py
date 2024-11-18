@@ -1,6 +1,22 @@
+#!/usr/bin/env python3
+
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # import os
 # os.environ['PYTORCH_MPS_HIGH_WATERMARK_RATIO'] = '0.0'
 
+from utils import RecipeDataset
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    Trainer,
+    TrainingArguments,
+)
+from google.cloud import storage
+import torch
 import os
 
 from dotenv import load_dotenv
@@ -9,19 +25,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Set the Google Cloud credentials
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
 
-import json
-import os
-from io import BytesIO
-
-import torch
-from google.cloud import storage
-from huggingface_hub import login
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                          DataCollatorForLanguageModeling, Trainer,
-                          TrainingArguments)
-from utils import RecipeDataset
 
 # Use environment variable for the token
 hf_token = os.getenv("HUGGINGFACE_TOKEN")
@@ -29,7 +34,9 @@ hf_token = os.getenv("HUGGINGFACE_TOKEN")
 # Load tokenizer and model from Hugging Face
 model_name = "facebook/opt-125m"
 tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=hf_token)
-model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=hf_token)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name, use_auth_token=hf_token
+)
 
 # Set the padding token
 tokenizer.pad_token = tokenizer.eos_token
@@ -60,13 +67,15 @@ training_args = TrainingArguments(
     save_total_limit=1,
     fp16=False,
     max_grad_norm=0.3,
-    remove_unused_columns=True,  
+    remove_unused_columns=True,
 )
 
 # Split dataset into train and validation
 train_size = int(0.9 * len(dataset))
 val_size = len(dataset) - train_size
-train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+train_dataset, val_dataset = torch.utils.data.random_split(
+    dataset, [train_size, val_size]
+)
 
 # Create a data collator
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
@@ -77,7 +86,7 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=val_dataset,
-    data_collator=data_collator,  
+    data_collator=data_collator,
 )
 
 # Fine-tune the model

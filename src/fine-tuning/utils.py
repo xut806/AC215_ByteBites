@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # utils.py
 import json
 import os
@@ -14,7 +20,9 @@ class RecipeDataset(Dataset):
         self.max_length = max_length
 
         # Set up GCS client
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/app/secrets/recipe.json'
+        os.environ[
+            "GOOGLE_APPLICATION_CREDENTIALS"
+        ] = "/app/secrets/recipe.json"
         storage_client = storage.Client()
 
         # Get the bucket and blob
@@ -25,7 +33,7 @@ class RecipeDataset(Dataset):
         content = blob.download_as_text()
 
         # Parse the JSONL content
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             if line.strip():
                 recipe = json.loads(line)
                 self.data.append(recipe)
@@ -36,10 +44,15 @@ class RecipeDataset(Dataset):
     def __getitem__(self, idx):
         recipe = self.data[idx]
         text = f"{recipe['prompt']}{recipe['completion']}"
-        
-        encodings = self.tokenizer(text, truncation=True, padding='max_length', max_length=self.max_length)
-        
+
+        encodings = self.tokenizer(
+            text,
+            truncation=True,
+            padding="max_length",
+            max_length=self.max_length,
+        )
+
         # Create labels (same as input_ids for causal language modeling)
-        encodings['labels'] = encodings['input_ids'].copy()
+        encodings["labels"] = encodings["input_ids"].copy()
 
         return {key: torch.tensor(val) for key, val in encodings.items()}
