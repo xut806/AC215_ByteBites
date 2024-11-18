@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ milestone4 ]
   pull_request:
-    branches: [ main ]
+    branches: [ milestone4 ]
 
 jobs:
   build-and-lint:
