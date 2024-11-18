@@ -68,6 +68,14 @@ Our repo is structured as follows:
 │     
 │    ├── landing/               # Frontend for the application
 │         ├── .env.local        # Secret keys
+│         ├── Dockerfile        # Dockerfile for the frontend
+│    ├── api-service/          # Backend for the application
+│         ├── api/
+|         ├── Dockerfile        
+│         ├── Pipfile            
+│         ├── Pipfile.lock
+|         ├── docker-entrypoint.sh
+│         ├── docker-shell.sh
 │    └── .env
 ├── .gitignore
 ├── README.md
@@ -90,7 +98,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 2. [Data Versioning Strategy](#data-versioning-strategy)
 3. [LLM: Fine-tuning](#llm-fine-tuning)
 4. [LLM: RAG](#llm-rag)
-5. [Frontend & Backend](#frontend--backend)
+5. [APIs & Frontend Implementation](#apis--frontend-implementation)
 
 
 ## Virtual Environment Setup & Containers
@@ -227,18 +235,47 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
    - One of the retrieved context: 
    ![image](./screenshots/llm-rag-example.png)
 
-## Frontend & Backend
+## APIs & Frontend Implementation
 
-- **Overview**: In this part, we implement the frontend including the landing page and dashboard (recipe upload, ingredients selection, meal preference selection，recipe generation). We also implement the backend to handle the OCR and NER task to extract ingredients from the receipt.
-- **Instructions**: 
-  - First, in the `/api-service` directory, run `sh docker-shell.sh` to start the container.
-    - You can also try out the OCR and NER API at `http://localhost:9000/docs`.
-    - Currently, the OCR and NER API is not hosted on the cloud, so you need to run the container locally.
-  - Then, in the `/landing` directory, run `npm install` to install the dependencies, then run `npm run dev` to start the app on localhost (`http://localhost:3000`). 
-- **Example**: 
-  - Landing Page:
-  ![image](./screenshots/landing-page.png)
-  - Dashboard:
-  ![image](./screenshots/dashboard.png)
+- **Overview**: The The ByteBites application consists of two main components: the frontend and the backend.  
+- **Frontend**: This is the user interface of the application, built using Next.js. It includes the landing page and dashboard where users can upload grocery receipts, select ingredients, and generate personalized recipes. The frontend is located in the `landing/` directory. 
+- **Backend**: This component handles the OCR & NER tasks as well as the LLM task. It processes uploaded receipt images to extract ingredient information and then generates recipes based on the user's preferences. The backend is located in the `api-service/` directory and is built using FastAPI. 
 
+### Setup Instructions
 
+1. **Backend Setup**:
+   - Navigate to the `api-service/` directory.
+   - Build and run the Docker container using the provided shell script:
+     ```bash
+     sh docker-shell.sh
+     ```
+   - The backend service will be available at `http://localhost:9000`. You can access and try out the API endpoints at `http://localhost:9000/docs`.
+
+2. **Frontend Setup**:
+   - Navigate to the `landing/` directory.
+   - Install the necessary dependencies:
+     ```bash
+     npm install
+     ```
+   - Start the development server:
+     ```bash
+     npm run dev
+     ```
+   - The frontend application will be available at `http://localhost:3000`.
+
+3. **Docker Compose**:
+   - Alternatively, you can use Docker Compose to set up both the frontend and backend services. Go to `src/`, and run the following command to start both services:
+     ```bash
+     docker-compose up --build
+     ```
+   - This will start the frontend on port 3000 and the backend on port 9000.
+
+### Usage Guidelines
+- **Landing Page**: Access the landing page at `http://localhost:3000`. Here, you can see a landing page and learn about the features of ByteBites. After logging in, you can navigate to the dashboard.
+
+   ![Landing Page](./screenshots/landing-page.png)
+
+- **Dashboard**: On the dashboard, you can upload a grocery receipt to extract ingredients, select your meal preferences, and generate recipes.
+
+   ![Dashboard](./screenshots/dashboard.png)
+  
