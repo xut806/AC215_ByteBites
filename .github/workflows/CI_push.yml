@@ -33,7 +33,8 @@ jobs:
           pip install pipenv
           pipenv install --dev
 
-      # linting- name: Run Linting for ${{ matrix.container }}
+      # linting
+      - name: Run Linting for ${{ matrix.container }}
         working-directory: src/${{ matrix.container }}
         run: |
           pipenv run flake8 . --exclude ../llama/.ipynb_checkpoints/llama_finetune-checkpoint.py
