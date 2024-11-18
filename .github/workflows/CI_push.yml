@@ -37,4 +37,4 @@ jobs:
       - name: Run Linting for ${{ matrix.container }}
         working-directory: src/${{ matrix.container }}
         run: |
-          pipenv run flake8 . --exclude ../llama/.ipynb_checkpoints/llama_finetune-checkpoint.py
+          pipenv run flake8 . --exclude src/llama/.ipynb_checkpoints/llama_finetune-checkpoint.py
