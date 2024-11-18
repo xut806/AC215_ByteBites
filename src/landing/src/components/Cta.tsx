@@ -13,9 +13,11 @@ export const Cta = () => {
           Join thousands of users already creating personalized, nutritious recipes with ByteBites.
         </p>
         <div className="mt-6">
-          <SignInButton className="inline-block py-3 px-6 text-lg font-medium text-center text-white bg-pink-600 rounded-md hover:bg-pink-700">
-            Get Started Now
-          </SignInButton>
+          <div className="px-8 py-4 text-lg font-medium text-center text-white bg-pink-600 rounded-md">
+            <SignInButton>
+              Discover Your Meals Today →
+            </SignInButton>
+          </div>
         </div>
       </div>
     </Container>

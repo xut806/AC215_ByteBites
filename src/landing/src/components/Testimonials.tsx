@@ -31,7 +31,7 @@ export const Testimonials = () => {
           <div className="flex items-center mt-2">
           </div>
           <p className="mt-4 text-base">
-            "Thanks to ByteBites, meal prep has never been easier! It turns my grocery receipts into personalized, healthy recipes in seconds, saving me time and reducing food waste. A total game-changer for my busy schedule!"
+            &quot;Thanks to ByteBites, meal prep has never been easier! It turns my grocery receipts into personalized, healthy recipes in seconds, saving me time and reducing food waste. A total game-changer for my busy schedule!&quot;
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export const Testimonials = () => {
           <div className="flex items-center mt-2">
           </div>
           <p className="mt-4 text-base">
-            "ByteBites has completely transformed how I plan my meals! With its personalized recipes and nutrition insights, I’m eating smarter and wasting less food. It's the ultimate tool for healthier, hassle-free cooking!"
+            &quot;ByteBites has completely transformed how I plan my meals! With its personalized recipes and nutrition insights, I&#39;m eating smarter and wasting less food. It&#39;s the ultimate tool for healthier, hassle-free cooking!&quot;
           </p>
         </div>
       </div>

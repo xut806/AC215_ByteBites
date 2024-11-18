@@ -6,7 +6,6 @@ import { Testimonials } from "@/components/Testimonials";
 import { Faq } from "@/components/Faq";
 import { Cta } from "@/components/Cta";
 import Steps from "@/components/Steps";
-
 import { benefitOne } from "@/components/data";
 
 export default function Home() {
@@ -21,15 +20,11 @@ export default function Home() {
         and more sustainable meal planning. 
       </SectionTitle>
 
-      <Benefits data={benefitOne} id="features"/>
+      <Benefits data={benefitOne}/>
 
       <SectionTitle
         preTitle="Here's how ByteBites works"
-        title={
-          <>
-            Create your meals in <span className="text-pink-500">3 simple steps</span>. Automated
-          </>
-        }
+        title="Create your meals in 3 simple steps. Automated."
       >
         Upload your grocery receipt, 
         set your preferences, 

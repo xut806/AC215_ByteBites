@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 
 interface SectionTitleProps {
   preTitle?: string;
-  title?: string;
+  title?: React.ReactNode;
   align?: "left" | "center";
   children?: React.ReactNode;
 }

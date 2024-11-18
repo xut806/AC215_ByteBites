@@ -19,9 +19,11 @@ export const Hero = () => {
             </p>
 
             <div className="flex flex-col items-start space-y-3 sm:space-x-4 sm:space-y-0 sm:items-center sm:flex-row">
-              <SignInButton className="px-8 py-4 text-lg font-medium text-center text-white bg-pink-600 rounded-md">
-                Discover Your Meals Today →
-              </SignInButton>
+              <div className="px-8 py-4 text-lg font-medium text-center text-white bg-pink-600 rounded-md">
+                <SignInButton>
+                  Discover Your Meals Today →
+                </SignInButton>
+              </div>
             </div>
           </div>
         </div>

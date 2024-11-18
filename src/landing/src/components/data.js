@@ -3,15 +3,14 @@ import {
   ChartBarSquareIcon,
   CursorArrowRaysIcon,
   DevicePhoneMobileIcon,
-  AdjustmentsHorizontalIcon,
-  SunIcon,
 } from "@heroicons/react/24/solid";
+
 import Imgone from "../../public/img/steps/step1.png"; 
 import Imgtwo from "../../public/img/steps/step2.png"; 
 import Imgthree from "../../public/img/steps/step3.png"; 
 import Image from "next/image";
 
-const benefitOne = {
+export const benefitOne = {
   bullets: [
     {
       title: "Automated Ingredient Recognition",
@@ -36,7 +35,7 @@ const benefitOne = {
   ],
 };
 
-const steps = {
+export const steps = {
   items: [
       {
         title: "Upload your grocery receipt",
@@ -55,6 +54,3 @@ const steps = {
       },      
   ],
 };
-
-
-export { benefitOne, steps };
