@@ -92,6 +92,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Experimenting with RLAIF (Please check out our `notebooks/` folder)
 - [NEW IN MS4] Added frontend (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added OCR and NER API (Please see [Frontend & Backend](#frontend--backend))
+- [NEW IN MS4] Added CI and testing (Please see [CI & Testing](#ci--testing))
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
@@ -99,6 +100,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 3. [LLM: Fine-tuning](#llm-fine-tuning)
 4. [LLM: RAG](#llm-rag)
 5. [APIs & Frontend Implementation](#apis--frontend-implementation)
+6. [CI & Testing](#ci--testing)
 
 
 ## Virtual Environment Setup & Containers
@@ -279,3 +281,31 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
    ![Dashboard](./screenshots/dashboard.png)
   
+
+## CI & Testing
+### Testing Tools Used
+- **PyTest**: Used for running unit, integration, and system tests.
+- **pytest-cov**: Used for generating code coverage reports.
+- **Flake8**: Used for linting and code quality checks.
+
+### Implemented Tests
+#### Unit Tests
+- **fine-tuning/**: We test the scripts `upload.py` and `inference_nutrition.py` only for this directory. The `upload.py` uploads our fine-tuned model to GCP, and the `inference_nutrition.py` file does inference with the fine-tuned model as well as generate nutrition facts. We have opted not to include tests for other scripts within this directory, as these scripts are either deprecated or were used exclusively for local fine-tuning tasks, which have already been completed and verified. Please see the screenshot below for coverage:
+![image](./screenshots/fine-tuning-coverage.png)  
+
+#### Integration Tests
+#### System Tests 
+
+### Instructions to Run Tests Locally
+1. First, navigate to the container directory you wish to test (e.g., `src/fine-tuning`).
+2. Next, run the following commands one by one
+   ```
+   # ensure `pipenv` is installed: 
+   pip install pipenv
+
+   # install dependencies
+   pipenv install --dev
+
+   # run the test with coverage report
+   pipenv run pytest tests/ --cov=. --cov-report=term --cov-config=.coveragerc
+   ```

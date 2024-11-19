@@ -26,6 +26,9 @@ requests = "*"
 
 [dev-packages]
 flake8 = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.11"

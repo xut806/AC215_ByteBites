@@ -26,19 +26,6 @@ USDA_API_KEY = os.getenv("USDA_API_KEY")
 # Google Cloud credentials
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
 
-# Initialize Google Cloud Storage client
-client = storage.Client()
-
-# Load the .safetensors file from GCP bucket
-bucket_name = "recipe-dataset"
-file_name = "finetuned_model/model.safetensors"
-
-bucket = client.get_bucket(bucket_name)
-blob = bucket.blob(file_name)
-
-local_file_path = "/app/model.safetensors"
-blob.download_to_filename(local_file_path)
-
 
 def generate_recipe(model, tokenizer, prompt):
     """
@@ -70,39 +57,6 @@ def save_recipe_to_text(recipe_text, filename="generated_recipe.txt"):
     with open(filename, "w") as f:
         f.write(recipe_text)
     print(f"Recipe saved to {filename}")
-
-
-# Load the fine-tuned model weights from the safetensors file
-original_model_name = "facebook/opt-125m"
-finetuned_tokenizer = AutoTokenizer.from_pretrained(
-    original_model_name, use_auth_token=hf_token
-)
-finetuned_model = AutoModelForCausalLM.from_pretrained(
-    original_model_name, use_auth_token=hf_token
-)
-state_dict = {}
-with safe_open(local_file_path, framework="pt", device="cpu") as f:
-    for key in f.keys():
-        state_dict[key] = f.get_tensor(key)
-finetuned_model.load_state_dict(state_dict, strict=False)
-finetuned_model.eval()
-
-# format the prompt using ingredients, time to complete, and dietary preference
-# ingredients to cook with (user-specified)
-ingredients = ["tomato", "beef"]
-# string version of the ingredients
-ingredients_str = ", ".join(ingredients)
-# time to complete the recipe (user-specified)
-time_to_complete = 55
-# dietary preference (user-specified)
-dietary_preference = "low-sodium"
-
-prompt = f"""Please write a {dietary_preference} meal recipe that takes
-            approximately {time_to_complete} minutes
-            and includes the following ingredients: {ingredients_str}.
-            The recipe should be formatted with a clear list of ingredients
-            and detailed, step-by-step cooking instructions."""
-
 
 # nutrition facts for the recipe
 # Get nutrition info for each ingredient used in the recipe using USDA API
@@ -319,26 +273,56 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
     )
 
 
-nutrition_facts = get_nutrition_info(ingredients)
-overall_nutrition = aggregate_nutrition_info_with_units(nutrition_facts)
-save_nutrition_label_as_text(overall_nutrition, "nutrition_facts.txt")
-upload_to_gcs(
-    bucket_name, "nutrition_facts.txt", "nutrition_facts/nutrition_facts.txt"
-)
+if __name__ == "__main__":
+    bucket_name = "recipe-dataset"
+    # ingredients to cook with (user-specified)
+    ingredients = ["tomato", "beef"]
+    # string version of the ingredients
+    ingredients_str = ", ".join(ingredients)
+    # time to complete the recipe (user-specified)
+    time_to_complete = 55
+    # dietary preference (user-specified)
+    dietary_preference = "low-sodium"
+    nutrition_facts = get_nutrition_info(ingredients)
+    overall_nutrition = aggregate_nutrition_info_with_units(nutrition_facts)
+    save_nutrition_label_as_text(overall_nutrition, "nutrition_facts.txt")
+    upload_to_gcs(
+        bucket_name, "nutrition_facts.txt", "nutrition_facts/nutrition_facts.txt"
+    )
+   
+    # Load the fine-tuned model weights from the safetensors file
+    original_model_name = "facebook/opt-125m"
+    finetuned_tokenizer = AutoTokenizer.from_pretrained(
+        original_model_name, use_auth_token=hf_token
+    )
+    finetuned_model = AutoModelForCausalLM.from_pretrained(
+        original_model_name, use_auth_token=hf_token
+    )
+    state_dict = {}
+    file_name = "finetuned_model/model.safetensors"
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(file_name)
+    local_file_path = "/app/model.safetensors"
+    blob.download_to_filename(local_file_path)
+    with safe_open(local_file_path, framework="pt", device="cpu") as f:
+        for key in f.keys():
+            state_dict[key] = f.get_tensor(key)
+    finetuned_model.load_state_dict(state_dict, strict=False)
+    finetuned_model.eval()
 
-
-# Generate recipes using the fine-tuned model
-finetuned_recipe = generate_recipe(
+    # format the prompt using ingredients, time to complete, and dietary preference
+    prompt = f"""Please write a {dietary_preference} meal recipe that takes
+                approximately {time_to_complete} minutes
+                and includes the following ingredients: {ingredients_str}.
+                The recipe should be formatted with a clear list of ingredients
+                and detailed, step-by-step cooking instructions."""
+    finetuned_recipe = generate_recipe(
     finetuned_model, finetuned_tokenizer, prompt
-)
-save_recipe_to_text(finetuned_recipe, "generated_recipe.txt")
-upload_to_gcs(
-    bucket_name,
-    "generated_recipe.txt",
-    "generated_recipe/generated_recipe.txt",
-)
-
-
-# Print the results
-# print("Fine-tuned Model Output:")
-# print(finetuned_recipe)
+    )
+    save_recipe_to_text(finetuned_recipe, "generated_recipe.txt")
+    upload_to_gcs(
+        bucket_name,
+        "generated_recipe.txt",
+        "generated_recipe/generated_recipe.txt",
+    )

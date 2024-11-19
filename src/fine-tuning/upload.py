@@ -22,8 +22,7 @@ def upload_weights_to_gcs(bucket_name, source_file, destination_blob_name):
     blob.upload_from_filename(source_file)
     print(f"Successfully Uploaded {source_file} to {destination_blob_name}")
 
-
-source_file = "/app/finetuned_model/model.safetensors"
-destination_blob_name = "finetuned_model/model.safetensors"
-
-upload_weights_to_gcs(bucket_name, source_file, destination_blob_name)
+if __name__ == "__main__":
+    source_file = "/app/finetuned_model/model.safetensors"
+    destination_blob_name = "finetuned_model/model.safetensors"
+    upload_weights_to_gcs(bucket_name, source_file, destination_blob_name)
