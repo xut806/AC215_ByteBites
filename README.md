@@ -93,6 +93,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Added frontend (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added OCR and NER API (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added CI and testing (Please see [CI & Testing](#ci--testing))
+- [NEW IN MS4] Llama-3.2-3b (recipe generator model) finetuned on GCP
 - [NEW IN MS4] Llama-3.2-3b deployed and served on GCP (external IP: 34.41.18.132)
 
 ## Table of Contents
@@ -190,12 +191,58 @@ For this milestone, we have adopted the GCS bucket versioning feature for data v
 
 ## LLM: Fine-tuning
 
-- **Overview**: In this Milestone, we perform fine-tuning on the [`facebook/opt-125m`](https://huggingface.co/facebook/opt-125m) model.
+- **Overview**: In this Milestone, we perform fine-tuning on the [`facebook/opt-125m`](https://huggingface.co/facebook/opt-125m) model; [`unsloth/Llama-3.2-3b`](https://huggingface.co/unsloth/Llama-3.2-1B) model.
+---
+### Fine-Tuning Data
 
-- **Fine-tuning data**: We fetch the preprocssed dataset `fine_tuning_data_top_5000.jsonl`, which contains 5000 records, from the GCS bucket. We use 90% of the fetched dataset as training data, and 10% as the validation data. We tokenize the dataset with `max_length=512, truncation=True, padding='max_length'` parameters. Since we are using the  `opt-125m` model as a Causal Language Model, we tokenize both the recipe prompt and recipe steps together as input to the model. 
+#### For `opt-125m` Model:
+- **Dataset**:  
+  We fetch the preprocessed dataset `fine_tuning_data_top_5000.jsonl`, which contains **5,000 records**, from the GCS bucket.
+- **Data Split**:  
+  90% of the fetched dataset is used for training, and 10% is used for validation.
+- **Tokenization**:  
+  The dataset is tokenized with the following parameters:
+  - `max_length=512`
+  - `truncation=True`
+  - `padding='max_length'`
+
+  Since we are using the `opt-125m` model as a Causal Language Model (CLM), both the recipe prompt and recipe steps are tokenized together as a single input to the model.
+
+#### For `Llama` Model:
+- **Dataset**:  
+  We fetch the full-sized dataset, `fine_tuning_data.jsonl`, which contains **231,637 records**, from the GCS bucket.
+- **Filtering**:  
+  The dataset is filtered based on the following criteria:
+  - **Prompt length**: ≤ 470 characters.
+    | Before Filtering                                      | After Filtering                                       |
+|-------------------------------------------------------|------------------------------------------------------|
+| ![Distribution of Prompt Lengths Before Filtering](/screenshots/promptlength.png) | ![Distribution of Prompt Lengths After Filtering](/screenshots/promptlength_after.png) |
+  - **Response length**: ≤ 2,500 characters.  
+    | Before Filtering                                      | After Filtering                                       |
+|-------------------------------------------------------|------------------------------------------------------|
+| ![Distribution of Prompt Lengths Before Filtering](/screenshots/completionlength.png) | ![Distribution of Prompt Lengths After Filtering](/screenshots/completionlength_after.png) |
 
 
-- **Fine-tuning choices**:
+  After filtering, the dataset contains **230,197 input-response pairs**.
+- **Data Split**:  
+  The filtered dataset is split into:
+  - **Training set**: 80% of the filtered data.
+  - **Validation set**: 20% of the filtered data.
+
+- **Training Data Format**:
+  Each record in the training dataset is structured as follows:
+  1. **Task-specific instruction**:  
+     `"Write a recipe that includes clear instructions and ingredients. Ensure the recipe has a detailed list of ingredients and step-by-step cooking instructions."`
+  2. **Input prompt**:  
+     The user-provided input to generate a recipe.
+  3. **Expected response**:  
+     The corresponding recipe, written step by step with detailed instructions.
+  4. **EOS token**:  
+     An end-of-sequence token appended to signify the end of the output.
+---
+
+### Fine-tuning choices
+#### For `opt-125m` Model:
 We train for 3 epochs with a learning rate of `5e-5`. The specific training parameters used in fine-tuning are as follows:
 ```
 num_train_epochs=3,
@@ -212,6 +259,41 @@ fp16=False,
 max_grad_norm=0.3
 ```
 We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fine-tuning task since LoRA works best for larger models, yet the `opt-125m` model is quite small. We plan on implementing LoRA for future milestones when we are able to finetune the model on GCP instead of locally.
+
+#### For `Llama` Model with LoRA:
+**Key Features**
+- **LoRA-based parameter-efficient fine-tuning**:
+  - Only specific low-rank layers are fine-tuned, drastically reducing the number of trainable parameters.
+- **Gradient checkpointing**:
+  - Reduces GPU memory usage by storing intermediate states during backpropagation.
+- **2x faster fine-tuning and inference**:
+  - Enabled through Unsloth's advanced optimizations, making the process efficient .
+- **Automatic RoPE scaling**:
+  - Allows the use of any `max_seq_length` dynamically by implementing Kaiokendev's RoPE scaling method.
+- **4-bit quantization**:
+  - Memory-efficient model loading using bits-and-bytes (bnb-4bit) quantization.
+- **Monitor with W&B**
+
+**LoRA Configurations**
+- **Rank (`r`)**: `16`  
+- **LoRA Alpha**: `16`  
+- **LoRA Dropout**: `0` (dropout is disabled for LoRA layers to retain full training capacity.)
+- **Bias**: `"none"`  (no additional bias terms are introduced.)
+- **Target Modules**:  
+  The LoRA adapters are applied to the following model layers:
+  - `q_proj`, `k_proj`, `v_proj`
+  - `up_proj`, `down_proj`, `o_proj`
+  - `gate_proj`
+- **RSLoRA**: Enabled (`use_rslora=True`)  to ensures stability during training by using Robust Scalable LoRA.
+- **Gradient Checkpointing**: `"unsloth"`  (enables Unsloth's gradient checkpointing for memory efficiency)
+
+### **Hyperparameters and Other Model Configurations**
+- **Learning Rate**: `3e-4`
+- **Epochs**: `3`
+- **Batch Size**: `4` (per device)
+- **Optimizer**: `adamw_8bit`  (uses an 8-bit optimizer for efficient memory usage.)
+- **Gradient Accumulation Steps**: `4`  (accumulates gradients across multiple steps to reduce memory load.)
+- **Warmup Steps**: `10%` of total training steps.
 
 ## LLM: RAG
 
