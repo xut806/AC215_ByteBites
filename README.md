@@ -214,13 +214,27 @@ For this milestone, we have adopted the GCS bucket versioning feature for data v
 - **Filtering**:  
   The dataset is filtered based on the following criteria:
   - **Prompt length**: ≤ 470 characters.
-    | Before Filtering                                      | After Filtering                                       |
-|-------------------------------------------------------|------------------------------------------------------|
-| ![Distribution of Prompt Lengths Before Filtering](/screenshots/promptlength.png) | ![Distribution of Prompt Lengths After Filtering](/screenshots/promptlength_after.png) |
+ <div style="display: flex; justify-content: space-between;">
+  <div style="text-align: center;">
+    <p><strong>Before Filtering</strong></p>
+    <img src="/screenshots/promptlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+  </div>
+  <div style="text-align: center;">
+    <p><strong>After Filtering</strong></p>
+    <img src="/screenshots/promptlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+  </div>
+</div>
   - **Response length**: ≤ 2,500 characters.  
-    | Before Filtering                                      | After Filtering                                       |
-|-------------------------------------------------------|------------------------------------------------------|
-| ![Distribution of Prompt Lengths Before Filtering](/screenshots/completionlength.png) | ![Distribution of Prompt Lengths After Filtering](/screenshots/completionlength_after.png) |
+ <div style="display: flex; justify-content: space-between;">
+  <div style="text-align: center;">
+    <p><strong>Before Filtering</strong></p>
+    <img src="/screenshots/completionlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+  </div>
+  <div style="text-align: center;">
+    <p><strong>After Filtering</strong></p>
+    <img src="/screenshots/completionlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+  </div>
+</div>
 
 
   After filtering, the dataset contains **230,197 input-response pairs**.
@@ -287,7 +301,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 - **RSLoRA**: Enabled (`use_rslora=True`)  to ensures stability during training by using Robust Scalable LoRA.
 - **Gradient Checkpointing**: `"unsloth"`  (enables Unsloth's gradient checkpointing for memory efficiency)
 
-### **Hyperparameters and Other Model Configurations**
+**Hyperparameters and Other Model Configurations**
 - **Learning Rate**: `3e-4`
 - **Epochs**: `3`
 - **Batch Size**: `4` (per device)
