@@ -18,40 +18,78 @@ load_dotenv()
 # Use environment variable for the token
 hf_token = os.getenv("HUGGINGFACE_TOKEN")
 
-# Google Cloud credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
-
-# Initialize Google Cloud Storage client
-client = storage.Client()
-
-# Load the .safetensors file from GCP bucket
-bucket_name = "recipe-dataset"
-file_name = "finetuned_model/model.safetensors"
-
-bucket = client.get_bucket(bucket_name)
-blob = bucket.blob(file_name)
-
-local_file_path = "/app/model.safetensors"
-blob.download_to_filename(local_file_path)
-
-# Load the fine-tuned model
-model_name = "facebook/opt-125m"
-finetuned_tokenizer = AutoTokenizer.from_pretrained(
-    model_name, use_auth_token=hf_token
-)
-finetuned_model = AutoModelForCausalLM.from_pretrained(
-    model_name, use_auth_token=hf_token
-)
-
-# Load the fine-tuned model weights from the safetensors file
-state_dict = {}
-with safe_open(local_file_path, framework="pt", device="cpu") as f:
-    for key in f.keys():
-        state_dict[key] = f.get_tensor(key)
-finetuned_model.load_state_dict(state_dict, strict=False)
-finetuned_model.eval()
-
 router = APIRouter()
+
+
+# # Google Cloud credentials
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
+
+# # Initialize Google Cloud Storage client
+# client = storage.Client()
+
+# # Load the .safetensors file from GCP bucket
+# bucket_name = "recipe-dataset"
+# file_name = "finetuned_model/model.safetensors"
+
+# bucket = client.get_bucket(bucket_name)
+# blob = bucket.blob(file_name)
+
+# local_file_path = "/app/model.safetensors"
+# blob.download_to_filename(local_file_path)
+
+# # Load the fine-tuned model
+# model_name = "facebook/opt-125m"
+# finetuned_tokenizer = AutoTokenizer.from_pretrained(
+#     model_name, use_auth_token=hf_token
+# )
+# finetuned_model = AutoModelForCausalLM.from_pretrained(
+#     model_name, use_auth_token=hf_token
+# )
+
+# # Load the fine-tuned model weights from the safetensors file
+# state_dict = {}
+# with safe_open(local_file_path, framework="pt", device="cpu") as f:
+#     for key in f.keys():
+#         state_dict[key] = f.get_tensor(key)
+# finetuned_model.load_state_dict(state_dict, strict=False)
+# finetuned_model.eval()
+
+
+def initialize_storage_client():
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
+    return storage.Client()
+
+
+def load_model_and_tokenizer():
+    # Load the .safetensors file from GCP bucket
+    client = initialize_storage_client()
+    bucket_name = "recipe-dataset"
+    file_name = "finetuned_model/model.safetensors"
+
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(file_name)
+
+    local_file_path = "/app/model.safetensors"
+    blob.download_to_filename(local_file_path)
+
+    # Load the fine-tuned model
+    model_name = "facebook/opt-125m"
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name, use_auth_token=hf_token
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name, use_auth_token=hf_token
+    )
+
+    # Load the fine-tuned model weights from the safetensors file
+    state_dict = {}
+    with safe_open(local_file_path, framework="pt", device="cpu") as f:
+        for key in f.keys():
+            state_dict[key] = f.get_tensor(key)
+    model.load_state_dict(state_dict, strict=False)
+    model.eval()
+
+    return model, tokenizer
 
 
 class RecipeRequest(BaseModel):
@@ -89,6 +127,7 @@ async def create_recipe(request: RecipeRequest):
     )
 
     try:
+        finetuned_model, finetuned_tokenizer = load_model_and_tokenizer()
         recipe = generate_recipe(finetuned_model, finetuned_tokenizer, prompt)
         return {"recipe": recipe}
     except Exception as e:

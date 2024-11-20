@@ -1,0 +1,18 @@
+[run]
+source =
+    api
+    .
+
+relative_files = True
+
+[report]
+exclude_lines =
+    def test_
+    if __name__ == .__main__.:
+
+omit =
+    */tests/*
+
+[paths]
+source =
+    .
