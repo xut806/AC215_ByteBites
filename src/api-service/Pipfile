@@ -17,10 +17,26 @@ matplotlib = "*"
 requests = "*"
 tf2onnx = "*"
 python-multipart = "*"
+pandas = "*"
+jupyter = "*"
+datasets = "*"
+faiss-cpu = "*"
+langchain = "*"
+huggingface-hub = "*"
+dvc = "*"
+importlib_metadata = "*"
+markupsafe = "*"
+langchain-huggingface = "*"
+langchain-community = "*"
+accelerate = ">=0.26.0"
+peft = "*"
+loralib = "*"
+safetensors = "*"
+python-dotenv = "*"
+bitsandbytes = "*"
 
 [dev-packages]
 flake8 = "*"
-
 
 [requires]
 python_version = "3.11"
