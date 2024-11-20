@@ -93,6 +93,7 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Added frontend (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added OCR and NER API (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added CI and testing (Please see [CI & Testing](#ci--testing))
+- [NEW IN MS4] Llama-3.2-3b deployed and served on GCP (external IP: 34.41.18.132)
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
