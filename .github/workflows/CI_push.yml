@@ -31,7 +31,7 @@ jobs:
         working-directory: src/${{ matrix.container }}
         run: |
           pip install pipenv
-          pipenv install --dev
+          pipenv install --dev --extra-index-url https://download.pytorch.org/whl/cpu
 
       # linting
       - name: Run Linting for ${{ matrix.container }}
