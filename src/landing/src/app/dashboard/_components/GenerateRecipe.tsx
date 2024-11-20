@@ -1,31 +1,84 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 
 interface GenerateRecipeProps {
   onStartOver: () => void
+  selectedIngredients: string[]
+  dietaryPreferences: string[]
+  mealType: string
+  cookingTime: number
 }
 
-export default function Component({ onStartOver }: GenerateRecipeProps) {
-  const fakeRecipe = "Based on your selected ingredients and preferences, here's your recipe:"
+export default function Component({ onStartOver, selectedIngredients, dietaryPreferences, mealType, cookingTime }: GenerateRecipeProps) {
+  const [recipe, setRecipe] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const generateRecipe = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch("http://localhost:9000/llm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ingredients: selectedIngredients.join(", "),
+            dietary_preference: dietaryPreferences.join(", "),
+            meal_type: mealType,
+            cooking_time: cookingTime,
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setRecipe(data.recipe)
+        } else {
+          console.error("Failed to generate recipe")
+        }
+      } catch (error) {
+        console.error("Error:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    generateRecipe()
+  }, [selectedIngredients, dietaryPreferences, mealType, cookingTime])
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
       <h2 className="mb-4 text-center text-2xl font-bold">Your Recipe</h2>
-      <p className="mb-6 text-center text-lg text-gray-600">{fakeRecipe}</p>
-      <div className="space-y-6">
-        <div className="rounded-lg bg-gray-50 p-5">
-          <p className="text-gray-600">
-            (Recipe content would be displayed here after generation by the LLM)
-          </p>
+      {loading ? (
+        <p className="text-center text-lg text-gray-600">Generating recipe...</p>
+      ) : (
+        <div className="space-y-6">
+          <div className="rounded-lg bg-gray-50 p-5">
+            <p className="text-gray-600">
+              {recipe ? (
+                recipe
+                  .split("Instructions:")[1]
+                  .split("\n")
+                  .map((step, index) => (
+                    <span key={index} className="block">
+                      {step.trim()}
+                    </span>
+                  ))
+              ) : (
+                "(Recipe content would be displayed here after generation by the LLM)"
+              )}
+            </p>
+          </div>
+          <button
+            onClick={onStartOver}
+            className="w-full rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+          >
+            Start Over
+          </button>
         </div>
-        <button
-          onClick={onStartOver}
-          className="w-full rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
-        >
-          Start Over
-        </button>
-      </div>
+      )}
     </div>
   )
 }
+

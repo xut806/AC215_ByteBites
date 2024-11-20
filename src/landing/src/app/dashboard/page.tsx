@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import React, { useState } from "react"
 import UploadRecipe from "./_components/UploadRecipe"
@@ -8,6 +8,10 @@ import GenerateRecipe from "./_components/GenerateRecipe"
 export default function Component() {
   const [step, setStep] = useState<"main" | "upload" | "select" | "generate">("main")
   const [ingredients, setIngredients] = useState<string[]>([])
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
+  const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
+  const [mealType, setMealType] = useState<string>("")
+  const [cookingTime, setCookingTime] = useState<number>(0)
 
   const handleUploadClick = () => setStep("upload")
   const handleSelectClick = () => setStep("select")
@@ -15,7 +19,13 @@ export default function Component() {
     setIngredients(newIngredients)
     setStep("select")
   }
-  const handleGenerateRecipe = () => setStep("generate")
+  const handleGenerateRecipe = (selectedIngredients: string[], dietaryPreferences: string[], mealType: string, cookingTime: number) => {
+    setSelectedIngredients(selectedIngredients)
+    setDietaryPreferences(dietaryPreferences)
+    setMealType(mealType)
+    setCookingTime(cookingTime)
+    setStep("generate")
+  }
   const handleStartOver = () => setStep("main")
 
   return (
@@ -33,18 +43,27 @@ export default function Component() {
             >
               Upload grocery receipt
             </button>
-            <button
+            {/* <button
               onClick={handleSelectClick}
               className="rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
             >
               Let&apos;s get cooking!
-            </button>
+            </button> */}
           </div>
         </div>
       )}
       {step === "upload" && <UploadRecipe onIngredientsReady={handleIngredientsReady} />}
       {step === "select" && <SelectIngredients onGenerate={handleGenerateRecipe} ingredients={ingredients} />}
-      {step === "generate" && <GenerateRecipe onStartOver={handleStartOver} />}
+      {step === "generate" && (
+        <GenerateRecipe
+          onStartOver={handleStartOver}
+          selectedIngredients={selectedIngredients}
+          dietaryPreferences={dietaryPreferences}
+          mealType={mealType}
+          cookingTime={cookingTime}
+        />
+      )}
     </div>
   )
 }
+

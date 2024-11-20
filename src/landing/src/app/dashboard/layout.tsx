@@ -13,8 +13,8 @@ export default function DashboardLayout({
     children: React.ReactNode;
   }) {
     return (
-      <div className="bg-pink-50">
-        <main className="container mx-auto flex min-h-screen flex-col items-center justify-center">
+      <div className="bg-pink-50 min-h-screen flex flex-col mt-10">
+        <main className="container mx-auto flex-grow flex flex-col items-center justify-center sm:p-4 lg:p-8">
           <div className="w-full max-w-2xl">
             <div className="mb-4 text-center">
               <Image
