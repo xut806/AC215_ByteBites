@@ -58,6 +58,7 @@ def save_recipe_to_text(recipe_text, filename="generated_recipe.txt"):
         f.write(recipe_text)
     print(f"Recipe saved to {filename}")
 
+
 # nutrition facts for the recipe
 # Get nutrition info for each ingredient used in the recipe using USDA API
 def get_nutrition_info(ingredients):
@@ -84,9 +85,7 @@ def get_nutrition_info(ingredients):
                     # sort by the number of nutrients present (descending)
                     sorted_foods = sorted(
                         fndds_foods,
-                        key=lambda x: len(
-                            x.get("foodNutrients", [])
-                        ),
+                        key=lambda x: len(x.get("foodNutrients", [])),
                         reverse=True,
                     )
                     most_complete_food = sorted_foods[0]
@@ -141,9 +140,7 @@ def get_nutrition_info(ingredients):
                                 for food in sorted_foods
                                 if food.get("servingSize") is not None
                             ),
-                            sorted_foods[
-                                0
-                            ],
+                            sorted_foods[0],
                         )
                         serving_size = most_complete_food.get(
                             "servingSize", "N/A"
@@ -287,9 +284,11 @@ if __name__ == "__main__":
     overall_nutrition = aggregate_nutrition_info_with_units(nutrition_facts)
     save_nutrition_label_as_text(overall_nutrition, "nutrition_facts.txt")
     upload_to_gcs(
-        bucket_name, "nutrition_facts.txt", "nutrition_facts/nutrition_facts.txt"
+        bucket_name,
+        "nutrition_facts.txt",
+        "nutrition_facts/nutrition_facts.txt",
     )
-   
+
     # Load the fine-tuned model weights from the safetensors file
     original_model_name = "facebook/opt-125m"
     finetuned_tokenizer = AutoTokenizer.from_pretrained(
@@ -311,14 +310,15 @@ if __name__ == "__main__":
     finetuned_model.load_state_dict(state_dict, strict=False)
     finetuned_model.eval()
 
-    # format the prompt using ingredients, time to complete, and dietary preference
+    # format the prompt using ingredients, time to complete, and dietary
+    # preference
     prompt = f"""Please write a {dietary_preference} meal recipe that takes
                 approximately {time_to_complete} minutes
                 and includes the following ingredients: {ingredients_str}.
                 The recipe should be formatted with a clear list of ingredients
                 and detailed, step-by-step cooking instructions."""
     finetuned_recipe = generate_recipe(
-    finetuned_model, finetuned_tokenizer, prompt
+        finetuned_model, finetuned_tokenizer, prompt
     )
     save_recipe_to_text(finetuned_recipe, "generated_recipe.txt")
     upload_to_gcs(

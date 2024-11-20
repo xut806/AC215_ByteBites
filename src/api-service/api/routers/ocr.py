@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # src/api-service/api/routers/ocr.py
 from fastapi import APIRouter, File, UploadFile
 from api.utils.ner_utils import convert_ner_entities_to_list
@@ -26,7 +32,10 @@ ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
 
 
 @router.post("/ocr")
-async def extract_ingredients(file: UploadFile = File(...)):
+async def extract_ingredients(file: UploadFile = None):
+    if file is None:
+        file = File(...)
+
     # Read the image file
     image_bytes = await file.read()
     image_array = DocumentFile.from_images(image_bytes)

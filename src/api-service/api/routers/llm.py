@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 import os
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -70,7 +76,7 @@ def generate_recipe(model, tokenizer, prompt):
         )
 
     full_output = tokenizer.decode(output[0], skip_special_tokens=True)
-    return full_output[len(prompt) :].strip()
+    return full_output[len(prompt):].strip()
 
 
 @router.post("/llm")
