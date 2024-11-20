@@ -24,6 +24,7 @@ ner_model = AutoModelForTokenClassification.from_pretrained(
 )
 ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
 
+
 @router.post("/ocr")
 async def extract_ingredients(file: UploadFile = File(...)):
     # Read the image file
