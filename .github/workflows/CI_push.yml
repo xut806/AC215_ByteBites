@@ -39,40 +39,40 @@ jobs:
         run: |
           pipenv run flake8 .
   
-  # test:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       container: [ "api-service", "fine-tuning", "ocr", "preprocessing", "rag"]
-  #       python-version: [ "3.11"]
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: [ "api-service", "fine-tuning"]
+        python-version: [ "3.11"]
 
-  #   steps:
-  #     # code checkout
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
+    steps:
+      # code checkout
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-  #     # Python setup
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
+      # Python setup
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-  #     # installing dependencies for each container
-  #     - name: Install Dependencies for ${{ matrix.container }}
-  #       working-directory: src/${{ matrix.container }}
-  #       run: |
-  #         pip install pipenv
-  #         pipenv install --dev
+      # installing dependencies for each container
+      - name: Install Dependencies for ${{ matrix.container }}
+        working-directory: src/${{ matrix.container }}
+        run: |
+          pip install pipenv
+          pipenv install --dev
 
-  #     # testing
-  #     - name: Run Tests for ${{ matrix.container }}
-  #       working-directory: src/${{ matrix.container }}
-  #       run: |
-  #         pipenv run pytest --cov=. --cov-report=xml
+      # testing
+      - name: Run Tests for ${{ matrix.container }}
+        working-directory: src/${{ matrix.container }}
+        run: |
+          pipenv run pytest tests/ --cov=. --cov-report=xml  --cov-config=.coveragerc
 
-  #     # test coverage report
-  #     - name: Upload Coverage Report
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: coverage-report
-  #         path: src/${{ matrix.container }}/coverage.xml
+      # test coverage report
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: src/${{ matrix.container }}/coverage.xml
