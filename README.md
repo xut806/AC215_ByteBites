@@ -93,6 +93,8 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Added frontend (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added OCR and NER API (Please see [Frontend & Backend](#frontend--backend))
 - [NEW IN MS4] Added CI and testing (Please see [CI & Testing](#ci--testing))
+- [NEW IN MS4] Llama-3.2-3b (recipe generator model) finetuned on GCP
+- [NEW IN MS4] Llama-3.2-3b deployed and served on GCP (external IP: 34.41.18.132)
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
@@ -189,12 +191,72 @@ For this milestone, we have adopted the GCS bucket versioning feature for data v
 
 ## LLM: Fine-tuning
 
-- **Overview**: In this Milestone, we perform fine-tuning on the [`facebook/opt-125m`](https://huggingface.co/facebook/opt-125m) model.
+- **Overview**: In this Milestone, we perform fine-tuning on the [`facebook/opt-125m`](https://huggingface.co/facebook/opt-125m) model; [`unsloth/Llama-3.2-3b`](https://huggingface.co/unsloth/Llama-3.2-1B) model.
+---
+### Fine-Tuning Data
 
-- **Fine-tuning data**: We fetch the preprocssed dataset `fine_tuning_data_top_5000.jsonl`, which contains 5000 records, from the GCS bucket. We use 90% of the fetched dataset as training data, and 10% as the validation data. We tokenize the dataset with `max_length=512, truncation=True, padding='max_length'` parameters. Since we are using the  `opt-125m` model as a Causal Language Model, we tokenize both the recipe prompt and recipe steps together as input to the model. 
+#### For `opt-125m` Model:
+- **Dataset**:  
+  We fetch the preprocessed dataset `fine_tuning_data_top_5000.jsonl`, which contains **5,000 records**, from the GCS bucket.
+- **Data Split**:  
+  90% of the fetched dataset is used for training, and 10% is used for validation.
+- **Tokenization**:  
+  The dataset is tokenized with the following parameters:
+  - `max_length=512`
+  - `truncation=True`
+  - `padding='max_length'`
+
+  Since we are using the `opt-125m` model as a Causal Language Model (CLM), both the recipe prompt and recipe steps are tokenized together as a single input to the model.
+
+#### For `Llama` Model:
+- **Dataset**:  
+  We fetch the full-sized dataset, `fine_tuning_data.jsonl`, which contains **231,637 records**, from the GCS bucket.
+- **Filtering**:  
+  The dataset is filtered based on the following criteria:
+  - **Prompt length**: ≤ 470 characters.
+ <div style="display: flex; justify-content: space-between;">
+  <div style="text-align: center;">
+    <p><strong>Before Filtering</strong></p>
+    <img src="/screenshots/promptlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+  </div>
+  <div style="text-align: center;">
+    <p><strong>After Filtering</strong></p>
+    <img src="/screenshots/promptlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+  </div>
+</div>
+  - **Response length**: ≤ 2,500 characters.  
+ <div style="display: flex; justify-content: space-between;">
+  <div style="text-align: center;">
+    <p><strong>Before Filtering</strong></p>
+    <img src="/screenshots/completionlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+  </div>
+  <div style="text-align: center;">
+    <p><strong>After Filtering</strong></p>
+    <img src="/screenshots/completionlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+  </div>
+</div>
 
 
-- **Fine-tuning choices**:
+  After filtering, the dataset contains **230,197 input-response pairs**.
+- **Data Split**:  
+  The filtered dataset is split into:
+  - **Training set**: 80% of the filtered data.
+  - **Validation set**: 20% of the filtered data.
+
+- **Training Data Format**:
+  Each record in the training dataset is structured as follows:
+  1. **Task-specific instruction**:  
+     `"Write a recipe that includes clear instructions and ingredients. Ensure the recipe has a detailed list of ingredients and step-by-step cooking instructions."`
+  2. **Input prompt**:  
+     The user-provided input to generate a recipe.
+  3. **Expected response**:  
+     The corresponding recipe, written step by step with detailed instructions.
+  4. **EOS token**:  
+     An end-of-sequence token appended to signify the end of the output.
+---
+
+### Fine-tuning choices
+#### For `opt-125m` Model:
 We train for 3 epochs with a learning rate of `5e-5`. The specific training parameters used in fine-tuning are as follows:
 ```
 num_train_epochs=3,
@@ -211,6 +273,41 @@ fp16=False,
 max_grad_norm=0.3
 ```
 We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fine-tuning task since LoRA works best for larger models, yet the `opt-125m` model is quite small. We plan on implementing LoRA for future milestones when we are able to finetune the model on GCP instead of locally.
+
+#### For `Llama` Model with LoRA:
+**Key Features**
+- **LoRA-based parameter-efficient fine-tuning**:
+  - Only specific low-rank layers are fine-tuned, drastically reducing the number of trainable parameters.
+- **Gradient checkpointing**:
+  - Reduces GPU memory usage by storing intermediate states during backpropagation.
+- **2x faster fine-tuning and inference**:
+  - Enabled through Unsloth's advanced optimizations, making the process efficient .
+- **Automatic RoPE scaling**:
+  - Allows the use of any `max_seq_length` dynamically by implementing Kaiokendev's RoPE scaling method.
+- **4-bit quantization**:
+  - Memory-efficient model loading using bits-and-bytes (bnb-4bit) quantization.
+- **Monitor with W&B**
+
+**LoRA Configurations**
+- **Rank (`r`)**: `16`  
+- **LoRA Alpha**: `16`  
+- **LoRA Dropout**: `0` (dropout is disabled for LoRA layers to retain full training capacity.)
+- **Bias**: `"none"`  (no additional bias terms are introduced.)
+- **Target Modules**:  
+  The LoRA adapters are applied to the following model layers:
+  - `q_proj`, `k_proj`, `v_proj`
+  - `up_proj`, `down_proj`, `o_proj`
+  - `gate_proj`
+- **RSLoRA**: Enabled (`use_rslora=True`)  to ensures stability during training by using Robust Scalable LoRA.
+- **Gradient Checkpointing**: `"unsloth"`  (enables Unsloth's gradient checkpointing for memory efficiency)
+
+**Hyperparameters and Other Model Configurations**
+- **Learning Rate**: `3e-4`
+- **Epochs**: `3`
+- **Batch Size**: `4` (per device)
+- **Optimizer**: `adamw_8bit`  (uses an 8-bit optimizer for efficient memory usage.)
+- **Gradient Accumulation Steps**: `4`  (accumulates gradients across multiple steps to reduce memory load.)
+- **Warmup Steps**: `10%` of total training steps.
 
 ## LLM: RAG
 
@@ -282,7 +379,11 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
    ![Dashboard](./screenshots/dashboard.png)
   
 
+
 ## CI & Testing
+
+* note: `ocr-vm` and `llm-vm` folders are excluded because they are work-in-progress directories.
+
 ### Testing Tools Used
 - **PyTest**: Used for running unit, integration, and system tests.
 - **pytest-cov**: Used for generating code coverage reports.
@@ -291,14 +392,18 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 ### Implemented Tests
 #### Unit Tests
 We test each functionality of our backend (in the `api-service` folder), including the `llm.py` router and the `ocr.py` router.
-Please see the `test_llm.py` and `test_ocr.py` files in our `api-service/tests` directory.
+Please see the `test_llm.py` and `test_ocr.py` files in our `api-service/tests` directory. Please see the screenshot below for coverage:
+![image](./screenshots/api-service-coverage.png)  
 
-We also do an example unit test for one of our deprecated folders:
-- **fine-tuning/**: We test the scripts `upload.py` and `inference_nutrition.py` only for this directory. The `upload.py` uploads our fine-tuned model to GCP, and the `inference_nutrition.py` file does inference with the fine-tuned model as well as generate nutrition facts. We have opted not to include tests for other scripts within this directory, as these scripts are either deprecated or were used exclusively for local fine-tuning tasks, which have already been completed and verified. Please see the screenshot below for coverage:
+
+We also do an example unit test for one of our deprecated folders: **fine-tuning/**
+
+We test the scripts `upload.py` and `inference_nutrition.py` only for this directory. The `upload.py` uploads our fine-tuned model to GCP, and the `inference_nutrition.py` file does inference with the fine-tuned model as well as generate nutrition facts. We have opted not to include tests for other scripts within this directory, as these scripts are either deprecated or were used exclusively for local fine-tuning tasks, which have already been completed and verified. Please see the screenshot below for coverage:
+
 ![image](./screenshots/fine-tuning-coverage.png)  
 
 We are not including additional unit tests for other folders for the following reasons:
-- **preprocessing/**:
+- **preprocessing/**: Already been completed and verified.
 - **rag/**: We eliminated the use of rag in our project.
 - **ocr/**: The ocr logic is already included in our backend as a router.
 - **landing/**: It is the frontend of our app and only user inputs will be tested.
@@ -308,7 +413,7 @@ We test how the different components in `service.py` work together, ensuring tha
 Please see the `test_service.py` file in our `api-service/tests` directory.
 
 #### System Tests 
-We use system tests to validate the behavior of our entire app. 
+We use system tests to validate the behavior of user flow. We use OCR outputs as inputs to the LLM endpoint.
 Please see the `test_service.py` file in our `api-service/tests` directory.
 
 ### Instructions to Run Tests Locally
@@ -324,3 +429,4 @@ Please see the `test_service.py` file in our `api-service/tests` directory.
    # run the test with coverage report
    pipenv run pytest tests/ --cov=. --cov-report=term --cov-config=.coveragerc
    ```
+
