@@ -31,8 +31,8 @@ jobs:
         working-directory: src/${{ matrix.container }}
         run: |
           pip install pipenv
-          pipenv install --dev --extra-index-url https://download.pytorch.org/whl/cpu
-
+          pipenv install --dev
+          
       # linting
       - name: Run Linting for ${{ matrix.container }}
         working-directory: src/${{ matrix.container }}
@@ -62,7 +62,9 @@ jobs:
         working-directory: src/${{ matrix.container }}
         run: |
           pip install pipenv
+          pip install --index-url=https://download.pytorch.org/whl/cpu --upgrade torch torchvision torchaudio
           pipenv install --dev
+
 
       # testing
       - name: Run Tests for ${{ matrix.container }}
