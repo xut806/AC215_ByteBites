@@ -309,6 +309,8 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 - **Gradient Accumulation Steps**: `4`  (accumulates gradients across multiple steps to reduce memory load.)
 - **Warmup Steps**: `10%` of total training steps.
 
+We finetuned Llama use gup on GCP with nvidia-tesla-A100.
+
 ## LLM: RAG
 
 - **Overview**: In this part, we implement the RAG workflow for generating recipes based on user queries.
@@ -378,7 +380,12 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
    ![Dashboard](./screenshots/dashboard.png)
   
-
+## Backend Implementation
+We deploy and serve Llama on GCP with GPU acceleration (nvidia-tesla-p100) and a REST API interface.
+- Below is a screenshot displaying the `health` route with external IP:
+![image](./screenshots/ip_health.png)  
+- Below is a screenshot displaying the `generate` route for generating recipes:
+![image](./screenshots/llama_deploy.png)  
 
 ## CI & Testing
 
