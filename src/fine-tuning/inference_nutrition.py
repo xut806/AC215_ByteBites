@@ -13,12 +13,6 @@ from google.cloud import storage
 from safetensors import safe_open
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-if not torch.cuda.is_available():
-    torch.backends.cudnn.enabled = False
-    device = torch.device("cpu")
-else:
-    device = torch.device("cuda")
-
 # Load environment variables from .env file
 load_dotenv()
 

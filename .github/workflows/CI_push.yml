@@ -62,8 +62,7 @@ jobs:
         working-directory: src/${{ matrix.container }}
         run: |
           pip install pipenv
-          pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pipenv install --dev
+          pipenv install --dev --extra-index-url https://download.pytorch.org/whl/ "torch==2.0.1+cpu"
 
 
       # testing
