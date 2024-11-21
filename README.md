@@ -96,6 +96,18 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Llama-3.2-3b (recipe generator model) finetuned on GCP
 - [NEW IN MS4] Llama-3.2-3b deployed and served on GCP (external IP: 34.41.18.132)
 
+## Aplication Design
+"Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together."
+---
+Here is our Solution Architecture:
+ ![image](./screenshots/sol_arch.png)
+ ![image](./screenshots/sol_arch2.png)
+
+Here is our Technical Architecture
+ ![image](./screenshots/tech_arch.png)
+
+
+
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
 2. [Data Versioning Strategy](#data-versioning-strategy)
