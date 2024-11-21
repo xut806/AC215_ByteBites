@@ -30,11 +30,11 @@ jobs:
         if: ${{ matrix.container == 'fine-tuning' }}
         run: |
           sudo apt-get update
-          sudo mkdir -p /etc/apt/keyrings
-          curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-archive-keyring.gpg | sudo tee /etc/apt/keyrings/cuda-archive-keyring.gpg > /dev/null
-          echo "deb [signed-by=/etc/apt/keyrings/cuda-archive-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /" | sudo tee /etc/apt/sources.list.d/cuda.list
+          sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
+          echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
           sudo apt-get update
           sudo apt-get install -y cuda libcudnn8 libcudnn8-dev
+
 
       # Step 4: Set CUDA Environment Path
       - name: Set CUDA Environment Path
