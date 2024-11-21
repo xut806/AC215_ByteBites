@@ -97,7 +97,9 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 - [NEW IN MS4] Llama-3.2-3b deployed and served on GCP (external IP: 34.41.18.132)
 
 ## Aplication Design
-"Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together."
+
+Before we start implementing the app we built a detailed design document outlining the application’s architecture. We built a Solution Architecture and Technical Architecture to ensure all our components work together.
+
 ---
 Here is our Solution Architecture:
  ![image](./screenshots/sol_arch.png)
