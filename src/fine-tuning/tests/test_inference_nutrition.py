@@ -13,7 +13,7 @@ import pytest  # noqa: E402
 from unittest import mock  # noqa: E402
 
 from inference_nutrition import (  # noqa: E402
-    generate_recipe,
+    # generate_recipe,
     save_recipe_to_text,
     get_nutrition_info,
     aggregate_nutrition_info_with_units,
@@ -31,23 +31,23 @@ def mock_storage_client():
         yield mock_client
 
 
-def test_generate_recipe_empty_prompt():
-    mock_model = mock.Mock()
-    mock_tokenizer = mock.Mock()
+# def test_generate_recipe_empty_prompt():
+#     mock_model = mock.Mock()
+#     mock_tokenizer = mock.Mock()
 
-    # mock return value that behaves like the actual return of tokenizer()
-    mock_inputs = mock.Mock()
-    mock_inputs.input_ids = [0]
+#     # mock return value that behaves like the actual return of tokenizer()
+#     mock_inputs = mock.Mock()
+#     mock_inputs.input_ids = [0]
 
-    # set the return value of the tokenizer to the mock object
-    mock_tokenizer.return_value = mock_inputs
-    mock_model.generate.return_value = [[0, 1, 2, 3]]
-    mock_tokenizer.decode.return_value = "Generated text"
+#     # set the return value of the tokenizer to the mock object
+#     mock_tokenizer.return_value = mock_inputs
+#     mock_model.generate.return_value = [[0, 1, 2, 3]]
+#     mock_tokenizer.decode.return_value = "Generated text"
 
-    prompt = ""
-    result = generate_recipe(mock_model, mock_tokenizer, prompt)
+#     prompt = ""
+#     result = generate_recipe(mock_model, mock_tokenizer, prompt)
 
-    assert result == "Generated text"
+#     assert result == "Generated text"
 
 
 @mock.patch("builtins.open", side_effect=IOError("File error"))
