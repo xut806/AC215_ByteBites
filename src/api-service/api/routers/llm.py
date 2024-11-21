@@ -13,6 +13,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from safetensors import safe_open
 
+if not torch.cuda.is_available():
+    torch.backends.cudnn.enabled = False
+    device = torch.device("cpu")
+else:
+    device = torch.device("cuda")
+
 load_dotenv()
 
 # Use environment variable for the token

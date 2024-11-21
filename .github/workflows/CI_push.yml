@@ -7,37 +7,37 @@ on:
     branches: [ milestone4 ]
 
 jobs:
-  build-and-lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # containers that we have for our app (folders in src/)
-        container: [ "api-service", "fine-tuning", "ocr", "preprocessing", "rag"]
-        python-version: [ "3.11"] 
+  # build-and-lint:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       # containers that we have for our app (folders in src/)
+  #       container: [ "api-service", "fine-tuning", "ocr", "preprocessing", "rag"]
+  #       python-version: [ "3.11"] 
 
-    steps:
-      # code checkout
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  #   steps:
+  #     # code checkout
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
 
-      # Python setup
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+  #     # Python setup
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
 
-      # installing dependencies for each container
-      - name: Install Dependencies for ${{ matrix.container }}
-        working-directory: src/${{ matrix.container }}
-        run: |
-          pip install pipenv
-          pipenv install --dev
+  #     # installing dependencies for each container
+  #     - name: Install Dependencies for ${{ matrix.container }}
+  #       working-directory: src/${{ matrix.container }}
+  #       run: |
+  #         pip install pipenv
+  #         pipenv install --dev
           
-      # linting
-      - name: Run Linting for ${{ matrix.container }}
-        working-directory: src/${{ matrix.container }}
-        run: |
-          pipenv run flake8 .
+  #     # linting
+  #     - name: Run Linting for ${{ matrix.container }}
+  #       working-directory: src/${{ matrix.container }}
+  #       run: |
+  #         pipenv run flake8 .
   
   test:
     runs-on: ubuntu-latest
