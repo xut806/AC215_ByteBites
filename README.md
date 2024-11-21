@@ -309,7 +309,8 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 - **Gradient Accumulation Steps**: `4`  (accumulates gradients across multiple steps to reduce memory load.)
 - **Warmup Steps**: `10%` of total training steps.
 
-We finetuned Llama use gup on GCP with nvidia-tesla-A100.
+**Finetune Instruction**
+- We finetuned Llama use gup on GCP with nvidia-tesla-A100. One can run `/src/fine-tuning/llama/run.py` to initiate the finetuning process.
 
 ## LLM: RAG
 
