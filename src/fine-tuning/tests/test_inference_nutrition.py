@@ -11,10 +11,6 @@ sys.path.insert(0, path_to_src)
 
 import pytest  # noqa: E402
 from unittest import mock  # noqa: E402
-from unittest.mock import MagicMock  # noqa: E402
-
-sys.modules["torch.cuda"] = MagicMock()
-sys.modules["torch.backends.cudnn"] = MagicMock()
 
 from inference_nutrition import (  # noqa: E402
     generate_recipe,
