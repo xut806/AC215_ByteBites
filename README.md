@@ -214,25 +214,23 @@ For this milestone, we have adopted the GCS bucket versioning feature for data v
 - **Filtering**:  
   The dataset is filtered based on the following criteria:
   - **Prompt length**: ≤ 470 characters.
- <div style="display: flex; justify-content: space-between;">
-  <div style="text-align: center;">
+ <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
+  <div style="flex: 1; text-align: center;">
     <p><strong>Before Filtering</strong></p>
-    <img src="/screenshots/promptlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+    <img src="/screenshots/promptlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="max-width: 100%; height: auto;"/>
   </div>
-  <div style="text-align: center;">
+  <div style="flex: 1; text-align: center;">
     <p><strong>After Filtering</strong></p>
-    <img src="/screenshots/promptlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+    <img src="/screenshots/promptlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="max-width: 100%; height: auto;"/>
   </div>
-</div>
-  - **Response length**: ≤ 2,500 characters.  
- <div style="display: flex; justify-content: space-between;">
-  <div style="text-align: center;">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
+  <div style="flex: 1; text-align: center;">
     <p><strong>Before Filtering</strong></p>
-    <img src="/screenshots/completionlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="width: 45%;"/>
+    <img src="/screenshots/completionlength.png" alt="Distribution of Prompt Lengths Before Filtering" style="max-width: 100%; height: auto;"/>
   </div>
-  <div style="text-align: center;">
+  <div style="flex: 1; text-align: center;">
     <p><strong>After Filtering</strong></p>
-    <img src="/screenshots/completionlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="width: 45%;"/>
+    <img src="/screenshots/completionlength_after.png" alt="Distribution of Prompt Lengths After Filtering" style="max-width: 100%; height: auto;"/>
   </div>
 </div>
 
