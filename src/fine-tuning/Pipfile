@@ -8,7 +8,7 @@ pandas = "*"
 google-cloud-storage = "*"
 jupyter = "*"
 transformers = "*"
-torch = "*"
+torch = { version = ">=2.0.0, !=2.0.1, !=2.1.0", index = "https://download.pytorch.org/whl/cpu" }
 datasets = "*"
 faiss-cpu = "*"
 langchain = "*"
