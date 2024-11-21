@@ -57,18 +57,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # installing dependencies for each container
-      - name: Install Dependencies for ${{ matrix.container }}
-        working-directory: src/${{ matrix.container }}
-        run: |
-          pip install pipenv
-          pipenv install --extra-index-url https://download.pytorch.org/whl/ "torch==2.0.1+cpu"
+      # # installing dependencies for each container
+      # - name: Install Dependencies for ${{ matrix.container }}
+      #   working-directory: src/${{ matrix.container }}
+      #   run: |
+      #     pip install pipenv
+      #     pipenv install --extra-index-url https://download.pytorch.org/whl/ "torch==2.0.1+cpu"
 
 
       # testing
       - name: Run Tests for ${{ matrix.container }}
         working-directory: src/${{ matrix.container }}
         run: |
+          pip install pipenv
+          pipenv install --dev
           pipenv run pytest tests/ --cov=. --cov-report=xml  --cov-config=.coveragerc
 
       # test coverage report
