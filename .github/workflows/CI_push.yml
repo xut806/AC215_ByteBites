@@ -25,7 +25,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Step 3: Install CUDA Libraries
       - name: Install CUDA Libraries
         if: ${{ matrix.container == 'fine-tuning' }}
         run: |
@@ -33,8 +32,10 @@ jobs:
           sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
           echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
           sudo apt-get update
+          sudo apt-get remove --purge '^nvidia-.*' || true
+          sudo apt-get autoremove -y
+          sudo apt-get clean
           sudo apt-get install -y cuda libcudnn8 libcudnn8-dev
-
 
       # Step 4: Set CUDA Environment Path
       - name: Set CUDA Environment Path
