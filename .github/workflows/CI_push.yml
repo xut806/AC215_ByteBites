@@ -70,8 +70,8 @@ jobs:
         working-directory: src/${{ matrix.container }}
         run: |
           pip install pipenv
-          pipenv install --dev
-          pipenv run pytest tests/ --cov=. --cov-report=xml  --cov-config=.coveragerc
+          pipenv install --dev --extra-index-url https://download.pytorch.org/whl/cpu
+          pipenv run pytest tests/ --cov=. --cov-report=xml --cov-config=.coveragerc
 
       # test coverage report
       - name: Upload Coverage Report
