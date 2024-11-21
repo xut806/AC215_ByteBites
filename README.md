@@ -101,12 +101,20 @@ Please make sure to create an `.env` file that contains your Huggingface Access 
 ---
 Here is our Solution Architecture:
  ![image](./screenshots/sol_arch.png)
+ 
  ![image](./screenshots/sol_arch2.png)
 
 Here is our Technical Architecture
  ![image](./screenshots/tech_arch.png)
 
+## Backend API
 
+"We built backend api service using fast API to expose model functionality to the frontend. We also added apis that will help the frontend display some key information about the model and data."
+ ![image](./screenshots/fastapi.png)
+
+  ![image](./screenshots/fastapi_ocr.png)
+  
+   ![image](./screenshots/fastapi_llm.png)
 
 ## Table of Contents
 1. [Virtual Environment Setup & Containers](#virtual-environment-setup--containers)
