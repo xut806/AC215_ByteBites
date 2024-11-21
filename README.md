@@ -385,6 +385,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 We deploy and serve Llama on GCP with GPU acceleration (nvidia-tesla-p100) and a REST API interface.
 - Below is a screenshot displaying the `health` route with external IP:
 ![image](./screenshots/ip_health.png)  
+
 - Below is a screenshot displaying the `generate` route for generating recipes:
 ![image](./screenshots/llama_deploy.png)  
 
