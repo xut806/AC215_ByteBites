@@ -1,3 +1,6 @@
 module.exports = {
-    reactStrictMode: true,
-  };
+  reactStrictMode: true,
+  experimental: {
+    hashSalt: "random-salt-value", // Replace with a secure, random string
+  },
+};

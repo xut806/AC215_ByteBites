@@ -12,6 +12,7 @@ services:
   backend:
     build:
       context: ./api-service
+    image: src-backend:latest
     ports:
       - "9000:9000"
     volumes:
