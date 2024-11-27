@@ -1,0 +1,25 @@
+all:
+    vars:
+      ansible_user: sa_109824559714063676521
+      ansible_ssh_private_key_file: "../../secrets/ssh-key-deployment"
+      gcp_service_account_file: "../../secrets/deployment.json"
+      gcp_service_account_email: "deployment@ac215-project-434717.iam.gserviceaccount.com"
+      gcp_auth_kind: "serviceaccount"
+      gcp_scopes: "https://www.googleapis.com/auth/compute"
+      gcp_project: "ac215-project-434717"
+      gcp_region: "us-central1"
+      gcp_zone: "us-central1-a"
+      docker_network_name: "appnetwork"
+      persistent_disk_name: "bytebites-app-demo-disk"
+      persistent_disk_size: 50
+      machine_instance_name: "bytebites-app-demo"
+      machine_type: "n2d-standard-2"
+      machine_disk_size: 50
+
+    children:
+        appserver:
+            hosts:
+                34.68.205.67:
+                  ansible_user: sa_109824559714063676521
+                  ansible_ssh_private_key_file: "../../secrets/ssh-key-deployment"
+                  ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
