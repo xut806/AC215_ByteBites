@@ -15,13 +15,15 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets/data-service-account.jso
 #     blob.download_to_filename(destination_file)
 #     print(f"Data fetched from gs://{bucket_name}/{source_blob_name} to {destination_file}")
 
+
 def upload_to_gcp(data_path, bucket_name, destination_blob_name):
     client = storage.Client()
     blob = client.get_bucket(bucket_name).blob(destination_blob_name)
-    with open(data_path, 'rb') as file_data:
-        blob.upload_from_file(file_data, content_type='application/json')
-    
+    with open(data_path, "rb") as file_data:
+        blob.upload_from_file(file_data, content_type="application/json")
+
     print(f"Data successfully uploaded to gs://{bucket_name}/{destination_blob_name}.")
+
 
 def main():
     bucket_name = "ai-recipe-data"
@@ -29,6 +31,7 @@ def main():
     data = "data/recipe_prompts.jsonl"
 
     upload_to_gcp(data, bucket_name, destination_blob_name)
+
 
 if __name__ == "__main__":
     main()
