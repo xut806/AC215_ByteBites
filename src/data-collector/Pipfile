@@ -4,9 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
 google-cloud-storage = "*"
-datasets = "*"
 
 [dev-packages]
 flake8 = "*"

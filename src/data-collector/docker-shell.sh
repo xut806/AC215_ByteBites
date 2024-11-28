@@ -2,14 +2,15 @@
 
 set -e
 
-source ../.env
+#source ../.env
 
-export IMAGE_NAME="llm-data-preprocessor"
+export IMAGE_NAME="llm-data-collector"
 
 docker build -t $IMAGE_NAME -f Dockerfile .
 
 docker run -it \
     -v $(pwd):/app \
-    -v $(pwd)/../../secrets:/app/secrets \
+    -v $(pwd)/../../../../secrets:/app/secrets \
+    -v $(pwd)/../../../../dataset:/app/data \
     $IMAGE_NAME \
     /bin/bash
