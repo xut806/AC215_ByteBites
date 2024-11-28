@@ -3,13 +3,16 @@
 echo "Container is running!!!"
 
 args="$@"
-echo "Command: $args"
+echo $args
 
 if [[ -z ${args} ]]; 
 then
-    echo "No command provided. Container is ready."
+    # Authenticate gcloud using service account
+    gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
+    # Set GCP Project Details
+    gcloud config set project $GCP_PROJECT
+    #/bin/bash
+    pipenv shell
 else
-    # Remove any unexpected characters and use the full path
-    cleaned_args=$(echo "$args" | tr -d '\r\n')
-    pipenv run $cleaned_args
+  pipenv run python $args
 fi
