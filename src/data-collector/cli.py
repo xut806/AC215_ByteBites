@@ -28,7 +28,7 @@ def upload_to_gcp(data_path, bucket_name, destination_blob_name):
 def main():
     bucket_name = "ai-recipe-data"
     destination_blob_name = "raw/recipe_prompts.jsonl"
-    data = "data/recipe_prompts.jsonl"
+    data = "persistent/recipe_prompts.jsonl"
 
     upload_to_gcp(data, bucket_name, destination_blob_name)
 

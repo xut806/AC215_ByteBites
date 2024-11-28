@@ -11,7 +11,6 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 docker run -it \
     -v $(pwd):/app \
     -v $(pwd)/../../../../secrets:/app/secrets \
-    -v $(pwd)/../../../../dataset:/app/data \
-    -v $(pwd)/../../../../persistent-folder:/app/persistent \
+    -v $(pwd)/../../../../dataset:/app/persistent \
     $IMAGE_NAME \
     /bin/bash
