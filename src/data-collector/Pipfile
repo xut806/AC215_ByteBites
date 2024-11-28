@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 google-cloud-storage = "*"
+user-agent = "*"
+requests = "*"
 
 [dev-packages]
 flake8 = "*"
