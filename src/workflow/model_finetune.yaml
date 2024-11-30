@@ -1,0 +1,102 @@
+# PIPELINE DEFINITION
+# Name: model-finetune-pipeline
+components:
+  comp-model-finetune:
+    executorLabel: exec-model-finetune
+    inputDefinitions:
+      parameters:
+        bucket_name:
+          defaultValue: ai-recipe-trainer
+          isOptional: true
+          parameterType: STRING
+        location:
+          defaultValue: us-central1
+          isOptional: true
+          parameterType: STRING
+        model_name:
+          defaultValue: llama3.2
+          isOptional: true
+          parameterType: STRING
+        project:
+          defaultValue: ai-recipe-441518
+          isOptional: true
+          parameterType: STRING
+        staging_bucket:
+          defaultValue: ai-recipe-staging
+          isOptional: true
+          parameterType: STRING
+deploymentSpec:
+  executors:
+    exec-model-finetune:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - model_finetune
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.10.1'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"'  &&\
+          \  python3 -m pip install --quiet --no-warn-script-location 'google-cloud-aiplatform'\
+          \ && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef model_finetune(\n    project: str = \"ai-recipe-441518\",\n \
+          \   location: str = \"us-central1\",\n    staging_bucket: str = \"ai-recipe-staging\"\
+          ,\n    bucket_name: str = \"ai-recipe-trainer\",\n    model_name: str =\
+          \ \"llama3.2\",\n):\n    print(\"Model Finetune Job\")\n\n    import google.cloud.aiplatform\
+          \ as aip\n\n    # Initialize Vertex AI SDK for Python\n    aip.init(project=project,\
+          \ location=location, staging_bucket=staging_bucket)\n\n    container_uri\
+          \ = \"gcr.io/ai-recipe-441518/llm-finetuner:v3\"\n    python_package_gcs_uri\
+          \ = f\"{staging_bucket}/ai-recipe-trainer.tar.gz\"\n\n    job = aip.CustomPythonPackageTrainingJob(\n\
+          \        display_name=\"ai-recipe-finetune\",\n        python_package_gcs_uri=python_package_gcs_uri,\n\
+          \        python_module_name=\"trainer.task\",\n        container_uri=container_uri,\n\
+          \        project=project,\n    )\n\n    replica_count = 1\n    machine_type\
+          \ = \"a2-highgpu-1g\"\n    accelerator_type = \"NVIDIA_TESLA_A100\"\n  \
+          \  accelerator_count = 1\n\n    print(python_package_gcs_uri)\n\n    # Run\
+          \ the training job on Vertex AI  \n    job.run(\n        replica_count=replica_count,\n\
+          \        machine_type=machine_type,\n        accelerator_type=accelerator_type,\n\
+          \        accelerator_count=accelerator_count,\n        sync=True\n    )\n\
+          \n"
+        image: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
+pipelineInfo:
+  name: model-finetune-pipeline
+root:
+  dag:
+    tasks:
+      model-finetune:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-model-finetune
+        inputs:
+          parameters:
+            bucket_name:
+              runtimeValue:
+                constant: ai-recipe-data
+            location:
+              runtimeValue:
+                constant: us-central1
+            project:
+              runtimeValue:
+                constant: ai-recipe-441518
+            staging_bucket:
+              runtimeValue:
+                constant: gs://ai-recipe-trainer-code
+        taskInfo:
+          name: model-finetune
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.10.1

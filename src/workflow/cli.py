@@ -12,18 +12,20 @@ import string
 from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
-# from model import model_training as model_training_job, model_deploy as model_deploy_job
+from model import model_finetune as model_finetune_job
+# from model import model_finetune as model_finetune_job, model_deploy as model_deploy_job
 
 GCP_PROJECT = "ai-recipe-441518"
 GCS_BUCKET_NAME = "ai-recipe-data"
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
-GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
-GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
-GCP_REGION = os.environ["GCP_REGION"]
+GCS_SERVICE_ACCOUNT = "ml-workflow-705@ai-recipe-441518.iam.gserviceaccount.com"
+GCS_PACKAGE_URI = "gs://ai-recipe-trainer"
+GCP_REGION = "us-central1"
 
 DATA_COLLECTOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-collector:v1"
 DATA_PROCESSOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-processor:v1"
+MODEL_FINETUNE_IMAGE = "gcr.io/ai-recipe-441518/llm-finetuner:v3"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -104,37 +106,37 @@ def data_processor():
     job.run(service_account=GCS_SERVICE_ACCOUNT)
 
 
-# def model_training():
-#     print("model_training()")
+def model_finetune():
+    print("model_finetune()")
 
-#     # Define a Pipeline
-#     @dsl.pipeline
-#     def model_training_pipeline():
-#         model_training_job(
-#             project=GCP_PROJECT,
-#             location=GCP_REGION,
-#             staging_bucket=GCS_PACKAGE_URI,
-#             bucket_name=GCS_BUCKET_NAME,
-#         )
+    # Define a Pipeline
+    @dsl.pipeline
+    def model_finetune_pipeline():
+        model_finetune_job(
+            project=GCP_PROJECT,
+            location=GCP_REGION,
+            staging_bucket=GCS_PACKAGE_URI,
+            bucket_name=GCS_BUCKET_NAME,
+        )
 
-#     # Build yaml file for pipeline
-#     compiler.Compiler().compile(
-#         model_training_pipeline, package_path="model_training.yaml"
-#     )
+    # Build yaml file for pipeline
+    compiler.Compiler().compile(
+        model_finetune_pipeline, package_path="model_finetune.yaml"
+    )
 
-#     # Submit job to Vertex AI
-#     aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+    # Submit job to Vertex AI
+    aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
-#     job_id = generate_uuid()
-#     DISPLAY_NAME = "cheese-app-model-training-" + job_id
-#     job = aip.PipelineJob(
-#         display_name=DISPLAY_NAME,
-#         template_path="model_training.yaml",
-#         pipeline_root=PIPELINE_ROOT,
-#         enable_caching=False,
-#     )
+    job_id = generate_uuid()
+    DISPLAY_NAME = "ai-recipe-model-finetune-" + job_id
+    job = aip.PipelineJob(
+        display_name=DISPLAY_NAME,
+        template_path="model_finetune.yaml",
+        pipeline_root=PIPELINE_ROOT,
+        enable_caching=False,
+    )
 
-#     job.run(service_account=GCS_SERVICE_ACCOUNT)
+    job.run(service_account=GCS_SERVICE_ACCOUNT)
 
 
 # def model_deploy():
@@ -202,21 +204,19 @@ def pipeline():
             .set_display_name("Data Processor")
             .after(data_collector_task)
         )
-        # Model Training
-        # model_training_task = (
-        #     model_training_job(
-        #         project=GCP_PROJECT,
-        #         location=GCP_REGION,
-        #         staging_bucket=GCS_PACKAGE_URI,
-        #         bucket_name=GCS_BUCKET_NAME,
-        #         epochs=15,
-        #         batch_size=16,
-        #         model_name="mobilenetv2",
-        #         train_base=False,
-        #     )
-        #     .set_display_name("Model Training")
-        #     .after(data_processor_task)
-        # )
+        # Model Finetune
+        model_finetune_task = (
+            model_finetune_job(
+                project=GCP_PROJECT,
+                location=GCP_REGION,
+                staging_bucket=GCS_PACKAGE_URI,
+                bucket_name=GCS_BUCKET_NAME,
+                model_name="llama3b",
+            )
+            .set_display_name("Model Finetune")
+            .after(data_processor_task)
+        )
+        
         # # Model Deployment
         # model_deploy_task = (
         #     model_deploy_job(
@@ -299,9 +299,9 @@ def main(args=None):
         print("Data Processor")
         data_processor()
 
-    # if args.model_training:
-    #     print("Model Training")
-    #     model_training()
+    if args.model_finetune:
+        print("Model Finetune")
+        model_finetune()
 
     # if args.model_deploy:
     #     print("Model Deploy")
@@ -329,11 +329,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Run just the Data Processor",
     )
-    # parser.add_argument(
-    #     "--model_training",
-    #     action="store_true",
-    #     help="Run just Model Training",
-    # )
+    parser.add_argument(
+        "--model_finetune",
+        action="store_true",
+        help="Run just Model Finetune",
+    )
     # parser.add_argument(
     #     "--model_deploy",
     #     action="store_true",
