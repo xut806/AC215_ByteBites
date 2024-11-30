@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -34,6 +34,10 @@ ADD --chown=app:app Pipfile Pipfile.lock /app/
 
 RUN pipenv sync
 
-ADD --chown=app:app . /app
+RUN pipenv install --system --deploy && python -m pip list
 
-ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]
+ADD --chown=app:app . /app
+ADD --chown=app:app secrets/data-service-account.json /app/secrets/data-service-account.json
+RUN chmod +x /app/docker-entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "./docker-entrypoint.sh"]

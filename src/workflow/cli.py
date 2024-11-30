@@ -22,8 +22,8 @@ GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
 GCP_REGION = os.environ["GCP_REGION"]
 
-DATA_COLLECTOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-collector:v0"
-DATA_PROCESSOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-processor:v0"
+DATA_COLLECTOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-collector:v1"
+DATA_PROCESSOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-processor:v1"
 
 
 def generate_uuid(length: int = 8) -> str:

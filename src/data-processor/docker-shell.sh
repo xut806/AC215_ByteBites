@@ -3,13 +3,12 @@
 set -e
 
 export IMAGE_NAME="llm-data-preprocessor"
-export GCP_PROJECT="ai-recipe-441518"
 
-docker build -t $IMAGE_NAME -f Dockerfile .
+docker build --platform linux/amd64 -t $IMAGE_NAME -f Dockerfile .
 
 docker run --rm --name $IMAGE_NAME -ti \
     -v $(pwd):/app \
-    -v $(pwd)/../../../../secrets:/app/secrets \
+    -v $(pwd)/../../../../secrets/:/app/secrets/ \
     -e GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/data-service-account.json \
-    -e GCP_PROJECT=$GCP_PROJECT \
+    -e GCP_PROJECT=ai-recipe-441518 \
     $IMAGE_NAME

@@ -50,7 +50,10 @@ RUN pipenv sync
 
 # Add the rest of the source code. This is done last so we don't invalidate all
 # layers when we change a line of code.
-ADD --chown=app:app . /app
+ADD --chown=app:app cli.py /app/cli.py
+ADD --chown=app:app docker-shell.sh /app/docker-shell.sh
+ADD --chown=app:app Dockerfile /app/Dockerfile
+ADD --chown=app:app docker-entrypoint.sh /app/docker-entrypoint.sh
 
 # Entry point
 ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]

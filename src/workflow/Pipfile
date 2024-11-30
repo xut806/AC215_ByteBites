@@ -8,6 +8,11 @@ verify_ssl = true
 [packages]
 google-cloud-aiplatform = "*"
 kfp = "*"
+pandas = "*"
+user-agent = "*"
+requests = "*"
+google-cloud-storage = "*"
+datasets = "*"
 
 [requires]
 python_version = "3.11"

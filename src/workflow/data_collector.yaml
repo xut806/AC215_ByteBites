@@ -10,7 +10,7 @@ deploymentSpec:
         command:
         - python
         - cli.py
-        image: gcr.io/ai-recipe-441518/llm-data-collector:v0
+        image: gcr.io/ai-recipe-441518/llm-data-collector:v1
 pipelineInfo:
   name: data-collector-pipeline
 root:

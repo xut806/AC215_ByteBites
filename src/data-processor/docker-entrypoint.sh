@@ -8,9 +8,9 @@ echo $args
 if [[ -z ${args} ]]; 
 then
     # Authenticate gcloud using service account
-    gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
+    gcloud auth activate-service-account --key-file=/app/secrets/data-service-account.json
     # Set GCP Project Details
-    gcloud config set project $GCP_PROJECT
+    gcloud config set project ai-recipe-441518
     #/bin/bash
     pipenv shell
 else
