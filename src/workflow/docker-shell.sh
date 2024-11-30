@@ -4,15 +4,10 @@
 
 export IMAGE_NAME="ai-recipe-workflow"
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../../../../secrets/ml-workflow.json
-export GCP_PROJECT="ai-recipe-441518"
-export GCS_BUCKET_NAME="ai-recipe-data"
-export GCS_SERVICE_ACCOUNT="ml-workflow-705@ai-recipe-441518.iam.gserviceaccount.com"
-export GCP_REGION="us-central1"
 export GCS_PACKAGE_URI="gs://ai-recipe-trainer-code"
 
 # Build the image based on the Dockerfile
-docker build -t $IMAGE_NAME -f Dockerfile .
+docker build --platform linux/amd64 -t $IMAGE_NAME -f Dockerfile .
 # docker build -t $IMAGE_NAME --platform=linux/amd64 -f Dockerfile .
 
 

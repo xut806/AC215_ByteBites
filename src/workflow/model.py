@@ -18,7 +18,7 @@ def model_finetune(
 
     project = "ai-recipe-441518"
 
-    container_image_uri = f"gcr.io/{project}/llm-finetuner:v3"
+    container_image_uri = f"gcr.io/{project}/llm-finetuner:v4"
     location = "us-central1"
 
     aiplatform.init(project=project,
