@@ -25,7 +25,7 @@ GCP_REGION = "us-central1"
 
 DATA_COLLECTOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-collector:v1"
 DATA_PROCESSOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-processor:v1"
-MODEL_FINETUNE_IMAGE = "gcr.io/ai-recipe-441518/llm-finetuner:v3"
+MODEL_FINETUNE_IMAGE = "gcr.io/ai-recipe-441518/llm-finetuner:v4"
 
 
 def generate_uuid(length: int = 8) -> str:
