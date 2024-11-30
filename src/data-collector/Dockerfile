@@ -31,6 +31,12 @@ ADD --chown=app:app Pipfile Pipfile.lock /app/
 
 RUN pipenv sync
 
+RUN pipenv install --system --deploy && python -m pip list
+
 ADD --chown=app:app . /app
+ADD --chown=app:app secrets/data-service-account.json /app/secrets/data-service-account.json
+ADD --chown=app:app dataset/recipe_prompts_test.jsonl /app/persistent/recipe_prompts_test.jsonl
+
+RUN chmod +x /app/docker-entrypoint.sh
 
 ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]
