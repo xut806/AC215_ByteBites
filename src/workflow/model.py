@@ -58,7 +58,7 @@ def model_deploy(
 
     # List of prebuilt containers for prediction
     # https://cloud.google.com/vertex-ai/docs/predictions/pre-built-containers
-    DEPLOY_IMAGE = "us-central1-docker.pkg.dev/ai-recipe-441518/llama-server-repo/llama-server-image:latest"
+    DEPLOY_IMAGE = "us-central1-docker.pkg.dev/ai-recipe-441518/llama-server-repo/llama-server-image:test"
     HEALTH_ROUTE = "/health"
     PREDICT_ROUTE = "/generate/"
     SERVING_CONTAINER_PORTS = [8080]
