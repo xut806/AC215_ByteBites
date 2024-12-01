@@ -51,36 +51,36 @@ def model_finetune(
     base_image="python:3.11", packages_to_install=["google-cloud-aiplatform"]
 )
 def model_deploy(
-    bucket_name: str = "",
+    bucket_name: str = "ai-recipe-workflow-demo",
 ):
-    print("Model Training Job")
-
+    print("Model Deployment Job")
     import google.cloud.aiplatform as aip
 
     # List of prebuilt containers for prediction
     # https://cloud.google.com/vertex-ai/docs/predictions/pre-built-containers
-    serving_container_image_uri = (
-        "us-central1-docker.pkg.dev/ai-recipe-441518/llama-server-repo"
-    )
+    serving_container_image_uri = ("us-docker.pkg.dev/vertex-ai/vertex-vision-model-garden-dockers/pytorch-vllm-serve:20240721_0916_RC00")
 
     display_name = "AI Recipe Model"
-    ARTIFACT_URI = f"gs://{bucket_name}/finetuned_models"
+    artifact_uri = f"gs://{bucket_name}/finetuned_models"
 
     # Upload and Deploy model to Vertex AI
-    # Reference: https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform.Model#google_cloud_aiplatform_Model_upload
     deployed_model = aip.Model.upload(
         display_name=display_name,
-        artifact_uri=ARTIFACT_URI,
+        artifact_uri=artifact_uri,
         serving_container_image_uri=serving_container_image_uri,
     )
     print("deployed_model:", deployed_model)
-    # Reference: https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform.Model#google_cloud_aiplatform_Model_deploy
-    endpoint = deployed_model.deploy(
+    
+    endpoint = aip.Endpoint.create(display_name="llama-endpint")
+
+    deployed_model.deploy(
+        endpoint=endpoint,
         deployed_model_display_name=display_name,
         traffic_split={"0": 100},
         machine_type="n1-standard-4",
-        accelerator_type="nvidia-tesla-p100"
-        accelerator_count=1,
+        accelerator_count=0,
+        min_replica_count=1,
+        max_replica_count=1,
         sync=True,
     )
     print("endpoint:", endpoint)

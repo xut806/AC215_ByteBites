@@ -12,7 +12,6 @@ import string
 from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
-from model import model_finetune as model_finetune_job
 from model import model_finetune as model_finetune_job, model_deploy as model_deploy_job
 
 GCP_PROJECT = "ai-recipe-441518"
