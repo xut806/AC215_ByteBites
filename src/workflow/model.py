@@ -58,29 +58,35 @@ def model_deploy(
 
     # List of prebuilt containers for prediction
     # https://cloud.google.com/vertex-ai/docs/predictions/pre-built-containers
-    serving_container_image_uri = ("us-docker.pkg.dev/vertex-ai/vertex-vision-model-garden-dockers/pytorch-vllm-serve:20240721_0916_RC00")
-
-    display_name = "AI Recipe Model"
-    artifact_uri = f"gs://{bucket_name}/finetuned_models"
-
-    # Upload and Deploy model to Vertex AI
-    deployed_model = aip.Model.upload(
-        display_name=display_name,
-        artifact_uri=artifact_uri,
-        serving_container_image_uri=serving_container_image_uri,
-    )
-    print("deployed_model:", deployed_model)
+    DEPLOY_IMAGE = "us-central1-docker.pkg.dev/ai-recipe-441518/llama-server-repo/llama-server-image:latest"
+    HEALTH_ROUTE = "/health"
+    PREDICT_ROUTE = "/generate/"
+    SERVING_CONTAINER_PORTS = [8080]
     
-    endpoint = aip.Endpoint.create(display_name="llama-endpint")
-
-    deployed_model.deploy(
-        endpoint=endpoint,
-        deployed_model_display_name=display_name,
-        traffic_split={"0": 100},
-        machine_type="n1-standard-4",
-        accelerator_count=0,
+    deployed_model = aip.Model.upload(
+        display_name=f'llama-3b',    
+        description=f'llama-3b with Uvicorn and FastAPI',
+        serving_container_image_uri=DEPLOY_IMAGE,
+        serving_container_predict_route=PREDICT_ROUTE,
+        serving_container_health_route=HEALTH_ROUTE,
+        serving_container_ports=SERVING_CONTAINER_PORTS,
+    )
+    print(deployed_model.resource_name)
+    
+    # Retrieve a Model on Vertex
+    deployed_model = aip.Model(deployed_model.resource_name)
+    
+    # Deploy model
+    endpoint = deployed_model.deploy(
+        machine_type='n1-standard-4', 
+        accelerator_type= "NVIDIA_TESLA_T4",
+        accelerator_count = 1,
+        traffic_split={"0": 100}, 
         min_replica_count=1,
         max_replica_count=1,
+        traffic_percentage=100,
+        deploy_request_timeout=1200,
         sync=True,
     )
     print("endpoint:", endpoint)
+    endpoint.wait()
