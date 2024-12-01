@@ -13,19 +13,18 @@ from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
 from model import model_finetune as model_finetune_job
-# from model import model_finetune as model_finetune_job, model_deploy as model_deploy_job
+from model import model_finetune as model_finetune_job, model_deploy as model_deploy_job
 
 GCP_PROJECT = "ai-recipe-441518"
-GCS_BUCKET_NAME = "ai-recipe-data"
+GCS_BUCKET_NAME = "ai-recipe-workflow-demo"
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = "ml-workflow-705@ai-recipe-441518.iam.gserviceaccount.com"
-GCS_PACKAGE_URI = "gs://ai-recipe-trainer"
+GCS_PACKAGE_URI = "gs://ai-recipe-workflow-demo"
 GCP_REGION = "us-central1"
 
 DATA_COLLECTOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-collector:v1"
 DATA_PROCESSOR_IMAGE = "gcr.io/ai-recipe-441518/llm-data-processor:v1"
-MODEL_FINETUNE_IMAGE = "gcr.io/ai-recipe-441518/llm-finetuner:v4"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -139,33 +138,33 @@ def model_finetune():
     job.run(service_account=GCS_SERVICE_ACCOUNT)
 
 
-# def model_deploy():
-#     print("model_deploy()")
-#     # Define a Pipeline
-#     @dsl.pipeline
-#     def model_deploy_pipeline():
-#         model_deploy(
-#             bucket_name=GCS_BUCKET_NAME,
-#         )
+def model_deploy():
+    print("model_deploy()")
+    # Define a Pipeline
+    @dsl.pipeline
+    def model_deploy_pipeline():
+        model_deploy_job(
+            bucket_name=GCS_BUCKET_NAME,
+        )
 
-#     # Build yaml file for pipeline
-#     compiler.Compiler().compile(
-#         model_deploy_pipeline, package_path="model_deploy.yaml"
-#     )
+    # Build yaml file for pipeline
+    compiler.Compiler().compile(
+        model_deploy_pipeline, package_path="model_deploy.yaml"
+    )
 
-#     # Submit job to Vertex AI
-#     aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+    # Submit job to Vertex AI
+    aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
-#     job_id = generate_uuid()
-#     DISPLAY_NAME = "cheese-app-model-deploy-" + job_id
-#     job = aip.PipelineJob(
-#         display_name=DISPLAY_NAME,
-#         template_path="model_deploy.yaml",
-#         pipeline_root=PIPELINE_ROOT,
-#         enable_caching=False,
-#     )
+    job_id = generate_uuid()
+    DISPLAY_NAME = "ai-recipe-model-deploy-" + job_id
+    job = aip.PipelineJob(
+        display_name=DISPLAY_NAME,
+        template_path="model_deploy.yaml",
+        pipeline_root=PIPELINE_ROOT,
+        enable_caching=False,
+    )
 
-#     job.run(service_account=GCS_SERVICE_ACCOUNT)
+    job.run(service_account=GCS_SERVICE_ACCOUNT)
 
 
 def pipeline():
@@ -217,14 +216,14 @@ def pipeline():
             .after(data_processor_task)
         )
         
-        # # Model Deployment
-        # model_deploy_task = (
-        #     model_deploy_job(
-        #         bucket_name=GCS_BUCKET_NAME,
-        #     )
-        #     .set_display_name("Model Deploy")
-        #     .after(model_training_task)
-        # )
+        # Model Deployment
+        model_deploy_task = (
+            model_deploy_job(
+                bucket_name=GCS_BUCKET_NAME,
+            )
+            .set_display_name("Model Deploy")
+            .after(model_training_task)
+        )
 
     # Build yaml file for pipeline
     compiler.Compiler().compile(ml_pipeline, package_path="pipeline.yaml")
@@ -303,9 +302,9 @@ def main(args=None):
         print("Model Finetune")
         model_finetune()
 
-    # if args.model_deploy:
-    #     print("Model Deploy")
-    #     model_deploy()
+    if args.model_deploy:
+        print("Model Deploy")
+        model_deploy()
 
     if args.pipeline:
         pipeline()
@@ -334,11 +333,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Run just Model Finetune",
     )
-    # parser.add_argument(
-    #     "--model_deploy",
-    #     action="store_true",
-    #     help="Run just Model Deployment",
-    # )
+    parser.add_argument(
+        "--model_deploy",
+        action="store_true",
+        help="Run just Model Deployment",
+    )
     parser.add_argument(
         "--pipeline",
         action="store_true",
