@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the OCR and LLM routers
+# Include the OCR, LLM (local fine-tuned model), and Nutrition routers
 app.include_router(ocr_router)
 app.include_router(llm_router)
 app.include_router(nutrition_router)

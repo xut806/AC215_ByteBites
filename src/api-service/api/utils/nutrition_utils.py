@@ -5,6 +5,9 @@ import requests
 USDA_API_KEY = os.getenv("USDA_API_KEY")
 
 def get_nutrition_info(ingredients):
+    """
+    Get nutrition info for each ingredient using USDA API.
+    """
     nutrition_data = {}
     base_url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 
