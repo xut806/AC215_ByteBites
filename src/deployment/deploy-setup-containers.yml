@@ -73,7 +73,7 @@
           - name: "{{docker_network_name}}"
         volumes:
           - /mnt/disk-1/persistent:/persistent
-          - /srv/secrets:/secrets
+          - /srv/secrets:/secrets:ro
 
   
     - name: Check if containers are running
