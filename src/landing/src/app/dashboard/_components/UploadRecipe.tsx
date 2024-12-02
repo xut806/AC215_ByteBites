@@ -17,7 +17,12 @@ export default function Component({ onIngredientsReady }: UploadRecipeProps) {
     setLoading(true)
 
     try {
-      const response = await fetch("http://localhost:9000/ocr", {
+      // const response = await fetch("http://localhost:9000/ocr", {
+      //   method: "POST",
+      //   body: formData,
+      // })
+
+      const response = await fetch("/api/ocr", {
         method: "POST",
         body: formData,
       })
