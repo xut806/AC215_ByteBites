@@ -4,7 +4,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# src/api-service/api/routers/ocr.py
 from fastapi import APIRouter, File, UploadFile
 from api.utils.ner_utils import convert_ner_entities_to_list
 from doctr.io import DocumentFile
@@ -32,10 +31,7 @@ ner_pipeline = pipeline("ner", model=ner_model, tokenizer=ner_tokenizer)
 
 
 @router.post("/ocr")
-async def extract_ingredients(file: UploadFile = None):
-    if file is None:
-        file = File(...)
-
+async def extract_ingredients(file: UploadFile = File(...)):
     # Read the image file
     image_bytes = await file.read()
     image_array = DocumentFile.from_images(image_bytes)
@@ -58,6 +54,9 @@ async def extract_ingredients(file: UploadFile = None):
     ner_entity_results = ner_pipeline(
         result_string, aggregation_strategy="simple"
     )
+    # Debug: Print the NER results to check scores and entity groups
+    # print("NER Entity Results:", ner_entity_results)
+
     ingredients = convert_ner_entities_to_list(
         result_string, ner_entity_results
     )
