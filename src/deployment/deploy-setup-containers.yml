@@ -15,6 +15,11 @@
         src: ../secrets/gcp-service.json
         dest: "/srv/secrets/gcp-service.json"
         mode: 0644
+    - name: Copy LLM loading key file (in Grace's project)
+      copy:
+        src: ../secrets/recipe.json
+        dest: "/srv/secrets/recipe.json"
+        mode: 0644
     - name: Authenticate gcloud using service account
       shell: "gcloud auth activate-service-account --key-file /srv/secrets/gcp-service.json"
     
@@ -68,6 +73,7 @@
           - 9000:9000
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
+          MODEL_LOADING_CREDENTIALS: "/secrets/recipe.json"
           GCP_PROJECT: "{{ gcp_project }}"
         networks:
           - name: "{{docker_network_name}}"

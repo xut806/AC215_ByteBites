@@ -56,40 +56,44 @@ router = APIRouter()
 
 
 def initialize_storage_client():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("MODEL_LOADING_CREDENTIALS", "/secrets/recipe.json")
+    #os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
     return storage.Client()
 
 
 def load_model_and_tokenizer():
     # Load the .safetensors file from GCP bucket
-    client = initialize_storage_client()
-    bucket_name = "recipe-dataset"
-    file_name = "finetuned_model/model.safetensors"
+    try:
+        client = initialize_storage_client()
+        bucket_name = "recipe-dataset"
+        file_name = "finetuned_model/model.safetensors"
 
-    bucket = client.get_bucket(bucket_name)
-    blob = bucket.blob(file_name)
+        bucket = client.get_bucket(bucket_name)
+        blob = bucket.blob(file_name)
 
-    local_file_path = "/app/model.safetensors"
-    blob.download_to_filename(local_file_path)
+        local_file_path = "/app/model.safetensors"
+        blob.download_to_filename(local_file_path)
 
-    # Load the fine-tuned model
-    model_name = "facebook/opt-125m"
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name, use_auth_token=hf_token
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name, use_auth_token=hf_token
-    )
+        # Load the fine-tuned model
+        model_name = "facebook/opt-125m"
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name, use_auth_token=hf_token
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, use_auth_token=hf_token
+        )
 
-    # Load the fine-tuned model weights from the safetensors file
-    state_dict = {}
-    with safe_open(local_file_path, framework="pt", device="cpu") as f:
-        for key in f.keys():
-            state_dict[key] = f.get_tensor(key)
-    model.load_state_dict(state_dict, strict=False)
-    model.eval()
+        # Load the fine-tuned model weights from the safetensors file
+        state_dict = {}
+        with safe_open(local_file_path, framework="pt", device="cpu") as f:
+            for key in f.keys():
+                state_dict[key] = f.get_tensor(key)
+        model.load_state_dict(state_dict, strict=False)
+        model.eval()
 
-    return model, tokenizer
+        return model, tokenizer
+    except Exception as e:
+        raise RuntimeError(f"Error loading model and tokenizer: {str(e)}")
 
 
 class RecipeRequest(BaseModel):

@@ -25,7 +25,15 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
     const fetchNutritionData = async () => {
       if (ingredients) {
         try {
-          const response = await fetch("http://localhost:9000/nutrition", {
+          // const response = await fetch("http://localhost:9000/nutrition", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ ingredients: Array.isArray(ingredients) ? ingredients : ingredients.split(", ") }),
+          // });
+
+          const response = await fetch("/api/nutrition", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

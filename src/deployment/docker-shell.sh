@@ -10,6 +10,7 @@ export SECRETS_DIR=$(pwd)/../../secrets/
 export GCP_PROJECT="ac215-project-434717" # Change to your GCP Project ID
 export GCP_ZONE="us-central1-a"
 export GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json
+export MODEL_LOADING_CREDENTIALS=/secrets/recipe.json
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
@@ -24,6 +25,7 @@ docker run --rm --name $IMAGE_NAME -ti \
 -v "$BASE_DIR/../api-service":/api-service \
 -v "$BASE_DIR/../landing":/landing \
 -e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS \
+-e MODEL_LOADING_CREDENTIALS=$MODEL_LOADING_CREDENTIALS \
 -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \

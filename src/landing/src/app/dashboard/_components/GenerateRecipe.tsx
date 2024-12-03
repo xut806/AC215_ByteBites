@@ -21,7 +21,20 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
     const generateRecipe = async () => {
       setLoading(true)
       try {
-        const response = await fetch("http://localhost:9000/llm", {
+        // const response = await fetch("http://localhost:9000/llm", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     ingredients: selectedIngredients.join(", "),
+        //     dietary_preference: dietaryPreferences.join(", "),
+        //     meal_type: mealType,
+        //     cooking_time: cookingTime,
+        //   }),
+        // })
+
+        const response = await fetch("/api/llm", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
