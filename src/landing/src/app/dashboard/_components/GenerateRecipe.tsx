@@ -21,20 +21,7 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
     const generateRecipe = async () => {
       setLoading(true)
       try {
-        // const response = await fetch("http://localhost:9000/llm", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     ingredients: selectedIngredients.join(", "),
-        //     dietary_preference: dietaryPreferences.join(", "),
-        //     meal_type: mealType,
-        //     cooking_time: cookingTime,
-        //   }),
-        // })
-
-        const response = await fetch("/api/llm", {
+        const response = await fetch("http://localhost:9000/llm", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -46,6 +33,20 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
             cooking_time: cookingTime,
           }),
         })
+
+        // TODO: replace this
+        // const response = await fetch("/api/llm", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     ingredients: selectedIngredients.join(", "),
+        //     dietary_preference: dietaryPreferences.join(", "),
+        //     meal_type: mealType,
+        //     cooking_time: cookingTime,
+        //   }),
+        // })
   // Fetch from the llm endpoint on VM
   // useEffect(() => {
   //     const generateRecipe = async () => {

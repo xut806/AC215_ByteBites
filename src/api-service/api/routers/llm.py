@@ -56,8 +56,9 @@ router = APIRouter()
 
 
 def initialize_storage_client():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("MODEL_LOADING_CREDENTIALS", "/secrets/recipe.json")
-    #os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
+    # TODO: replace this
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("MODEL_LOADING_CREDENTIALS", "/secrets/recipe.json")
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/app/secrets/recipe.json"
     return storage.Client()
 
 

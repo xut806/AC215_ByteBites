@@ -14,9 +14,10 @@ type NutritionData = Record<string, Nutrient>;
 
 type NutritionAnalysisProps = {
   ingredients: string | string[];
+  onStartOver: () => void;
 };
 
-const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) => {
+const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients, onStartOver }) => {
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,21 +26,22 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
     const fetchNutritionData = async () => {
       if (ingredients) {
         try {
-          // const response = await fetch("http://localhost:9000/nutrition", {
-          //   method: "POST",
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify({ ingredients: Array.isArray(ingredients) ? ingredients : ingredients.split(", ") }),
-          // });
-
-          const response = await fetch("/api/nutrition", {
+          const response = await fetch("http://localhost:9000/nutrition", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ ingredients: Array.isArray(ingredients) ? ingredients : ingredients.split(", ") }),
           });
+          
+          // TODO: replace this
+          // const response = await fetch("/api/nutrition", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ ingredients: Array.isArray(ingredients) ? ingredients : ingredients.split(", ") }),
+          // });
 
           if (response.ok) {
             const data = await response.json();
@@ -62,12 +64,6 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
     ? Object.entries(nutritionData)
         .filter(([key, { value }]) => value !== 0 && key.toLowerCase().includes(searchTerm.toLowerCase()))
     : [];
-
-  const onStartOver = () => {
-    setNutritionData(null);
-    setLoading(true);
-    setSearchTerm("");
-  };
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">

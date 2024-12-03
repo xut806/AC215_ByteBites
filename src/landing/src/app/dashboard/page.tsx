@@ -62,7 +62,12 @@ export default function Component() {
           onGoToNutrition={handleGoToNutrition}
         />
       )}
-      {step === "nutrition" && <NutritionAnalysis ingredients={selectedIngredients} />}
+      {step === "nutrition" && (
+        <NutritionAnalysis 
+          ingredients={selectedIngredients} 
+          onStartOver={handleStartOver}
+        />
+      )}
     </div>
   )
 }
