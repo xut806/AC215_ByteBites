@@ -49,10 +49,15 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
   }, [ingredients]);
 
   const filteredData = nutritionData
-    ? Object.entries(nutritionData).filter(([key]) =>
-        key.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? Object.entries(nutritionData)
+        .filter(([key, { value }]) => value !== 0 && key.toLowerCase().includes(searchTerm.toLowerCase()))
     : [];
+
+  const onStartOver = () => {
+    setNutritionData(null);
+    setLoading(true);
+    setSearchTerm("");
+  };
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
@@ -69,31 +74,42 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
             className="mb-4"
           />
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nutrient
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Value
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Unit
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map(([key, { value, unit }]) => (
-                  <tr key={key}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{key}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{value}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{unit}</td>
+            <div className="max-h-[300px] overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="sticky top-0 bg-white">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nutrient
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Value
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Unit
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredData.map(([key, { value, unit }]) => (
+                    <tr key={key}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{key}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{value}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{unit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+          <p className="mt-4 text-sm text-gray-600">
+            Note: Nutrients with a value of 0 are not displayed.
+          </p>
+          <button
+            onClick={onStartOver}
+            className="mt-6 w-full rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+          >
+            Start Over
+          </button>
         </div>
       )}
     </div>
@@ -101,3 +117,4 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
 };
 
 export default NutritionAnalysis;
+
