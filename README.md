@@ -361,7 +361,7 @@ We did not apply Parameter Efficient Fine-tuning (PEFT) such as LoRA for the fin
 
 - **Overview**: The The ByteBites application consists of two main components: the frontend and the backend.  
 - **Frontend**: This is the user interface of the application, built using Next.js. It includes the landing page and dashboard where users can upload grocery receipts, select ingredients, and generate personalized recipes. The frontend is located in the `landing/` directory. 
-- **Backend**: This component handles the OCR & NER tasks as well as the LLM task. It processes uploaded receipt images to extract ingredient information and then generates recipes based on the user's preferences. The backend is located in the `api-service/` directory and is built using FastAPI. 
+- **Backend**: This component handles the OCR & NER task, LLM task, and the Nutrition Extraction task. It processes uploaded receipt images to extract edible ingredient. Then it generates recipes based on the user's preferences and output the nutration facts based on selected ingredients. The backend is located in the `api-service/` directory and is built using FastAPI. 
 
 ### Setup Instructions
 
