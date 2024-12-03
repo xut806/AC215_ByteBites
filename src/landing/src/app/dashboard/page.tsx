@@ -4,9 +4,10 @@ import React, { useState } from "react"
 import UploadRecipe from "./_components/UploadRecipe"
 import SelectIngredients from "./_components/SelectIngredients"
 import GenerateRecipe from "./_components/GenerateRecipe"
+import NutritionAnalysis from "./_components/NutritionAnalysis"
 
 export default function Component() {
-  const [step, setStep] = useState<"main" | "upload" | "select" | "generate">("main")
+  const [step, setStep] = useState<"main" | "upload" | "select" | "generate" | "nutrition">("main")
   const [ingredients, setIngredients] = useState<string[]>([])
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([])
@@ -27,6 +28,9 @@ export default function Component() {
     setStep("generate")
   }
   const handleStartOver = () => setStep("main")
+  const handleGoToNutrition = () => {
+    setStep("nutrition")
+  }
 
   return (
     <div className="w-full">
@@ -43,12 +47,6 @@ export default function Component() {
             >
               Upload grocery receipt
             </button>
-            {/* <button
-              onClick={handleSelectClick}
-              className="rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
-            >
-              Let&apos;s get cooking!
-            </button> */}
           </div>
         </div>
       )}
@@ -61,8 +59,10 @@ export default function Component() {
           dietaryPreferences={dietaryPreferences}
           mealType={mealType}
           cookingTime={cookingTime}
+          onGoToNutrition={handleGoToNutrition}
         />
       )}
+      {step === "nutrition" && <NutritionAnalysis ingredients={selectedIngredients} />}
     </div>
   )
 }
