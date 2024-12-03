@@ -8,9 +8,10 @@ interface GenerateRecipeProps {
   dietaryPreferences: string[]
   mealType: string
   cookingTime: number
+  onGoToNutrition: () => void;
 }
 
-export default function Component({ onStartOver, selectedIngredients, dietaryPreferences, mealType, cookingTime }: GenerateRecipeProps) {
+export default function Component({ onStartOver, selectedIngredients, dietaryPreferences, mealType, cookingTime, onGoToNutrition }: GenerateRecipeProps) {
   const [recipe, setRecipe] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -71,10 +72,12 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
             </p>
           </div>
           <button
-            onClick={onStartOver}
+            onClick={() => {
+              onGoToNutrition();
+            }}
             className="w-full rounded-md bg-pink-500 px-4 py-2 text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
           >
-            Start Over
+            Show Nutrition Analysis
           </button>
         </div>
       )}
