@@ -4,6 +4,7 @@ import requests
 # Use environment variable for the USDA API key
 USDA_API_KEY = os.getenv("USDA_API_KEY")
 
+
 def get_nutrition_info(ingredients):
     """
     Get nutrition info for each ingredient using USDA API.
@@ -75,7 +76,8 @@ def get_nutrition_info(ingredients):
                     else:
                         print(
                             f"Warning: No nutrition data available for {ingredient}. "
-                            "This ingredient will not be included in the nutrition facts calculation."
+                            "This ingredient will not be included in the nutrition "
+                            "facts calculation."
                         )
                         continue
 
@@ -96,6 +98,7 @@ def get_nutrition_info(ingredients):
             print(f"Failed to retrieve data for {ingredient}")
 
     return nutrition_data
+
 
 def aggregate_nutrition_info_with_units(nutrition_info_dict):
     """
@@ -123,6 +126,8 @@ def aggregate_nutrition_info_with_units(nutrition_info_dict):
                         "unit": unit,
                     }
         else:
-            print(f"Warning: Cannot scale {ingredient}; serving size is missing.")
+            print(
+                f"Warning: Cannot scale {ingredient}; serving size is missing."
+            )
 
     return overall_nutrition

@@ -1,11 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from api.utils.nutrition_utils import get_nutrition_info, aggregate_nutrition_info_with_units
+from api.utils.nutrition_utils import (
+    get_nutrition_info,
+    aggregate_nutrition_info_with_units,
+)
 
 router = APIRouter()
 
+
 class NutritionRequest(BaseModel):
     ingredients: list
+
 
 @router.post("/nutrition")
 async def get_nutritional_info(request: NutritionRequest):
