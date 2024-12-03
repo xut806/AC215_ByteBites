@@ -31,6 +31,21 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
             cooking_time: cookingTime,
           }),
         })
+  // Fetch from the llm endpoint on VM
+  // useEffect(() => {
+  //     const generateRecipe = async () => {
+  //       setLoading(true)
+  //       try {
+  //         const response = await fetch("http://34.41.18.132:8080/generate/", { // Updated endpoint
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             text: `please write a ${dietaryPreferences.join(", ")}, ${mealType} meal recipe that takes approximately ${cookingTime} minutes and includes the following ingredients: ${selectedIngredients.join(", ")}`, // Updated body format
+  //             max_length: 200 
+  //           }),
+  //         })
 
         if (response.ok) {
           const data = await response.json()
