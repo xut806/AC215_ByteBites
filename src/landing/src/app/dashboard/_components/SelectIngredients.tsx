@@ -38,13 +38,18 @@ export default function Component({ onGenerate, ingredients }: SelectIngredients
     }
   }
 
+  const handleDeleteIngredient = (ingredient: string) => {
+    setAllIngredients(prev => prev.filter(i => i !== ingredient))
+    setSelectedIngredients(prev => prev.filter(i => i !== ingredient))
+  }
+
   return (
     <div className="rounded-lg bg-white p-6 shadow-md mx-auto">
       <h2 className="mb-4 text-center text-2xl font-semibold">Select Ingredients</h2>
       <div className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           {allIngredients.map(ingredient => (
-            <div key={ingredient} className="flex items-center space-x-2">
+            <div key={ingredient} className="flex items-center space-x-2 group">
               <input
                 type="checkbox"
                 id={ingredient}
@@ -55,6 +60,13 @@ export default function Component({ onGenerate, ingredients }: SelectIngredients
               <label htmlFor={ingredient} className="text-sm font-medium text-gray-700">
                 {ingredient}
               </label>
+              <button
+                onClick={() => handleDeleteIngredient(ingredient)}
+                className="invisible group-hover:visible text-red-500 ml-2"
+                aria-label={`Delete ${ingredient}`}
+              >
+                x
+              </button>
             </div>
           ))}
         </div>
