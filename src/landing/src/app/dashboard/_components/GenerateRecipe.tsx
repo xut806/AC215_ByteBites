@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import Lottie from "lottie-react"
+import loadingAnimation from "../../../../public/loading.json"
 
 interface GenerateRecipeProps {
   onStartOver: () => void
@@ -67,7 +69,9 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
     <div className="rounded-lg bg-white p-6 shadow-md">
       <h2 className="mb-4 text-center text-2xl font-bold">Your Recipe</h2>
       {loading ? (
-        <p className="text-center text-lg text-gray-600">Generating recipe...</p>
+        <div className="flex justify-center">
+          <Lottie animationData={loadingAnimation} className="w-24 h-24" />
+        </div>
       ) : (
         <div className="space-y-6">
           <div className="rounded-lg bg-gray-50 p-5">

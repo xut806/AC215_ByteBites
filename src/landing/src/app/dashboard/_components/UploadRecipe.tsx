@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
+import Lottie from "lottie-react"
+import loadingAnimation from "../../../../public/loading.json"
 
 interface UploadRecipeProps {
   onIngredientsReady: (ingredients: string[]) => void
@@ -76,7 +78,9 @@ export default function Component({ onIngredientsReady }: UploadRecipeProps) {
         onDrop={handleDrop}
       >
         {loading ? (
-          <p className="text-center text-lg text-gray-600">Loading...</p>
+          <div className="flex justify-center">
+            <Lottie animationData={loadingAnimation} className="w-24 h-24" />
+          </div>
         ) : (
           <>
             <svg

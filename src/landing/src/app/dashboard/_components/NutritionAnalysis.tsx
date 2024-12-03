@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
+import Lottie from "lottie-react"
+import loadingAnimation from "../../../../public/loading.json"
 
 type Nutrient = {
   value: number;
@@ -63,7 +65,9 @@ const NutritionAnalysis: React.FC<NutritionAnalysisProps> = ({ ingredients }) =>
     <div className="rounded-lg bg-white p-6 shadow-md">
       <h2 className="mb-4 text-center text-2xl font-bold">Nutrition Analysis</h2>
       {loading ? (
-        <p className="text-center text-lg text-gray-600">Loading nutrition data...</p>
+        <div className="flex justify-center">
+          <Lottie animationData={loadingAnimation} className="w-24 h-24" />
+        </div>
       ) : (
         <div>
           <Input
