@@ -54,61 +54,81 @@ def mock_dependencies():
         yield
 
 
-# # integration test
-# @pytest.mark.usefixtures("mock_dependencies")
-# def test_service_integration():
+# integration test: For integrating multiple components.
+@pytest.mark.usefixtures("mock_dependencies")
+def test_service_integration():
+    # OCR endpoint
+    ocr_response = client.post(
+        "/api/ocr",
+        files={"file": ("test_image.jpg", b"valid_image_data", "image/jpeg")},
+    )
 
-#     # OCR endpoint
-#     ocr_response = client.post(
-#         "/ocr",
-#         files={"file": ("test_image.jpg", b"valid_image_data", "image/jpeg")},
-#     )
+    print("OCR Response JSON:", ocr_response.json())
+    assert ocr_response.status_code == 200
+    assert "ingredients" in ocr_response.json() 
 
-#     print("OCR Response JSON:", ocr_response.json())
-#     assert ocr_response.status_code == 200
+    # LLM endpoint
+    llm_payload = {
+        "ingredients": "ingredient1, ingredient2",
+        "dietary_preference": "vegetarian",
+        "meal_type": "dinner",
+        "cooking_time": 30,
+    }
+    llm_response = client.post("/api/llm", json=llm_payload)
 
-#     # LLM endpoint
-#     llm_payload = {
-#         "ingredients": "ingredient1, ingredient2",
-#         "dietary_preference": "vegetarian",
-#         "meal_type": "dinner",
-#         "cooking_time": 30,
-#     }
-#     llm_response = client.post("/llm", json=llm_payload)
+    print("LLM Response JSON:", llm_response.json())
+    assert llm_response.status_code == 200
+    assert "recipe" in llm_response.json() 
 
-#     print("LLM Response JSON:", llm_response.json())
-#     assert llm_response.status_code == 200
-#     assert llm_response.json() == {"recipe": "Mock Recipe"}
+    # Nutrition endpoint
+    nutrition_payload = {
+        "ingredients": ["ingredient1", "ingredient2"],
+    }
+    nutrition_response = client.post("/api/nutrition", json=nutrition_payload)
+
+    print("Nutrition Response JSON:", nutrition_response.json())
+    assert nutrition_response.status_code == 200
+    assert "nutrition_data" in nutrition_response.json() 
 
 
-# # System test
-# @pytest.mark.usefixtures("mock_dependencies")
-# def test_system_end_to_end():
-#     """System test for the entire service: OCR -> LLM."""
+# System test
+@pytest.mark.usefixtures("mock_dependencies")
+def test_system_end_to_end():
+    """System test for the entire service: OCR -> LLM -> Nutrition."""
 
-#     # Mocked file data
-#     fake_image_data = b"fake_image_data"
+    # Mocked file data
+    fake_image_data = b"fake_image_data"
 
-#     # Test OCR endpoint
-#     ocr_response = client.post(
-#         "/ocr",
-#         files={"file": ("test_image.jpg", fake_image_data, "image/jpeg")},
-#     )
+    # Test OCR endpoint
+    ocr_response = client.post(
+        "/api/ocr",
+        files={"file": ("test_image.jpg", fake_image_data, "image/jpeg")},
+    )
 
-#     print("OCR Response JSON:", ocr_response.json())
-#     assert ocr_response.status_code == 200
-#     ingredients = ocr_response.json().get("ingredients")
-#     assert ingredients is not None
+    print("OCR Response JSON:", ocr_response.json())
+    assert ocr_response.status_code == 200
+    ingredients = ocr_response.json().get("ingredients")
+    assert ingredients is not None
 
-#     # Use OCR output as input for the LLM endpoint
-#     llm_payload = {
-#         "ingredients": ", ".join(ingredients),
-#         "dietary_preference": "vegetarian",
-#         "meal_type": "dinner",
-#         "cooking_time": 30,
-#     }
-#     llm_response = client.post("/llm", json=llm_payload)
+    # Use OCR output as input for the LLM endpoint
+    llm_payload = {
+        "ingredients": ", ".join(ingredients),
+        "dietary_preference": "vegetarian",
+        "meal_type": "dinner",
+        "cooking_time": 30,
+    }
+    llm_response = client.post("/api/llm", json=llm_payload)
 
-#     print("LLM Response JSON:", llm_response.json())
-#     assert llm_response.status_code == 200
-#     assert llm_response.json() == {"recipe": "Mock Recipe"}
+    print("LLM Response JSON:", llm_response.json())
+    assert llm_response.status_code == 200
+    assert "recipe" in llm_response.json()
+
+    # Use OCR output as input for the Nutrition endpoint
+    nutrition_payload = {
+        "ingredients": ingredients,
+    }
+    nutrition_response = client.post("/api/nutrition", json=nutrition_payload)
+
+    print("Nutrition Response JSON:", nutrition_response.json())
+    assert nutrition_response.status_code == 200
+    assert "nutrition_data" in nutrition_response.json()
