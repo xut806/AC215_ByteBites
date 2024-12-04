@@ -466,13 +466,6 @@ In this deployment approach, we deploy our web app using **only Ansible playbook
 
 #### Setup Instruction
 
-- Uncomment the following lines in `src/api-service/api/service.py`:
-  ```
-  app.include_router(ocr_router)
-  app.include_router(llm_router)
-  app.include_router(nutrition_router)
-  ```
-  * note: The lines are commented by default because we are switching to [Deployment With Scaling Using Ansible and Kubernetes](#deployment-with-scaling-using-ansible-and-kubernetes).
 - Navigate to `src/deployment`
 - Run `sh docker-shell.sh`
 - Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`. 
@@ -514,4 +507,4 @@ We added two separate plays in the `deploy-k8s-cluster.yml` playbook to enable m
   ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --tags scale-down
   ```
   The [Scale Down the Deployment] play will run, and we scale down again to 1 replica:
-  ![image](./screenshots/kubernetes_scaled_down.png)  
+  ![image](./screenshots/kubernetes_scaled_down.png)   
