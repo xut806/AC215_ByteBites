@@ -28,7 +28,7 @@ app.include_router(ocr_router, prefix="/api")
 app.include_router(llm_router, prefix="/api")
 app.include_router(nutrition_router, prefix="/api")
 
-# # Uncomment for local development / Ansible
+# # Uncomment for local development
 # app.include_router(ocr_router)
 # app.include_router(llm_router)
 # app.include_router(nutrition_router)

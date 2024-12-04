@@ -462,23 +462,42 @@ Please see the `test_service.py` file in our `api-service/tests` directory.
 
 ## Deployment with Ansible
 
-** Placeholder**
+In this deployment approach, we deploy our web app using **only Ansible playbooks**. This deployment approach does not have Kubernetes and is for demonstration purposes only as requied by Milestone 5. For Kubernetes and Ansible deployment, please see [Deployment With Scaling Using Ansible and Kubernetes](#deployment-with-scaling-using-ansible-and-kubernetes).
 
-## Deployment with Ansible and Kubernetes
+#### Setup Instruction
 
-In this deployment approach, we deploy our web app using Kubernetes powered by Ansible playbooks. We also implement manual scaling up and manual scaling down options.
+- Uncomment the following lines in `src/api-service/api/service.py`:
+  ```
+  app.include_router(ocr_router)
+  app.include_router(llm_router)
+  app.include_router(nutrition_router)
+  ```
+  * note: The lines are commented by default because we are switching to [Deployment With Scaling Using Ansible and Kubernetes](#deployment-with-scaling-using-ansible-and-kubernetes).
+- Navigate to `src/deployment`
+- Run `sh docker-shell.sh`
+- Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`. 
+- Run `ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present` which creates the Virtual Machine
+- Run `ansible-playbook deploy-provision-instance.yml -i inventory.yml` after changing details in the `inventory.yml` file
+- Run `ansible-playbook deploy-setup-containers.yml -i inventory.yml`
+- Run `ansible-playbook deploy-setup-webserver.yml -i inventory.yml` after changing details in the `nginx-conf/nginx/nginx.conf` file
 
-**Our web app is currently deployed and ready to be viewed at http://35.226.149.192.sslip.io**
+
+## Deployment With Scaling Using Ansible and Kubernetes
+
+In this deployment approach, we deploy our web app using **Kubernetes powered by Ansible playbooks**. We also implement manual scaling up and manual scaling down options.
+
+**Our web app is currently deployed with Kubernetes and ready to be viewed at http://35.226.149.192.sslip.io**
 
 #### Setup instructions
 
 >> Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY='...'`), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
 
 - Navigate to `src/deployment`
-- run `sh.docker-shell.sh`
-- run the Ansible playbook `deploy-docker-images.yml`, which creates and pushes the web app containers to GCP Artifact Registry
-- run the Ansible playbook `deploy-k8s-cluster.yml`, which deploys our web app on a Kubernetes cluster with NGINX ingress controller, and sets up the necessary GCP secrets and application credentials, and creates deployments and services for the API and frontend components in the specified namespace.
+- run `sh docker-shell.sh`
+- Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`, which creates and pushes the web app containers to GCP Artifact Registry
+- Run `ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present`, which deploys our web app on a Kubernetes cluster with NGINX ingress controller, and sets up the necessary GCP secrets and application credentials, and creates deployments and services for the API and frontend components in the specified namespace.
 - You should be able to access the web app at http://<YOUR INGRESS IP>.sslip.io.
+* note: if you exit the container and reenter again but kubectl gives a connection error, please run `gcloud container clusters get-credentials byte-bites-app-cluster --zone us-central1-a` to configure the cluster's credentials again.
 
 #### Manual Scaling Up and Scaling Down
 We added two separate plays in the `deploy-k8s-cluster.yml` playbook to enable manualing scaling our deployment up and down in order to handle increased or decreased load.
