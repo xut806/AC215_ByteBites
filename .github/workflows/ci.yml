@@ -1,0 +1,90 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ milestone5 ]
+  pull_request:
+    branches: [ milestone5 ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # containers that we have for our app (folders in src/)
+        # container: [ "api-service", "data-collector", "data-processor", "deployment", "model_finetune", "workflow"]
+        container: [ "api-service"]
+        python-version: [ "3.11"] 
+
+    steps:
+      # code checkout
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Python setup
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # installing dependencies for each container
+      - name: Install Dependencies for ${{ matrix.container }}
+        working-directory: src/${{ matrix.container }}
+        run: |
+          pip install pipenv
+          pipenv install --dev
+          
+      # linting
+      - name: Run Linting for ${{ matrix.container }}
+        working-directory: src/${{ matrix.container }}
+        run: |
+          pipenv run flake8 .
+  
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: [ "api-service"]
+        python-version: [ "3.11"]
+
+    steps:
+      # code checkout
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Python setup
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # # installing dependencies for each container
+      # - name: Install Dependencies for ${{ matrix.container }}
+      #   working-directory: src/${{ matrix.container }}
+      #   run: |
+      #     pip install pipenv
+      #     pipenv install --extra-index-url https://download.pytorch.org/whl/ "torch==2.0.1+cpu"
+
+
+      # testing
+      - name: Run Tests for ${{ matrix.container }}
+        working-directory: src/${{ matrix.container }}
+        run: |
+          pip install pipenv
+          pipenv install --dev
+          pipenv run pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+          pipenv run pytest tests/ --cov=. --cov-report=xml --cov-config=.coveragerc
+
+      # Check Coverage Threshold
+      - name: Verify Coverage
+        working-directory: src/api-service
+        run: |
+          coverage report --fail-under=70
+
+      # test coverage report
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: src/${{ matrix.container }}/coverage.xml
+
