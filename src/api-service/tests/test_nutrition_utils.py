@@ -7,7 +7,9 @@
 
 import unittest
 from unittest.mock import patch
-from api.utils.nutrition_utils import get_nutrition_info, aggregate_nutrition_info_with_units
+from api.utils.nutrition_utils import get_nutrition_info, \
+    aggregate_nutrition_info_with_units
+
 
 class TestNutritionUtils(unittest.TestCase):
 
@@ -118,7 +120,7 @@ class TestNutritionUtils(unittest.TestCase):
         expected_result = {}
 
         self.assertEqual(result, expected_result)
-    
+
     @patch('api.utils.nutrition_utils.requests.get')
     def test_get_nutrition_info_no_foods(self, mock_get):
         mock_response = {"foods": []}
@@ -132,20 +134,20 @@ class TestNutritionUtils(unittest.TestCase):
     def test_get_nutrition_info_missing_serving_size(self, mock_get):
         mock_response = {
             "foods": [
-            {
-                "description": "Ingredient with no serving size",
-                "dataType": "Survey (FNDDS)",
-                "servingSize": None,
-                "servingSizeUnit": None,
-                "foodNutrients": [
-                    {
-                        "nutrientName": "Protein",
-                        "value": 10,
-                        "unitName": "G"
-                    }
-                ]
-            }
-        ]
+                {
+                    "description": "Ingredient with no serving size",
+                    "dataType": "Survey (FNDDS)",
+                    "servingSize": None,
+                    "servingSizeUnit": None,
+                    "foodNutrients": [
+                        {
+                            "nutrientName": "Protein",
+                            "value": 10,
+                            "unitName": "G"
+                        }
+                    ]
+                }
+            ]
         }
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
@@ -153,17 +155,16 @@ class TestNutritionUtils(unittest.TestCase):
         result = get_nutrition_info(['ingredient_with_no_serving_size'])
         expected_result = {
             'ingredient_with_no_serving_size': {
-            'description': 'Ingredient with no serving size',
-            'dataType': 'Survey (FNDDS)',
-            'servingSize': 100,  
-            'servingSizeUnit': 'g',  
-            'nutrients': {
-                'Protein': {'value': 10, 'unit': 'G'}
+                'description': 'Ingredient with no serving size',
+                'dataType': 'Survey (FNDDS)',
+                'servingSize': 100,
+                'servingSizeUnit': 'g',
+                'nutrients': {
+                    'Protein': {'value': 10, 'unit': 'G'}
+                }
             }
         }
-    }
         self.assertEqual(result, expected_result)
-
 
 
 if __name__ == '__main__':

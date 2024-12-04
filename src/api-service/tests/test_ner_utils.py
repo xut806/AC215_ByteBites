@@ -1,5 +1,12 @@
+#!/usr/bin/env python3
+
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 import unittest
 from api.utils.ner_utils import convert_ner_entities_to_list
+
 
 class TestNERUtils(unittest.TestCase):
 
@@ -25,9 +32,7 @@ class TestNERUtils(unittest.TestCase):
             {"score": 0.999, "entity_group": "FOOD", "start": 6, "end": 12}
         ]
         result = convert_ner_entities_to_list(text, entities)
-        # Adjusted expectation to match the function's merging behavior
         self.assertEqual(result, ["apple banana"])
-
 
     def test_entities_mixed_scores(self):
         text = "apple banana cherry"
@@ -43,7 +48,8 @@ class TestNERUtils(unittest.TestCase):
         text = "apple banana cherry"
         entities = [
             {"score": 0.998, "entity_group": "FOOD", "start": 0, "end": 5},
-            {"score": 0.999, "entity_group": "NOT_FOOD", "start": 6, "end": 12},
+            {"score": 0.999, "entity_group": "NOT_FOOD",
+             "start": 6, "end": 12},
             {"score": 0.999, "entity_group": "FOOD", "start": 13, "end": 19}
         ]
         result = convert_ner_entities_to_list(text, entities)
@@ -83,9 +89,7 @@ class TestNERUtils(unittest.TestCase):
             {"score": 0.997, "entity_group": "FOOD", "start": 6, "end": 12}
         ]
         result = convert_ner_entities_to_list(text, entities)
-        
         self.assertEqual(result, [])
-
 
     def test_entities_adjacent_non_merge(self):
         text = "applebanana"
@@ -104,6 +108,7 @@ class TestNERUtils(unittest.TestCase):
         ]
         result = convert_ner_entities_to_list(text, entities)
         self.assertEqual(result, ["apple", "banana"])
+
 
 if __name__ == '__main__':
     unittest.main()

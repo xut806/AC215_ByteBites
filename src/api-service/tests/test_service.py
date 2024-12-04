@@ -65,7 +65,7 @@ def test_service_integration():
 
     print("OCR Response JSON:", ocr_response.json())
     assert ocr_response.status_code == 200
-    assert "ingredients" in ocr_response.json() 
+    assert "ingredients" in ocr_response.json()
 
     # LLM endpoint
     llm_payload = {
@@ -78,7 +78,7 @@ def test_service_integration():
 
     print("LLM Response JSON:", llm_response.json())
     assert llm_response.status_code == 200
-    assert "recipe" in llm_response.json() 
+    assert "recipe" in llm_response.json()
 
     # Nutrition endpoint
     nutrition_payload = {
@@ -88,7 +88,7 @@ def test_service_integration():
 
     print("Nutrition Response JSON:", nutrition_response.json())
     assert nutrition_response.status_code == 200
-    assert "nutrition_data" in nutrition_response.json() 
+    assert "nutrition_data" in nutrition_response.json()
 
 
 # System test
