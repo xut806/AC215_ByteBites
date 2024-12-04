@@ -32,7 +32,10 @@ def get_nutrition_info(ingredients):
                     )
                     most_complete_food = sorted_foods[0]
 
-                    if most_complete_food.get("servingSize") is None:
+                    serving_size = most_complete_food.get("servingSize")
+                    serving_size_unit = most_complete_food.get("servingSizeUnit", "")
+
+                    if serving_size is None:
                         serving_size = 100
                         serving_size_unit = "g"
                     print(
@@ -67,12 +70,11 @@ def get_nutrition_info(ingredients):
                             ),
                             sorted_foods[0],
                         )
-                        serving_size = most_complete_food.get(
-                            "servingSize", "N/A"
-                        )
-                        serving_size_unit = most_complete_food.get(
-                            "servingSizeUnit", ""
-                        )
+                        serving_size = most_complete_food.get("servingSize")
+                        serving_size_unit = most_complete_food.get("servingSizeUnit", "")
+
+                        if serving_size is None:
+                            serving_size = "N/A"
                     else:
                         print(
                             f"Warning: No nutrition data available for {ingredient}. "
