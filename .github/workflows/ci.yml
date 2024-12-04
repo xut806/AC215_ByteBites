@@ -13,7 +13,7 @@ jobs:
       matrix:
         # containers that we have for our app (folders in src/)
         # container: [ "api-service", "data-collector", "data-processor", "deployment", "model_finetune", "workflow"]
-        container: [ "api-service"]
+        container: [ "api-service", "data-collector"]
         python-version: [ "3.11"] 
 
     steps:
@@ -80,7 +80,7 @@ jobs:
       - name: Verify Coverage
         working-directory: src/api-service
         run: |
-          coverage report --fail-under=70
+          pipenv run coverage report --fail-under=70
 
       # test coverage report
       - name: Upload Coverage Report

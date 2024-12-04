@@ -4,9 +4,11 @@ import os
 from google.cloud import storage
 
 # Set up GCP credentials
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets/data-service-account.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "secrets/data-service-account.json")
-
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+# = "secrets/data-service-account.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS", "secrets/data-service-account.json"
+)
 # def fetch_data(bucket_name, source_blob_name, destination_file):
 #     client = storage.Client()
 #     bucket = client.bucket(bucket_name)
@@ -14,7 +16,8 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CRE
 
 #     # Download data
 #     blob.download_to_filename(destination_file)
-#     print(f"Data fetched from gs://{bucket_name}/{source_blob_name} to {destination_file}")
+#     print(f"Data fetched from gs://{bucket_name}/{source_blob_name}
+#     to {destination_file}")
 
 
 def upload_to_gcp(data_path, bucket_name, destination_blob_name):
@@ -23,7 +26,10 @@ def upload_to_gcp(data_path, bucket_name, destination_blob_name):
     with open(data_path, "rb") as file_data:
         blob.upload_from_file(file_data, content_type="application/json")
 
-    print(f"Data successfully uploaded to gs://{bucket_name}/{destination_blob_name}.")
+    print(
+        "Data successfully uploaded to "
+        f"gs://{bucket_name}/{destination_blob_name}."
+    )
 
 
 def main():
