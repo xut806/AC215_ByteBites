@@ -22,6 +22,13 @@ app.add_middleware(
 )
 
 # Include the OCR, LLM (local fine-tuned model), and Nutrition routers
-app.include_router(ocr_router)
-app.include_router(llm_router)
-app.include_router(nutrition_router)
+
+# Kubernetes deployment
+app.include_router(ocr_router, prefix="/api")
+app.include_router(llm_router, prefix="/api")
+app.include_router(nutrition_router, prefix="/api")
+
+# # Uncomment for local development / Ansible
+# app.include_router(ocr_router)
+# app.include_router(llm_router)
+# app.include_router(nutrition_router)

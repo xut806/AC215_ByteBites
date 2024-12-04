@@ -20,6 +20,11 @@
         src: ../secrets/recipe.json
         dest: "/srv/secrets/recipe.json"
         mode: 0644
+    - name: Copy USDA API key file 
+      copy:
+        src: ../secrets/usda_api_key.env
+        dest: "/srv/secrets/usda_api_key.env"
+        mode: 0644
     - name: Authenticate gcloud using service account
       shell: "gcloud auth activate-service-account --key-file /srv/secrets/gcp-service.json"
     
@@ -74,6 +79,7 @@
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
           MODEL_LOADING_CREDENTIALS: "/secrets/recipe.json"
+          USDA_API_KEY: "/secrets/usda_api_key.env"
           GCP_PROJECT: "{{ gcp_project }}"
         networks:
           - name: "{{docker_network_name}}"
