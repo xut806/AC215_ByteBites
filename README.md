@@ -125,6 +125,7 @@ Here is our Technical Architecture
 4. [LLM: RAG](#llm-rag)
 5. [APIs & Frontend Implementation](#apis--frontend-implementation)
 6. [CI & Testing](#ci--testing)
+7. [Deployment with Ansible]()
 
 
 ## Virtual Environment Setup & Containers
@@ -459,3 +460,38 @@ Please see the `test_service.py` file in our `api-service/tests` directory.
    pipenv run pytest tests/ --cov=. --cov-report=term --cov-config=.coveragerc
    ```
 
+## Deployment with Ansible
+
+** Placeholder**
+
+## Deployment with Ansible and Kubernetes
+
+In this deployment approach, we deploy our web app using Kubernetes powered by Ansible playbooks. We also implement manual scaling up and manual scaling down options.
+
+**Our web app is currently deployed and ready to be viewed at http://35.226.149.192.sslip.io**
+
+#### Setup instructions
+
+>> Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY='...'`), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
+
+- Navigate to `src/deployment`
+- run `sh.docker-shell.sh`
+- run the Ansible playbook `deploy-docker-images.yml`, which creates and pushes the web app containers to GCP Artifact Registry
+- run the Ansible playbook `deploy-k8s-cluster.yml`, which deploys our web app on a Kubernetes cluster with NGINX ingress controller, and sets up the necessary GCP secrets and application credentials, and creates deployments and services for the API and frontend components in the specified namespace.
+- You should be able to access the web app at http://<YOUR INGRESS IP>.sslip.io.
+
+#### Manual Scaling Up and Scaling Down
+- After deploying as the above, i.e. without running the `deploy-k8s-cluster.yml` playbook with `scale-up` or `scale-down` arguments, we use a default of 1 replica:
+  ![image](./screenshots/kubernetes_without_scaling.png)  
+- When running the `deploy-k8s-cluster.yml` playbook again with `scale-up` argument, 
+  ```
+  ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --tags scale-up
+  ```
+  we scale up to 5 replicas:
+  ![image](./screenshots/kubernetes_scaled_up.png)  
+- When running the `deploy-k8s-cluster.yml` playbook again with `scale-down` argument, 
+  ```
+  ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --tags scale-down
+  ```
+  we scale down again to 1 replica:
+  ![image](./screenshots/kubernetes_scaled_down.png)  
