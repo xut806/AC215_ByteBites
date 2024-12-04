@@ -481,17 +481,18 @@ In this deployment approach, we deploy our web app using Kubernetes powered by A
 - You should be able to access the web app at http://<YOUR INGRESS IP>.sslip.io.
 
 #### Manual Scaling Up and Scaling Down
+We added two separate plays in the `deploy-k8s-cluster.yml` playbook to enable manualing scaling our deployment up and down in order to handle increased or decreased load.
 - After deploying as the above, i.e. without running the `deploy-k8s-cluster.yml` playbook with `scale-up` or `scale-down` arguments, we use a default of 1 replica:
   ![image](./screenshots/kubernetes_without_scaling.png)  
 - When running the `deploy-k8s-cluster.yml` playbook again with `scale-up` argument, 
   ```
   ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --tags scale-up
   ```
-  we scale up to 5 replicas:
+  The [Scale Up the Deployment] play will run, and we scale up to 5 replicas:
   ![image](./screenshots/kubernetes_scaled_up.png)  
 - When running the `deploy-k8s-cluster.yml` playbook again with `scale-down` argument, 
   ```
   ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --tags scale-down
   ```
-  we scale down again to 1 replica:
+  The [Scale Down the Deployment] play will run, and we scale down again to 1 replica:
   ![image](./screenshots/kubernetes_scaled_down.png)  
