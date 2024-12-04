@@ -358,3 +358,39 @@
                     port:
                       number: 9000
     when: cluster_state == "present"
+
+- name: Scale Up the Deployment
+  hosts: localhost
+  vars:
+    cluster_name: byte-bites-app-cluster
+  tasks:
+    - name: Scale Up the Deployment to 5 Replicas
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: api
+            namespace: "{{cluster_name}}-namespace"
+          spec:
+            replicas: 5
+      tags: scale-up
+
+- name: Scale Down the Deployment
+  hosts: localhost
+  vars:
+    cluster_name: byte-bites-app-cluster
+  tasks:
+    - name: Scale Down the Deployment to 1 Replica
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: api
+            namespace: "{{cluster_name}}-namespace"
+          spec:
+            replicas: 1
+      tags: scale-down
