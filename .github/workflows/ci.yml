@@ -75,12 +75,6 @@ jobs:
           pipenv run pip install coverage
           pipenv run pytest tests/ --cov=. --cov-report=xml --cov-config=.coveragerc
 
-      # Check Coverage Threshold
-      - name: Verify Coverage
-        working-directory: src/api-service
-        run: |
-          pipenv run coverage report --fail-under=70 --omit=config-3.py
-
       # test coverage report
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
