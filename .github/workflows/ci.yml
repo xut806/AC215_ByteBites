@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # containers that we have for our app (folders in src/)
-        container: [ "api-service", "data-collector"]
+        container: [ "api-service", "data-collector", "data-processor", "model_finetune"]
         python-version: [ "3.11"] 
 
     steps:
