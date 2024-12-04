@@ -10,3 +10,6 @@ __pycache__/
 
 # Ignore all pycache directories in any subdirectory
 **/__pycache__/
+
+# Ignore coverage report
+.coverage
