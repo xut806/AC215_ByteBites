@@ -33,20 +33,25 @@ def get_nutrition_info(ingredients):
                     most_complete_food = sorted_foods[0]
 
                     serving_size = most_complete_food.get("servingSize")
-                    serving_size_unit = most_complete_food.get("servingSizeUnit", "")
+                    serving_size_unit = most_complete_food.get(
+                        "servingSizeUnit", ""
+                    )
 
                     if serving_size is None:
                         serving_size = 100
                         serving_size_unit = "g"
                     print(
-                        f"Reminder: Raw ingredient data found for {ingredient}. "
-                        "The nutrition calculation for this ingredient is based "
+                        "Reminder: Raw ingredient data found "
+                        f"for {ingredient}. "
+                        "The nutrition calculation for this "
+                        "ingredient is based "
                         "on the FNDDS database from USDA."
                     )
 
                 else:
                     print(
-                        f"Reminder: No raw ingredient data found for {ingredient}. "
+                        "Reminder: No raw ingredient data "
+                        f"found for {ingredient}. "
                         "General USDA nutrition facts search is used for "
                         "nutrition calculation for this ingredient."
                     )
@@ -71,15 +76,18 @@ def get_nutrition_info(ingredients):
                             sorted_foods[0],
                         )
                         serving_size = most_complete_food.get("servingSize")
-                        serving_size_unit = most_complete_food.get("servingSizeUnit", "")
+                        serving_size_unit = most_complete_food.get(
+                            "servingSizeUnit", ""
+                        )
 
                         if serving_size is None:
                             serving_size = "N/A"
                     else:
                         print(
-                            f"Warning: No nutrition data available for {ingredient}. "
-                            "This ingredient will not be included in the nutrition "
-                            "facts calculation."
+                            "Warning: No nutrition data "
+                            f"available for {ingredient}. "
+                            "This ingredient will not be included "
+                            "in the nutrition facts calculation."
                         )
                         continue
 
