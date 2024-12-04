@@ -474,6 +474,8 @@ In this deployment approach, we deploy our web app using **only Ansible playbook
 - Run `ansible-playbook deploy-setup-containers.yml -i inventory.yml`
 - Run `ansible-playbook deploy-setup-webserver.yml -i inventory.yml` after changing details in the `nginx-conf/nginx/nginx.conf` file
 
+**Our web app is deployed with these Ansible playbooks and ready to be viewed at http://34.68.205.67/**
+
 
 ## Deployment With Scaling Using Ansible and Kubernetes
 

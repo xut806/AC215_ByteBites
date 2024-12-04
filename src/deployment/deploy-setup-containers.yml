@@ -66,6 +66,11 @@
         state: "directory"
         mode: 0777
 
+    - name: Load USDA API key from file
+      set_fact:
+        usda_api_key: "{{ lookup('file', '/secrets/usda_api_key.env') | regex_replace('.*=', '') | trim }}"
+
+
     - name: Create api-service container
       docker_container:
         name: "api-service"
@@ -79,7 +84,7 @@
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
           MODEL_LOADING_CREDENTIALS: "/secrets/recipe.json"
-          USDA_API_KEY: "/secrets/usda_api_key.env"
+          USDA_API_KEY: "{{ usda_api_key }}"
           GCP_PROJECT: "{{ gcp_project }}"
         networks:
           - name: "{{docker_network_name}}"
