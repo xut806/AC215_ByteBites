@@ -29,7 +29,9 @@ def clean_data(data, phrase_to_replace, replacement_text):
 def filter_data(data):
     data["prompt_length"] = data["prompt"].apply(len)
     data["response_length"] = data["completion"].apply(len)
-    return data[(data["prompt_length"] <= 470) & (data["response_length"] <= 2500)]
+    filtered_data = data[(data["prompt_length"] <= 470) &
+                         (data["response_length"] <= 2500)]
+    return filtered_data
 
 
 def upload_to_gcp(data, bucket_name, destination_blob_name):
@@ -38,13 +40,16 @@ def upload_to_gcp(data, bucket_name, destination_blob_name):
     data.to_json(buffer, orient="records", lines=True)
     blob = client.get_bucket(bucket_name).blob(destination_blob_name)
     blob.upload_from_string(buffer.getvalue(), content_type="application/json")
-    print(f"Data successfully uploaded to gs://{bucket_name}/{destination_blob_name}.")
+    print("Data successfully uploaded to "
+          f"gs://{bucket_name}/{destination_blob_name}.")
 
 
 def formatting_prompt(examples):
     EOS_TOKEN = "<|end_of_text|>"
-    data_prompt = """Write a recipe that includes clear instructions and ingredients.
-    Ensure the recipe has a detailed list of ingredientsand step-by-step cooking instructions.
+    data_prompt = """Write a recipe that includes
+    clear instructions and ingredients.
+    Ensure the recipe has a detailed list of ingredients
+    and step-by-step cooking instructions.
 
                     ### Input:
                     {}
@@ -61,14 +66,16 @@ def formatting_prompt(examples):
 
 
 def main():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets/data-service-account.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = \
+        "secrets/data-service-account.json"
 
     bucket_name = "ai-recipe-data"
     file_name = "processed/fine_tuning_opt125_data.jsonl"
     data = download_data_from_gcs(bucket_name, file_name)
 
     print("Cleaning and filtering data...")
-    phrase_to_replace = ("The recipe should be formatted with a clear list of ingredients "
+    phrase_to_replace = ("The recipe should be formatted with "
+                         "a clear list of ingredients "
                          "and detailed, step-by-step cooking instructions.")
     data = clean_data(data, phrase_to_replace, replacement_text=".")
     filtered_data = filter_data(data)
@@ -79,14 +86,16 @@ def main():
 
     print("Spliting train and val data...")
     dataset = Dataset.from_pandas(filtered_data)
-    train_data, val_data = dataset.train_test_split(test_size=0.2, seed=42).values()
+    split_result = dataset.train_test_split(test_size=0.2, seed=42)
+    train_data, val_data = split_result.values()
     train_data = train_data.map(formatting_prompt, batched=True)
 
     print("Uploading train and val data...")
     upload_to_gcp(
         train_data, bucket_name, "processed/fine_tuning_llama_train_data.jsonl"
     )
-    upload_to_gcp(val_data, bucket_name, "processed/fine_tuning_llama_val_data.jsonl")
+    file_path = "processed/fine_tuning_llama_val_data.jsonl"
+    upload_to_gcp(val_data, bucket_name, file_path)
 
 
 if __name__ == "__main__":

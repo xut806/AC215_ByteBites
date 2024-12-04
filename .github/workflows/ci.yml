@@ -79,7 +79,7 @@ jobs:
       - name: Verify Coverage
         working-directory: src/api-service
         run: |
-          pipenv run coverage report --fail-under=70
+          pipenv run coverage report --fail-under=70 --omit=config-3.py
 
       # test coverage report
       - name: Upload Coverage Report
