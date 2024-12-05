@@ -17,6 +17,7 @@ xformers = "==0.0.28.post3"
 unsloth = "==2024.11.7"
 
 [dev-packages]
+flake8 = "*"
 
 [requires]
 python_version = "3.11"
