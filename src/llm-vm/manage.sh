@@ -2,7 +2,7 @@
 
 # Load environment variables from .env file
 set -o allexport
-source .env
+source ./.env
 set +o allexport
 
 # Usage function to display help
@@ -12,8 +12,8 @@ usage() {
     echo "  build                 - Build the Docker image using Cloud Build"
     echo "  deploy                - Deploy the Docker image to a VM instance"
     echo "  create-service-account - Set up a service account with necessary roles"
-    echo "  connect               - SSH into running VM"
-    echo "  update                - Update VM to run the most recent container"
+    echo "  connect		  - SSH into running VM"
+    echo "  update		  - Update VM to run most recent container"
     echo "  clean                 - Clean up old images and cache to free up space"
     echo "  teardown              - Remove all provisioned resources"
     exit 1
@@ -30,6 +30,7 @@ create_disk() {
     # Check if disk exists
     if ! gcloud compute disks describe "${DISK_NAME}" \
         --zone="${ZONE}" >/dev/null 2>&1; then
+        
         gcloud compute disks create "${DISK_NAME}" \
             --zone="${ZONE}" \
             --size="${DISK_SIZE}" \
@@ -57,8 +58,8 @@ deploy() {
     echo "Granting required roles to service account..."
     
     REQUIRED_ROLES=(
-        "roles/artifactregistry.reader"      # Pull container images
-        "roles/storage.admin"               # Work with buckets
+    "roles/artifactregistry.reader"      # Pull container images
+    "roles/storage.admin"         	 # Work with buckets
     )
 
     for role in "${REQUIRED_ROLES[@]}"; do
@@ -73,10 +74,10 @@ deploy() {
     # Create bucket if it doesn't exist
     echo "Creating bucket if it doesn't exist..."
     if ! gcloud storage buckets describe "gs://${BUCKET_NAME}" &>/dev/null; then
-        gcloud storage buckets create "gs://${BUCKET_NAME}" \
-            --project="${PROJECT_ID}" \
-            --location="${REGION}" \
-            --uniform-bucket-level-access
+	gcloud storage buckets create "gs://${BUCKET_NAME}" \
+	    --project="${PROJECT_ID}" \
+	    --location="${REGION}" \
+	    --uniform-bucket-level-access
     fi
 
     # Create persistent disk
@@ -98,9 +99,42 @@ deploy() {
         fi
     done < .env
 
+#     # Create and populate secret if it doesn't exist
+#     echo "Setting up HuggingFace token in Secret Manager..."
+#     SECRET_NAME="huggingface-token"
+    
+    # # Check if secret exists
+    # if ! gcloud secrets describe $SECRET_NAME --project=${PROJECT_ID} >/dev/null 2>&1; then
+    #     echo "Creating secret..."
+    #     gcloud secrets create $SECRET_NAME \
+    #         --project=${PROJECT_ID} \
+    #         --replication-policy="automatic" \
+    #         --quiet
+    # fi
+
+    # # Add/Update secret version with token
+    # if [ -f "../secrets/huggingface_token" ]; then
+    #     echo "Uploading token to Secret Manager..."
+    #     gcloud secrets versions add $SECRET_NAME \
+    #         --project=${PROJECT_ID} \
+    #         --data-file="../secrets/huggingface_token" \
+    #         --quiet
+    # else
+    #     echo "Error: Hugging Face token not found in ../secrets/huggingface_token"
+    #     exit 1
+    # fi
+
+    # # Grant service account access to secret
+    # gcloud secrets add-iam-policy-binding $SECRET_NAME \
+    #     --project=${PROJECT_ID} \
+    #     --member="serviceAccount:${SA_EMAIL}" \
+    #     --role="roles/secretmanager.secretAccessor" \
+    #     --quiet > /dev/null
+
     # Deploy VM instance
     echo "Deploying VM instance..."
-    gcloud compute instances create ${INSTANCE_NAME} \
+    gcloud compute instances create-with-container ${INSTANCE_NAME} \
+        --container-image="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest" \
         --project=${PROJECT_ID} \
         --zone=${ZONE} \
         --machine-type=${MACHINE_TYPE} \
@@ -114,6 +148,15 @@ deploy() {
         --disk="name=${DISK_NAME},device-name=${DISK_NAME},mode=rw,boot=no" \
         --metadata-from-file=user-data=cloud-init.yaml,env-vars="$temp_env_file" \
         --tags=${VM_TAG}
+    
+    #gcloud compute instances create-with-container ${INSTANCE_NAME} \
+    #--container-image="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest" \
+    #--zone=${ZONE}
+    
+    #gcloud compute instances add-metadata ${INSTANCE_NAME} \
+    #--metadata=gce-container-declaration='{"spec":{"containers":[{"image":"'${REGION}'-docker.pkg.dev/'${PROJECT_ID}'/'${REPO_NAME}'/'${IMAGE_NAME}':latest"}]}}'
+
+
 
     # Clean up temporary files
     rm "$temp_env_file"
@@ -168,7 +211,7 @@ update_container() {
     echo "Updating container on VM instance..."
     gcloud compute instances update-container ${INSTANCE_NAME} \
         --zone=${ZONE} \
-        --container-image="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest" \
+        --container-image="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:test" \
         --container-env="MODEL_ID=${MODEL_ID},PROJECT_ID=${PROJECT_ID},BUCKET_NAME=${BUCKET_NAME},CACHE_DIR=/mnt/disks/model-cache"
 }
 
