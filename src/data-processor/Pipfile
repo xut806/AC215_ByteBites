@@ -10,6 +10,10 @@ datasets = "*"
 
 [dev-packages]
 flake8 = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.11"
