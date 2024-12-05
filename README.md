@@ -517,6 +517,20 @@ In this deployment approach, we deploy our web app using **Kubernetes powered by
 #### Setup instructions
 
 > Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY=...`, without quotation marks surrounding the API key content), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
+>
+>> The service account `deployment` must have the following permissions
+>>  - Compute Admin
+>>  - Compute OS Login
+>>  - Container Registry Service Agent
+>>  - Kubernetes Engine Admin
+>>  - Service Account User
+>>  - Storage Admin
+>>  - Artifact Registry Writer
+>>  - Artifact Registry Reader
+>> The service account `gcp-service` must have the following permissions
+>>  - Storage Object Viewer
+>>  - Artifact Registry Reader
+>> You should create a gcr.io repository on GCP Artifact Registry
 
 - Navigate to `src/deployment`
 - run `sh docker-shell.sh`
