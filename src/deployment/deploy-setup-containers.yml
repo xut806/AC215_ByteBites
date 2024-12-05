@@ -70,6 +70,9 @@
       set_fact:
         usda_api_key: "{{ lookup('file', '/secrets/usda_api_key.env') | regex_replace('.*=', '') | trim }}"
 
+    - name: Debug USDA_API_KEY
+      debug:
+        msg: "Extracted USDA_API_KEY is {{ usda_api_key }}"
 
     - name: Create api-service container
       docker_container:

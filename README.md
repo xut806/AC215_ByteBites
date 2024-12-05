@@ -466,11 +466,42 @@ In this deployment approach, we deploy our web app using **only Ansible playbook
 
 #### Setup Instruction
 
+> Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY=...`, without quotation marks surrounding the API key content), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
+>
+>> The service account `deployment` must have the following permissions
+>>  - Compute Admin
+>>  - Compute OS Login
+>>  - Container Registry Service Agent
+>>  - Kubernetes Engine Admin
+>>  - Service Account User
+>>  - Storage Admin
+>>  - Artifact Registry Writer
+>>  - Artifact Registry Reader
+>> The service account `gcp-service` must have the following permissions
+>>  - Storage Object Viewer
+>>  - Artifact Registry Reader
+>> You should create a gcr.io repository on GCP Artifact Registry
+
 - Navigate to `src/deployment`
 - Run `sh docker-shell.sh`
+- SSH setup
+  - Run `gcloud compute project-info add-metadata --project <YOUR GCP_PROJECT> --metadata enable-oslogin=TRUE`
+  - Create SSH key for service account with
+    ```
+    cd /secrets
+    ssh-keygen -f ssh-key-deployment
+    cd /app
+    ```
+  - Providing public SSH keys to instances with `gcloud compute os-login ssh-keys add --key-file=/secrets/ssh-key-deployment.pub`
+  - Change details in the `inventory.yml` file
+    - Change `ansible_user` to the `username` gotten from the previous command output
+    - Change `gcp_service_account_email` to the deployment@<MY_GCP_PROJECT_ID>.iam.gserviceaccount.com
+    - Change `gcp_project` to your project id 
+    - Change `gcp_region` and `gcp_zone` as needed
 - Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`. 
 - Run `ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present` which creates the Virtual Machine
 - Run `ansible-playbook deploy-provision-instance.yml -i inventory.yml` after changing details in the `inventory.yml` file
+  - Change `appserver > hosts` to the external IP address of the VM
 - Run `ansible-playbook deploy-setup-containers.yml -i inventory.yml`
 - Run `ansible-playbook deploy-setup-webserver.yml -i inventory.yml` after changing details in the `nginx-conf/nginx/nginx.conf` file
 
@@ -485,7 +516,7 @@ In this deployment approach, we deploy our web app using **Kubernetes powered by
 
 #### Setup instructions
 
->> Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY='...'`), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
+> Reminder: You must ensure the `secrets/` folder at the location specied in [Directory Structure](#directory-structure) contains the `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY=...`, without quotation marks surrounding the API key content), the `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors), the `gcp-service.json` file (which is the secrets for the service account under the same project used for deployment), and the `deployment.json` file (which is responsible for Ansible deployment).
 
 - Navigate to `src/deployment`
 - run `sh docker-shell.sh`
