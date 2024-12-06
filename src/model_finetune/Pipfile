@@ -16,6 +16,7 @@ bitsandbytes = "==0.45.0"
 xformers = "==0.0.28.post3"
 evaluate = "==0.4.3"
 unsloth = "==2024.11.7"
+gcsfs = "*"
 
 [dev-packages]
 flake8 = "*"

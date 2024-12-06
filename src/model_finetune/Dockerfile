@@ -20,6 +20,7 @@ RUN set -ex; \
 
 RUN pipenv sync
 
+COPY eval.py /app/
 COPY llama_finetune.py /app/
 
 CMD ["python", "/app/llama_finetune.py", "--train"]
