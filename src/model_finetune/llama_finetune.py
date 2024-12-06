@@ -28,7 +28,7 @@ def check_cuda_version():
             ["nvcc", "--version"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
         )
         if result.returncode == 0:
             print(result.stdout)
@@ -42,19 +42,19 @@ def run_nvidia_smi():
     try:
         # Run the nvidia-smi command
         result = subprocess.run(
-            ["nvidia-smi"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True)
+            ["nvidia-smi"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
         # Print the output
         if result.returncode == 0:
             print(result.stdout)
         else:
             print(f"Error: {result.stderr}")
     except FileNotFoundError:
-        print("nvidia-smi command not found. "
-              "Make sure NVIDIA drivers are installed and "
-              "nvidia-smi is in your PATH.")
+        print(
+            "nvidia-smi command not found. "
+            "Make sure NVIDIA drivers are installed and "
+            "nvidia-smi is in your PATH."
+        )
 
 
 def upload_to_gcs(bucket_name, destination_blob_name, source_file_path):
@@ -67,22 +67,41 @@ def upload_to_gcs(bucket_name, destination_blob_name, source_file_path):
         blob.upload_from_filename(source_file_path)
         print(f"File {source_file_path} uploaded to {destination_blob_name}.")
     except Exception as e:
-        print(f"Failed to upload {source_file_path} "
-              f"to {bucket_name}/{destination_blob_name}: {e}")
+        print(
+            f"Failed to upload {source_file_path} "
+            f"to {bucket_name}/{destination_blob_name}: {e}"
+        )
+
 
 def get_latest_checkpoint(destination_folder="./finetuned_model"):
     try:
-        checkpoints = [d for d in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, d))]
-        sorted_checkpoints = sorted(checkpoints, key=lambda x: int(re.search(r'\d+', x).group()))
+        checkpoints = [
+            d
+            for d in os.listdir(destination_folder)
+            if os.path.isdir(os.path.join(destination_folder, d))
+        ]
+        sorted_checkpoints = sorted(
+            checkpoints, key=lambda x: int(re.search(r"\d+", x).group())
+        )
         if not sorted_checkpoints:
             raise Exception("No checkpoints found in the extracted model directory.")
-            
-        base_folder = destination_folder[2:] if destination_folder.startswith("./") else destination_folder
+
+        base_folder = (
+            destination_folder[2:]
+            if destination_folder.startswith("./")
+            else destination_folder
+        )
         return f"{base_folder}/{sorted_checkpoints[-1]}"
     except Exception as e:
         print(f"Error finding the latest checkpoint: {e}")
 
-def download_and_extract_model(bucket_name="ai-recipe-trainer", blob_name = "finetuned_models/finetuned_model.zip", local_file_path = "finetuned_model.zip", destination_folder="./finetuned_model"):
+
+def download_and_extract_model(
+    bucket_name="ai-recipe-trainer",
+    blob_name="finetuned_models/finetuned_model.zip",
+    local_file_path="finetuned_model.zip",
+    destination_folder="./finetuned_model",
+):
     try:
         client = storage.Client()
         bucket = client.bucket(bucket_name)
@@ -91,25 +110,28 @@ def download_and_extract_model(bucket_name="ai-recipe-trainer", blob_name = "fin
 
         print(f"Downloaded {blob_name} from {bucket_name} to {local_file_path}")
         os.makedirs(destination_folder, exist_ok=True)
-        
+
         with zipfile.ZipFile(local_file_path, "r") as zip_ref:
             zip_ref.extractall(destination_folder)
             print(f"Extracted model files to {destination_folder}")
-        
+
         model_id = get_latest_checkpoint(destination_folder=destination_folder)
         print(f"Old model's checkpoint identified: {model_id}")
         return model_id
-    
+
     except Exception as e:
         print(f"Failed to download or extract the model: {e}")
 
-def load_and_prepare_model(model_id="finetuned_model/checkpoint-500", max_seq_length=2048, load_in_4bit = True):
+
+def load_and_prepare_model(
+    model_id="finetuned_model/checkpoint-500", max_seq_length=2048, load_in_4bit=True
+):
     try:
         print(f"Loading model from: {model_id}")
         model, tokenizer = FastLanguageModel.from_pretrained(
             model_name=model_id,
             max_seq_length=max_seq_length,
-            load_in_4bit=load_in_4bit
+            load_in_4bit=load_in_4bit,
         )
         print("Old Finetuned model and tokenizer loaded successfully.")
         return model, tokenizer
@@ -123,11 +145,11 @@ def main(args):
         print("Train flag not set. Exiting script.")
         return
 
-    bucket_name = 'ai-recipe-data'
-    train_blob_name = 'processed/fine_tuning_llama_train_data.jsonl'
-    val_blob_name = 'processed/fine_tuning_llama_val_data.jsonl'
+    bucket_name = "ai-recipe-data"
+    train_blob_name = "processed/fine_tuning_llama_train_data.jsonl"
+    val_blob_name = "processed/fine_tuning_llama_val_data.jsonl"
     val_data_path = f"gs://{bucket_name}/{val_blob_name}"
-    MODEL_NAME = 'unsloth/Llama-3.2-3B-bnb-4bit'
+    MODEL_NAME = "unsloth/Llama-3.2-3B-bnb-4bit"
 
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
@@ -138,7 +160,7 @@ def main(args):
 
     print("**train_data: **", train_data)
 
-    login(token=os.environ['HF_TOKEN'])
+    login(token=os.environ["HF_TOKEN"])
 
     torch.cuda.empty_cache()
     MAX_SEQ_LENGTH = 2048
@@ -155,8 +177,15 @@ def main(args):
         lora_alpha=16,
         lora_dropout=0,
         bias="none",
-        target_modules=["q_proj", "k_proj", "v_proj",
-                        "up_proj", "down_proj", "o_proj", "gate_proj"],
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "up_proj",
+            "down_proj",
+            "o_proj",
+            "gate_proj",
+        ],
         use_rslora=True,
         use_gradient_checkpointing="unsloth",
         random_state=32,
@@ -170,7 +199,7 @@ def main(args):
     batch_size = 1  # 4
     NAME = "Llama-3.2-3B-bnb-4bit"
 
-    wandb.login(key=os.environ['WANDB_API'])
+    wandb.login(key=os.environ["WANDB_API"])
 
     wandb.init(
         project="ai-recipe",
@@ -183,10 +212,10 @@ def main(args):
         name=NAME,
     )
     # test
-    epochs=1
-    batch_size=1 #4
-    max_steps=2
-    gradient_accumulation_steps=1
+    epochs = 1
+    batch_size = 1  # 4
+    max_steps = 2
+    gradient_accumulation_steps = 1
 
     # epochs = 3
     # batch_size = 4
@@ -214,7 +243,7 @@ def main(args):
         seed=0,
         remove_unused_columns=True,
         run_name="test_v0",
-        report_to="wandb"
+        report_to="wandb",
     )
 
     trainer = SFTTrainer(
@@ -233,16 +262,31 @@ def main(args):
 
     # Evaluation: Old vs New model
     print("Evaluating start...")
-    eva_dataset = load_dataset('json', data_files={'validation': val_data_path}, split='validation')
-    new_model_bleu = evaluate_model(model, tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda"))
+    eva_dataset = load_dataset(
+        "json", data_files={"validation": val_data_path}, split="validation"
+    )
+    new_model_bleu = evaluate_model(
+        model, tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda")
+    )
 
-    old_model_id = download_and_extract_model(bucket_name="ai-recipe-trainer", blob_name = "finetuned_models/finetuned_model.zip", local_file_path = "finetuned_model.zip", destination_folder="./finetuned_model")
-    old_model, old_tokenizer = load_and_prepare_model(model_id=old_model_id, max_seq_length=2048, load_in_4bit = True)
-    old_model_bleu = evaluate_model(old_model, old_tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda"))
-    print(f"New model's BlUE score: {new_model_bleu}, old model's BLUE score: {old_model_bleu}")
+    old_model_id = download_and_extract_model(
+        bucket_name="ai-recipe-trainer",
+        blob_name="finetuned_models/finetuned_model.zip",
+        local_file_path="finetuned_model.zip",
+        destination_folder="./finetuned_model",
+    )
+    old_model, old_tokenizer = load_and_prepare_model(
+        model_id=old_model_id, max_seq_length=2048, load_in_4bit=True
+    )
+    old_model_bleu = evaluate_model(
+        old_model, old_tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda")
+    )
+    print(
+        f"New model's BlUE score: {new_model_bleu}, old model's BLUE score: {old_model_bleu}"
+    )
     print("Evaluating end...")
 
-    if (old_model_bleu<=new_model_bleu):
+    if old_model_bleu <= new_model_bleu:
         print("Saving new model to Wandb...")
         artifact_name = "finetuned_model"
         artifact = wandb.Artifact(name=artifact_name, type="model")
@@ -250,14 +294,15 @@ def main(args):
         wandb.log_artifact(artifact)
 
         print("Saving new model weights to GCS...")
-        bucket_name2 = 'ai-recipe-trainer'
+        bucket_name2 = "ai-recipe-trainer"
         model_zip_path = "/app/finetuned_model.zip"
         destination_blob_name = "finetuned_models/finetuned_model.zip"
 
         shutil.make_archive(
-            base_name=model_zip_path.replace('.zip', ''),
-            format='zip',
-            root_dir=output_dir)
+            base_name=model_zip_path.replace(".zip", ""),
+            format="zip",
+            root_dir=output_dir,
+        )
         print(f"Model zipped at {model_zip_path}")
 
         upload_to_gcs(bucket_name2, destination_blob_name, model_zip_path)
@@ -271,6 +316,7 @@ def main(args):
         print("Model weights successfully uploaded to GCS.")
 
         wandb.finish()
+
 
 #    model.save_pretrained_merged("model", tokenizer,
 #    save_method = "merged_16bit",)
