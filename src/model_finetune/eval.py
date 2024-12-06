@@ -30,6 +30,6 @@ def evaluate_model(model, tokenizer, eval_dataset, device, max_new_tokens=2500):
 
         predictions.extend(decoded_preds)
         references.extend([[ref] for ref in decoded_labels])
-
-    result = compute_bleu(predictions=predictions, references=references)
-    return result["bleu"]
+        
+    result = compute_bleu(reference_corpus=references, translation_corpus=predictions)
+    return result['bleu']
