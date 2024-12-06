@@ -17,6 +17,7 @@ xformers = "==0.0.28.post3"
 evaluate = "==0.4.3"
 unsloth = "==2024.11.7"
 gcsfs = "*"
+sacrebleu = "*"
 
 [dev-packages]
 flake8 = "*"
