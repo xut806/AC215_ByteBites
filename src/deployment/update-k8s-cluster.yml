@@ -1,0 +1,114 @@
+---
+- name: "Update Kubernetes Cluster"
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    cluster_name: "byte-bites-app-cluster"
+  
+  tasks:
+  - name: "Connect to cluster (update kubeconfig)"
+    shell: "gcloud container clusters get-credentials {{ cluster_name }} --zone {{ gcp_zone }} --project {{ gcp_project }}"
+  
+  - name: "Copy docker tag file"
+    copy:
+      src: .docker-tag
+      dest: .docker-tag
+      mode: 0644
+
+  - name: "Get docker tag"
+    shell: "cat .docker-tag"
+    register: tag
+
+  - name: "Print tag"
+    debug:
+      var: tag
+  
+  - name: "Update Deployment for Frontend"
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Deployment
+        metadata:
+          name: frontend
+          namespace: "{{cluster_name}}-namespace"
+        spec:
+          selector:
+            matchLabels:
+              run: frontend
+          template:
+            metadata:
+              labels:
+                run: frontend
+            spec:
+              containers:
+              - image: "gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}"
+                imagePullPolicy: IfNotPresent
+                name: frontend
+                ports:
+                - containerPort: 3000
+                  protocol: TCP
+                readinessProbe:
+                  httpGet:
+                    path: /
+                    port: 3000
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+              restartPolicy: Always
+  
+  - name: "Update Deployment for API Service"
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Deployment
+        metadata:
+          name: api
+          namespace: "{{cluster_name}}-namespace"
+        spec:
+          selector:
+            matchLabels:
+              run: api
+          template:
+            metadata:
+              labels:
+                run: api
+            spec:
+              volumes:
+                - name: persistent-vol
+                  emptyDir: {}
+                - name: google-cloud-key
+                  secret:
+                    secretName: gcp-service-key
+                - name: llm-loading-key
+                  secret:
+                    secretName: grace-llm-loading-key
+                - name: usda-api-key
+                  secret:
+                    secretName: usda-key
+              containers:
+              - image: gcr.io/{{ gcp_project }}/bytebites-api-service:{{ tag.stdout}}
+                imagePullPolicy: IfNotPresent
+                name: api
+                # include volumn mounts here for consistency
+                volumeMounts:
+                  - name: persistent-vol
+                    mountPath: /persistent
+                  - name: google-cloud-key
+                    mountPath: /secrets/google-cloud-key
+                  - name: llm-loading-key
+                    mountPath: /secrets/llm-loading-key
+                  - name: usda-api-key
+                    mountPath: /secrets/usda-api-key
+                env:
+                  - name: GOOGLE_APPLICATION_CREDENTIALS
+                    value: /secrets/google-cloud-key/gcp-service.json
+                  - name: MODEL_LOADING_CREDENTIALS
+                    value: /secrets/llm-loading-key/recipe.json
+                  - name: USDA_API_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: usda-key
+                        key: USDA_API_KEY
+              restartPolicy: Always
