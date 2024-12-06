@@ -1,7 +1,7 @@
 import argparse
 from trl import SFTConfig, SFTTrainer
 import torch
-from datasets import Dataset, load_dataset
+from datasets import Dataset
 import pandas as pd
 from unsloth import FastLanguageModel
 from google.cloud import storage
@@ -148,7 +148,7 @@ def main(args):
     bucket_name = "ai-recipe-data"
     train_blob_name = "processed/fine_tuning_llama_train_data.jsonl"
     val_blob_name = "processed/fine_tuning_llama_val_data.jsonl"
-    val_data_path = f"gs://{bucket_name}/{val_blob_name}"
+    # val_data_path = f"gs://{bucket_name}/{val_blob_name}"
     MODEL_NAME = "unsloth/Llama-3.2-3B-bnb-4bit"
 
     client = storage.Client()
@@ -158,7 +158,14 @@ def main(args):
     train_data = pd.read_json(BytesIO(train_data_bytes), lines=True)
     train_data = Dataset.from_pandas(train_data)
 
+    val_blob = bucket.blob(val_blob_name)
+    val_data_bytes = val_blob.download_as_bytes()
+    val_data = pd.read_json(BytesIO(val_data_bytes), lines=True)
+    val_data = Dataset.from_pandas(val_data)
+    val_data = val_data.select(range(2))
+
     print("**train_data: **", train_data)
+    print("**val_data: **", val_data)
 
     login(token=os.environ["HF_TOKEN"])
 
@@ -214,7 +221,7 @@ def main(args):
     # test
     epochs = 1
     batch_size = 1  # 4
-    max_steps = 2
+    max_steps = 1
     gradient_accumulation_steps = 1
 
     # epochs = 3
@@ -261,13 +268,12 @@ def main(args):
     print("Training finished...")
 
     # Evaluation: Old vs New model
-    print("Evaluating start...")
-    eva_dataset = load_dataset(
-        "json", data_files={"validation": val_data_path}, split="validation"
-    )
+    # eva_dataset = load_dataset('json', data_files={'validation': val_data_path}, split='validation')
+    # print("Validation dataset loaded.")
     new_model_bleu = evaluate_model(
-        model, tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda")
+        model, tokenizer, eval_dataset=val_data, device=torch.device("cuda")
     )
+    print(f"New model's BlUE score: {new_model_bleu}")
 
     old_model_id = download_and_extract_model(
         bucket_name="ai-recipe-trainer",
@@ -278,12 +284,11 @@ def main(args):
     old_model, old_tokenizer = load_and_prepare_model(
         model_id=old_model_id, max_seq_length=2048, load_in_4bit=True
     )
+    print("Old model loaded")
     old_model_bleu = evaluate_model(
-        old_model, old_tokenizer, eval_dataset=eva_dataset, device=torch.device("cuda")
+        old_model, old_tokenizer, eval_dataset=val_data, device=torch.device("cuda")
     )
-    print(
-        f"New model's BlUE score: {new_model_bleu}, old model's BLUE score: {old_model_bleu}"
-    )
+    print(f"Old model's BLUE score: {old_model_bleu}")
     print("Evaluating end...")
 
     if old_model_bleu <= new_model_bleu:
@@ -318,10 +323,10 @@ def main(args):
         wandb.finish()
 
 
-#    model.save_pretrained_merged("model", tokenizer,
-#    save_method = "merged_16bit",)
-#    model.push_to_hub_merged("hf/model", tokenizer,
-#    save_method = "merged_16bit", token = "")
+# model.save_pretrained_merged("model", tokenizer,
+# save_method = "merged_16bit",)
+# model.push_to_hub_merged("hf/model", tokenizer,
+# save_method = "merged_16bit", token = "")
 
 
 if __name__ == "__main__":
