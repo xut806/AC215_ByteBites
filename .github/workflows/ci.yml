@@ -33,17 +33,11 @@ jobs:
           pip install pipenv
           pipenv install --dev
           
-      # configure flake8
-      - name: Configure flake8
-        working-directory: src/${{ matrix.container }}
-        run: |
-          echo "[flake8]\nmax-line-length = 150" > .flake8
-          
       # linting
       - name: Run Linting for ${{ matrix.container }}
         working-directory: src/${{ matrix.container }}
         run: |
-          pipenv run flake8 .
+          pipenv run flake8 . --max-line-length=120
   
   test:
     runs-on: ubuntu-latest
