@@ -1,0 +1,56 @@
+name: CI & CD for App
+run-name: ${{ github.actor }} submitted a CI CD Action
+on:
+  push:
+    branches: [ "milestone5" ] # TODO: change to main
+
+jobs:
+  Deploy-To-GKE:
+    if: contains(github.event.head_commit.message, '/deploy-app')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Deployment Information
+        run: |
+          echo "Commit Message: ${{ github.event.head_commit.message }}"
+          echo "Job triggered by ${{ github.event_name }} event"
+          echo "Running on ${{ runner.os }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Repository: ${{ github.repository }}"
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - name: Configure Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker
+
+      - name: List workspace contents
+        run: ls ${{ github.workspace }}
+
+      - name: Build Deployment Container
+        run: |
+          cd ${{ github.workspace }}/src/deployment/
+          docker build -t bytebites-app-deployment -f Dockerfile .
+
+      - name: Run Deployment
+        run: |
+          docker run --rm --name bytebites-app-deployment \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $HOME/.ssh:/home/app/.ssh \
+            -v ${{ github.workspace }}/src/landing:/landing \
+            -v ${{ github.workspace }}/src/api-service:/api-service \
+            --volume $GITHUB_WORKSPACE:/workspace \
+            --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
+            --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
+            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+            -e GCP_PROJECT=ac215-project-434717 \
+            -e GCP_ZONE=us-central1-a \
+            bytebites-app-deployment sh deploy-k8s-update.sh
