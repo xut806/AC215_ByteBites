@@ -1,15 +1,17 @@
-import evaluate
 from unsloth import FastLanguageModel
+from nmt_bleu import compute_bleu
 
 
 def evaluate_model(model, tokenizer, eval_dataset, device, max_new_tokens=2500):
+    print("Evaluating start...")
     FastLanguageModel.for_inference(model)
     model.to(device)
+    print("Model for inference loaded.")
 
-    bleu_metric = evaluate.load("bleu")
     predictions, references = [], []
 
     # Process each example in the dataset
+    print("Generate outputs for BLEU...")
     for example in eval_dataset:
         prompt = example["prompt"]
 
@@ -29,5 +31,5 @@ def evaluate_model(model, tokenizer, eval_dataset, device, max_new_tokens=2500):
         predictions.extend(decoded_preds)
         references.extend([[ref] for ref in decoded_labels])
 
-    result = bleu_metric.compute(predictions=predictions, references=references)
+    result = compute_bleu(predictions=predictions, references=references)
     return result["bleu"]
