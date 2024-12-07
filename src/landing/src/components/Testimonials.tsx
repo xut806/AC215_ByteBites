@@ -56,7 +56,7 @@ export const Testimonials = () => {
           <div className="flex items-center mt-2">
           </div>
           <p className="mt-4 text-base">
-            &quot;ByteBites has completely transformed how I plan my meals! With its personalized recipes and nutrition insights, I&#39;m eating smarter and wasting less food. It&#39;s the ultimate tool for healthier, hassle-free cooking!&quot;
+            &quot;ByteBites has completely transformed how I plan my meals! With its personalized recipes and nutrition insights, I&#39;m eating smarter and wasting less food. It&#39;s the perfect app for effortless, healthier and smarter cooking!&quot;
           </p>
         </div>
       </div>
