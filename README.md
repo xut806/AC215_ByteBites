@@ -555,3 +555,23 @@ We added two separate plays in the `deploy-k8s-cluster.yml` playbook to enable m
   ```
   The [Scale Down the Deployment] play will run, and we scale down again to 1 replica:
   ![image](./screenshots/kubernetes_scaled_down.png)   
+
+## Usage details and examples (unfinished)
+
+- Nagivate to http://35.226.149.192.sslip.io, you should see the landing page with a get started button: 
+![image](./screenshots/landing.png)
+- Click on the get started button
+  - you can sign up with Google or your email if you're a new user.
+  - you can also sign in with Google or your email if you're a returning user.
+- After signing in, you should see the dashboard:
+![image](./screenshots/dashboard.png)
+- You can upload a grocery receipt by clicking on the upload receipt button.
+![image](./screenshots/upload_receipt.png)
+
+
+- **Frontend**: 
+  - **Dashboard**: 
+    - **Upload Receipt**: 
+    - **Generate Recipe**: 
+    - **View Recipe**: 
+
