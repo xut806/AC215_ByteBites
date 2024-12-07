@@ -59,6 +59,7 @@ jobs:
               sh deploy-k8s-update.sh && \
               echo '=== After Deployment ===' && \
               kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}' && \
+              kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace && \
               kubectl rollout status deployment/frontend -n byte-bites-app-cluster-namespace
             "
 
@@ -79,3 +80,5 @@ jobs:
           kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}'
           echo "\nPod status:"
           kubectl get pods -n byte-bites-app-cluster-namespace
+          echo "\nDeployment events:"
+          kubectl describe deployment frontend -n byte-bites-app-cluster-namespace | grep -A 10 Events:
