@@ -9,6 +9,12 @@
   - name: Print tag
     debug:
       var: tag
+  - name: Debug frontend build path
+    shell: "ls -la /landing"
+    register: frontend_files
+  - name: Show frontend files
+    debug:
+      var: frontend_files.stdout_lines
   - name: Build frontend container image
     community.general.docker_image:
       build:
@@ -16,6 +22,16 @@
         platform: linux/amd64/v2
       name: gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}
       source: build
+    register: build_result
+  - name: Debug build result
+    debug:
+      var: build_result
+  - name: Verify image was built
+    shell: "docker images | grep bytebites-frontend"
+    register: image_check
+  - name: Show image check result
+    debug:
+      var: image_check.stdout_lines
   - name: Push frontend image to GCR
     community.general.docker_image:
       name: gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}
