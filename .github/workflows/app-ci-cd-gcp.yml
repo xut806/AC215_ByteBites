@@ -53,4 +53,19 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-434717 \
             -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh deploy-k8s-update.sh
+            bytebites-app-deployment sh -c "
+              echo '=== Before Deployment ===' && \
+              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}' && \
+              sh deploy-k8s-update.sh && \
+              echo '=== After Deployment ===' && \
+              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}' && \
+              kubectl rollout status deployment/frontend -n byte-bites-app-cluster-namespace
+            "
+
+      - name: Verify Deployment
+        run: |
+          gcloud container clusters get-credentials byte-bites-app-cluster --zone us-central1-a --project ac215-project-434717
+          echo "Current frontend image:"
+          kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}'
+          echo "\nPod status:"
+          kubectl get pods -n byte-bites-app-cluster-namespace
