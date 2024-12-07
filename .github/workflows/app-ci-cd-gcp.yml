@@ -42,6 +42,7 @@ jobs:
 
       - name: Run Deployment
         run: |
+          echo "Starting deployment process..."
           docker run --rm --name bytebites-app-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.ssh:/home/app/.ssh \
@@ -53,15 +54,31 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-434717 \
             -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh -c "
-              echo '=== Before Deployment ===' && \
-              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}' && \
-              sh deploy-k8s-update.sh && \
-              echo '=== After Deployment ===' && \
-              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}' && \
-              kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace && \
+            bytebites-app-deployment sh -c '
+              set -x
+              echo "=== Before Deployment ==="
+              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath="{.spec.template.spec.containers[0].image}"
+              echo ""
+              
+              echo "=== Running deployment script ==="
+              sh deploy-k8s-update.sh
+              
+              echo "=== After Deployment ==="
+              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath="{.spec.template.spec.containers[0].image}"
+              echo ""
+              
+              echo "=== Force rolling update ==="
+              kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace
               kubectl rollout status deployment/frontend -n byte-bites-app-cluster-namespace
-            "
+              
+              echo "=== Final deployment status ==="
+              kubectl get pods -n byte-bites-app-cluster-namespace
+            '
+
+      - name: Check GCR Images
+        run: |
+          echo "Listing recent images in GCR:"
+          gcloud container images list-tags gcr.io/ac215-project-434717/bytebites-frontend --sort-by=~timestamp --limit=3
 
       - name: Install GKE Auth Plugin
         run: |
@@ -78,7 +95,12 @@ jobs:
           gcloud container clusters get-credentials byte-bites-app-cluster --zone us-central1-a --project ac215-project-434717
           echo "Current frontend image:"
           kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}'
-          echo "\nPod status:"
+          echo -e "\nPod status:"
           kubectl get pods -n byte-bites-app-cluster-namespace
-          echo "\nDeployment events:"
+          echo -e "\nDeployment events:"
           kubectl describe deployment frontend -n byte-bites-app-cluster-namespace | grep -A 10 Events:
+          
+          # Force a rollout if needed
+          echo -e "\nForcing rollout restart:"
+          kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace
+          kubectl

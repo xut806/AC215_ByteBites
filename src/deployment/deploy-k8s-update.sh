@@ -21,4 +21,5 @@ kubectl set image deployment/frontend frontend=gcr.io/ac215-project-434717/byteb
 
 echo "=== Verifying Kubernetes Deployment ==="
 kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}'
-kubectl rollout status deployment/frontend -n byte-bites-app-cluster-namespace
+echo ""
+kubectl get pods -n byte-bites-app-cluster-namespace
