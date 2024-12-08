@@ -56,5 +56,5 @@ jobs:
               -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
               -e GCP_PROJECT=ac215-project-434717 \
               -e GCP_ZONE=us-central1-a \
-              bytebites-app-deployment sh -c "set -x; echo 'Starting ls command'; cd /workspace && ls -l; echo 'Finished ls command'"
+              bytebites-app-deployment sh -c "set -x; echo 'Starting deploy script'; cd /workspace/src/deployment && sh deploy-k8s-update.sh; echo 'Finished deploy script'"
         
