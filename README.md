@@ -30,32 +30,22 @@ Our repo is structured as follows:
 │    ├── rlaif_peft_finetuned_opt125m.ipynb    # We attempt to implement RLAIF (where the LLM labeler is the off-the-shelf llama-3.1-8b model) on top of our finetuned opt125m model with LoRA
 │    
 ├── src/                     # Source code directory
-│    ├── ocr/                # Implementing OCR and NER for ingredient recognition from receipt
-│         ├── ocr_ner.py   
-│         ├── extract_ingredients.py 
-│         ├── docker-shell.sh   
-│         ├── docker-entrypoint.sh  
-│         ├── Dockerfile   
-│         ├── Pipfile   
-│         └── Pipfile.lock
-│         
-│    ├── preprocessing/       #  Preprocessing raw recipe data from a Google Cloud Storage bucket and prepare it for fine-tuning.        
-│         ├── data_preprocessing.py    
-│         ├── docker-shell.sh   
-│         ├── docker-entrypoint.sh  
-│         ├── Dockerfile   
-│         ├── Pipfile   
-│         └── Pipfile.lock
-│
-│    ├── fine-tuning/             # Fine-tuning LLM using the preprocessed recipe data.
-|         ├── inference+nutrition.py  # [New in MS4] Please run this script to get the generated recipe and the nutrition facts   
-│         ├── utils.py   
-│         ├── fine_tune.py    
-│         ├── compare_models.py   
-│         ├── docker-shell.sh   
-│         ├── docker-entrypoint.sh  
-│         ├── Dockerfile   
-│         ├── Pipfile   
+│    ├── deployment/       #  The folder responsible for deployment      
+│         ├── nginx-conf/   # The folder storing the nginx configuration 
+│         ├── deploy-create-instance.yml   # [Ansible Playbook] creates VM instance (ansible deployment)
+│         ├── deploy-docker-images.yml     # [Ansible Playbook] builds and pushes docker containers to GCR AR (ansible deployment & kubernetes deployment)
+│         ├── deploy-k8s-cluster.yml       # [Ansible Playbook] deployment with kubernetes with manual scaling options (kubernetes deployment)
+│         ├── deploy-k8s-update.sh         # shell script to update kubernetes clusters
+│         ├── update-k8s-cluster.yml       # [Ansible Playbook] updates kubernetes clusters
+│         ├── deploy-provision-instance.yml  # [Ansible Playbook] provisions VM instance (ansible deployment)
+│         ├── deploy-setup-containers.yml   # [Ansible Playbook] sets up docker containers on VM  (ansible deployment)
+│         ├── deploy-setup-webserver.yml    # [Ansible Playbook] sets up nginx configuration on VM (ansible deployment)
+│         ├── inventory.yml
+│         ├── inventory-prod.yml
+│         ├── docker-entrypoint.sh
+│         ├── docker-shell.sh
+│         ├── Dockerfile
+│         ├── Pipfile
 │         └── Pipfile.lock
 │     
 │    ├── landing/               # Frontend for the application
@@ -63,6 +53,10 @@ Our repo is structured as follows:
 │         ├── Dockerfile        # Dockerfile for the frontend
 │    ├── api-service/          # Backend for the application
 │         ├── api/
+│             ├── routers/
+│             ├── routers/
+│             ├── utils/
+│             ├── service.py
 |         ├── Dockerfile        
 │         ├── Pipfile            
 │         ├── Pipfile.lock
@@ -73,10 +67,7 @@ Our repo is structured as follows:
 ├── README.md
 ├── LICENSE
 ├── secrets/                      # Secrets directory
-│    └── recipe.json
 ```
-
-Please make sure to create an `.env` file that contains your Huggingface Access Token (`HUGGINGFACE_TOKEN`) and your USDA API key (`USDA_API_KEY`) as well as a `secrets/` directory with your credentials in the location as shown above after cloning the repo.
 
 ## Table of Contents
 1. [Application Design](#application-design)
@@ -107,9 +98,8 @@ We built backend api service using fast API to expose model functionality to the
 
 ## Prerequisites and Setup Instructions
 
-Since our web app is deployed in this milestone, prerequisites and setup instructions are relevant to deployment only.
-
 For replicating our deployment procedure, the following should be ensured:
+- You must ensure that you have a `.envlocal` 
 - You must ensure the file content in the `secrets/` folder at the location specied in [Directory Structure](#directory-structure):
     - You should have a `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY=...`, without quotation marks surrounding the API key content)
     - You should have a `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors)
