@@ -9,12 +9,6 @@
   - name: Print tag
     debug:
       var: tag
-  - name: Debug frontend build path
-    shell: "ls -la /landing"
-    register: frontend_files
-  - name: Show frontend files
-    debug:
-      var: frontend_files.stdout_lines
   - name: Build frontend container image
     community.general.docker_image:
       build:
@@ -22,35 +16,12 @@
         platform: linux/amd64/v2
       name: gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}
       source: build
-    register: build_result
-  - name: Debug build result
-    debug:
-      msg: 
-        - "Build completed with result: {{ build_result }}"
-        - "Image ID: {{ build_result.image.Id if build_result.image is defined else 'No image ID' }}"
-  - name: List images before push
-    shell: "docker images gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout }} --format '{{.ID}} {{.Repository}} {{.Tag}}'"
-    register: images_before_push
-  - name: Show images before push
-    debug:
-      var: images_before_push.stdout_lines  - name: Push frontend image to GCR
+  - name: Push frontend image to GCR
     community.general.docker_image:
       name: gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}
       repository: gcr.io/{{ gcp_project }}/bytebites-frontend:{{ tag.stdout}}
       push: yes
       source: local
-    register: push_result
-  - name: Debug push result
-    debug:
-      msg: "Push completed with result: {{ push_result }}"
-  - name: Verify image in GCR
-    shell: "gcloud container images list-tags gcr.io/{{ gcp_project }}/bytebites-frontend --filter='tags:{{ tag.stdout }}' --format='get(tags)'"
-    register: gcr_verify
-  - name: Show GCR verification result
-    debug:
-      msg: 
-        - "GCR verification result: {{ gcr_verify.stdout }}"
-        - "Image should be present in GCR with tag: {{ tag.stdout }}"
   - name: Build api-service container image
     community.general.docker_image:
       build:
