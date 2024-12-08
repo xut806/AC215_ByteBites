@@ -19,8 +19,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        id: 'auth'
+      - id: 'auth'
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
@@ -56,4 +55,4 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-434717 \
             -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh -c "cd /workspace && sh deploy-k8s-update.sh"
+            bytebites-app-deployment sh -c "cd /workspace && ls -l"
