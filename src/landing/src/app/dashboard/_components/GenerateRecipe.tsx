@@ -38,39 +38,39 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
         // })
 
         // TODO: replace this
-        const response = await fetch("/api/llm", {
+        // const response = await fetch("/api/llm", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     ingredients: selectedIngredients.join(", "),
+        //     dietary_preference: dietaryPreferences.join(", "),
+        //     meal_type: mealType,
+        //     cooking_time: cookingTime,
+        //   }),
+        // })
+
+        const response = await fetch("http://34.19.48.150:8080/generate/", { // Updated endpoint
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ingredients: selectedIngredients.join(", "),
-            dietary_preference: dietaryPreferences.join(", "),
-            meal_type: mealType,
-            cooking_time: cookingTime,
+            text: `please write a ${dietaryPreferences.join(", ")}, ${mealType} meal recipe that takes approximately ${cookingTime} minutes and includes the following ingredients: ${selectedIngredients.join(", ")}. Include the instructions only.`,
+            max_length: 200
           }),
         })
-  // Fetch from the llm endpoint on VM
-  // useEffect(() => {
-  //     const generateRecipe = async () => {
-  //       setLoading(true)
-  //       try {
-  //         const response = await fetch("http://34.41.18.132:8080/generate/", { // Updated endpoint
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             text: `please write a ${dietaryPreferences.join(", ")}, ${mealType} meal recipe that takes approximately ${cookingTime} minutes and includes the following ingredients: ${selectedIngredients.join(", ")}`, // Updated body format
-  //             max_length: 200 
-  //           }),
-  //         })
 
         if (response.ok) {
           const data = await response.json()
-          setRecipe(data.recipe)
+          // setRecipe(data.recipe)
+          // LLM VM version:
+          console.log(data); 
+          console.log("Generated Recipe:", data.generated_text); 
+          setRecipe(data.generated_text);
         } else {
-          console.error("Failed to generate recipe")
+          console.error("Failed to generate recipe", response.statusText)
         }
       } catch (error) {
         console.error("Error:", error)
