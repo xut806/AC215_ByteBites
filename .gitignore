@@ -3,6 +3,7 @@ secrets/
 fine-tuning/finetuned_model/**
 .DS_Store
 src/fine-tuning/llama/.ipynb_checkpoints/
+.docker-tag
 
 # Ignore Python cache files
 __pycache__/

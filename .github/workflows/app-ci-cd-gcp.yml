@@ -53,4 +53,8 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-434717 \
             -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh deploy-k8s-update.sh
+            bytebites-app-deployment sh -c "rm -f .docker-tag && sh deploy-k8s-update.sh 2>&1 | tee deployment.log"
+
+      - name: Display Deployment Logs
+        if: always()
+        run: cat deployment.log

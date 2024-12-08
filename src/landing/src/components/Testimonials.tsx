@@ -31,7 +31,7 @@ export const Testimonials = () => {
           <div className="flex items-center mt-2">
           </div>
           <p className="mt-4 text-base">
-            &quot;Thanks to ByteBites, meal preperation has never been easier! It turns my grocery receipts into personalized, healthy recipes in seconds, saving me time and reducing food waste. A total game-changer for my busy schedule!&quot;
+            &quot;Thanks to ByteBites, meal preparation has never been easier! It turns my grocery receipts into personalized, healthy recipes in seconds, saving me time and reducing food waste. It&apos;s a total game-changer for my busy schedule!&quot;
           </p>
         </div>
 
