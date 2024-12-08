@@ -1,12 +1,15 @@
 "use client"
 
 import React, { useState } from "react"
-import Lottie from "lottie-react"
+import dynamic from 'next/dynamic'
 import loadingAnimation from "../../../../public/loading.json"
 
 interface UploadRecipeProps {
   onIngredientsReady: (ingredients: string[]) => void
 }
+
+// Dynamically import Lottie with SSR disabled
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
 export default function Component({ onIngredientsReady }: UploadRecipeProps) {
   const [isDragging, setIsDragging] = useState(false)

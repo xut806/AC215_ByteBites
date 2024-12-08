@@ -2,8 +2,11 @@
 
 import React, { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
-import Lottie from "lottie-react"
+import dynamic from 'next/dynamic'
 import loadingAnimation from "../../../../public/loading.json"
+
+// Dynamically import Lottie with SSR disabled
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
 type Nutrient = {
   value: number;
