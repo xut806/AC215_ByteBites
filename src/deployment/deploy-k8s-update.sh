@@ -3,7 +3,7 @@ set -x  # Enable debug mode
 
 echo "=== Starting deployment process ==="
 
-echo "=== Running deploy-docker-images playbook ==="
+echo "=== Running deploy-docker-images playbook with inventory.yml ==="
 ansible-playbook -vv deploy-docker-images.yml -i inventory.yml
 
 echo "=== Checking generated docker tag ==="
@@ -13,7 +13,7 @@ NEW_TAG=$(cat .docker-tag)
 echo "=== Verifying images in GCR ==="
 gcloud container images list-tags gcr.io/ac215-project-434717/bytebites-frontend --limit=3 --sort-by=~timestamp
 
-echo "=== Running update-k8s-cluster playbook ==="
+echo "=== Running update-k8s-cluster playbook with inventory-prod.yml ==="
 ansible-playbook -vv update-k8s-cluster.yml -i inventory-prod.yml
 
 echo "=== Force updating deployment with new image ==="

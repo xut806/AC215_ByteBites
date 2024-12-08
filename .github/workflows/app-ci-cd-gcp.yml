@@ -16,7 +16,6 @@ jobs:
           echo "Running on ${{ runner.os }}"
           echo "Branch: ${{ github.ref }}"
           echo "Repository: ${{ github.repository }}"
-
       - name: Check out repository code
         uses: actions/checkout@v4
 
@@ -39,103 +38,17 @@ jobs:
         run: |
           cd ${{ github.workspace }}/src/deployment/
           docker build -t bytebites-app-deployment -f Dockerfile .
-
-      - name: Verify Deployment Files
-        run: |
-          echo "=== Checking deployment directory ==="
-          ls -la ${{ github.workspace }}/src/deployment/
-          
-          echo "=== Checking deploy-docker-images.yml content ==="
-          cat ${{ github.workspace }}/src/deployment/deploy-docker-images.yml
-          
-          echo "=== Checking deploy-k8s-update.sh content ==="
-          cat ${{ github.workspace }}/src/deployment/deploy-k8s-update.sh
-
       - name: Run Deployment
         run: |
-          echo "Starting deployment process..."
-          
-          # Debug: Check workspace contents
-          echo "=== Workspace contents ==="
-          ls -la ${{ github.workspace }}/src/deployment/
-          
           docker run --rm --name bytebites-app-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/landing:/landing \
             -v ${{ github.workspace }}/src/api-service:/api-service \
-            -v ${{ github.workspace }}/src/deployment:/deployment \
             --volume $GITHUB_WORKSPACE:/workspace \
             --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
             --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-434717 \
             -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh -c '
-              set -x
-              
-              cd /deployment
-              
-              echo "=== Current directory contents ==="
-              ls -la
-              
-              echo "=== Making scripts executable ==="
-              chmod +x deploy-k8s-update.sh
-              
-              echo "=== Debug: Checking deploy-docker-images.yml ==="
-              cat deploy-docker-images.yml
-              
-              echo "=== Debug: Running ansible playbook ==="
-              ansible-playbook -vvv deploy-docker-images.yml -i inventory.yml
-              
-              echo "=== Debug: Checking if docker tag was generated ==="
-              cat .docker-tag || echo "No docker tag file found"
-              
-              echo "=== Debug: Checking docker images ==="
-              docker images | grep bytebites
-              
-              echo "=== Before Deployment ==="
-              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath="{.spec.template.spec.containers[0].image}"
-              echo ""
-              
-              echo "=== Running deployment script ==="
-              ./deploy-k8s-update.sh
-              
-              echo "=== After Deployment ==="
-              kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath="{.spec.template.spec.containers[0].image}"
-              echo ""
-              
-              echo "=== Force rolling update ==="
-              kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace
-              kubectl rollout status deployment/frontend -n byte-bites-app-cluster-namespace
-            '
-            
-      - name: Check GCR Images
-        run: |
-          echo "Listing recent images in GCR:"
-          gcloud container images list-tags gcr.io/ac215-project-434717/bytebites-frontend --sort-by=~timestamp --limit=3
-
-      - name: Install GKE Auth Plugin
-        run: |
-          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-          sudo apt-get update
-          sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
-      - name: Verify Deployment
-        env:
-          USE_GKE_GCLOUD_AUTH_PLUGIN: True
-        run: |
-          gcloud container clusters get-credentials byte-bites-app-cluster --zone us-central1-a --project ac215-project-434717
-          echo "Current frontend image:"
-          kubectl get deployment frontend -n byte-bites-app-cluster-namespace -o jsonpath='{.spec.template.spec.containers[0].image}'
-          echo -e "\nPod status:"
-          kubectl get pods -n byte-bites-app-cluster-namespace
-          echo -e "\nDeployment events:"
-          kubectl describe deployment frontend -n byte-bites-app-cluster-namespace | grep -A 10 Events:
-          
-          # Force a rollout if needed
-          echo -e "\nForcing rollout restart:"
-          kubectl rollout restart deployment/frontend -n byte-bites-app-cluster-namespace
-          kubectl
+            bytebites-app-deployment sh deploy-k8s-update.sh
