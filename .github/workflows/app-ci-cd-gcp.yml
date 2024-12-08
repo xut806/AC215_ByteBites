@@ -44,15 +44,17 @@ jobs:
       
       - name: Run Deploy App
         run: |
-          docker run --rm --name bytebites-app-deployment \
+          docker run --rm --entrypoint "" \
+            --name bytebites-app-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/landing:/landing \
             -v ${{ github.workspace }}/src/api-service:/api-service \
             --volume $GITHUB_WORKSPACE:/workspace \
             --mount type=bind,source="${GOOGLE_APPLICATION_CREDENTIALS}",target=/secrets/deployment.json \
-            --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
-            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
-            -e GCP_PROJECT=ac215-project-434717 \
-            -e GCP_ZONE=us-central1-a \
-            bytebites-app-deployment sh -c "echo 'Starting ls command'; cd /workspace && ls -l; echo 'Finished ls command'"
+              --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
+              -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+              -e GCP_PROJECT=ac215-project-434717 \
+              -e GCP_ZONE=us-central1-a \
+              bytebites-app-deployment sh -c "set -x; echo 'Starting ls command'; cd /workspace && ls -l; echo 'Finished ls command'"
+        
