@@ -99,7 +99,7 @@ We built backend api service using fast API to expose model functionality to the
 ## Prerequisites and Setup Instructions
 
 For replicating our deployment procedure, the following should be ensured:
-- You must ensure that you have a `.envlocal` 
+- You must ensure that you have a `.envlocal` file containing the `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` at the location specied in [Directory Structure](#directory-structure) in order to successfully deploy the frontend container.
 - You must ensure the file content in the `secrets/` folder at the location specied in [Directory Structure](#directory-structure):
     - You should have a `usda_api_key.env` file (key to USDA API, in a format like `USDA_API_KEY=...`, without quotation marks surrounding the API key content)
     - You should have a `recipe.json` file (which is the secrets for the GCP account storing the finetuned model safetensors)
