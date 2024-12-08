@@ -58,6 +58,14 @@
                     periodSeconds: 10
                 restartPolicy: Always
 
+    - name: "Debug Frontend Deployment Image"
+      shell: "kubectl get deployment frontend -n {{ cluster_name }}-namespace -o=jsonpath='{.spec.template.spec.containers[0].image}'"
+      register: frontend_image
+
+    - name: "Show Frontend Deployment Image"
+      debug:
+        msg: "Frontend deployment is using image: {{ frontend_image.stdout }}"
+
     - name: "Update Deployment for API Service"
       k8s:
         state: present
@@ -113,3 +121,11 @@
                           name: usda-key
                           key: USDA_API_KEY
                 restartPolicy: Always
+
+    - name: "Debug API Deployment Image"
+      shell: "kubectl get deployment api -n {{ cluster_name }}-namespace -o=jsonpath='{.spec.template.spec.containers[0].image}'"
+      register: api_image
+
+    - name: "Show API Deployment Image"
+      debug:
+        msg: "API deployment is using image: {{ api_image.stdout }}"
