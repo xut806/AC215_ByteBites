@@ -96,6 +96,11 @@ We built backend api service using fast API to expose model functionality to the
   
  <img src="./screenshots/fastapi_llm.png" alt="fastapi_llm" width="350"/>
 
+The ML workflow consists of four main stages: **data collection**, **data processing**, **model fine-tuning**, and **model evaluation**. The latter two stages are combined into a single component, where model weights are saved only if the new model outperforms the existing one based on the LLM evaluation metric, BLEU. The **model deployment** process is handled by the script src/`llm-vm/manage.sh --deploy`, as this approach aligns with practical implementation standards.
+ <img src="./screenshots/complete_workflow.png" alt="fastapi" width="350"/>
+
+We also experimented with incorporating the RLHF concept into our project by implementing DPO on top of Llama. The detailed script can be found under src/RLHF-DPO. In this approach, we simulate user interaction by having the app generate two recipe responses, where the user selects one as their preferred choice. The prompts, along with the chosen and rejected outputs, are collected to train the DPO model. Note that we did not integrate the copoment into our workflow due to time constraints.
+
 ## Prerequisites and Setup Instructions
 
 For replicating our deployment procedure, the following should be ensured:
