@@ -5,6 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 
 import unittest
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from api.utils.ner_utils import convert_ner_entities_to_list
 
 

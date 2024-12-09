@@ -6,6 +6,12 @@
 
 from fastapi.testclient import TestClient
 from unittest import mock
+import sys
+import os
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from api.routers.nutrition import router
 
 client = TestClient(router)

@@ -7,6 +7,9 @@
 
 import unittest
 from unittest.mock import patch
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from api.utils.nutrition_utils import get_nutrition_info, \
     aggregate_nutrition_info_with_units
 

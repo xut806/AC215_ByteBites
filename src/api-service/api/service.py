@@ -7,7 +7,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers.ocr import router as ocr_router
-from api.routers.llm import router as llm_router
 from api.routers.nutrition import router as nutrition_router
 
 app = FastAPI()
