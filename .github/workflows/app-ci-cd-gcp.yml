@@ -59,13 +59,22 @@ jobs:
             -v ${{ github.workspace }}/src/api-service:/api-service \
             --volume $GITHUB_WORKSPACE:/workspace \
             --mount type=bind,source="${GOOGLE_APPLICATION_CREDENTIALS}",target=/secrets/deployment.json \
-              --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
-              --env NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
-              --env CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} \
-              -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
-              -e GCP_PROJECT=ac215-project-434717 \
-              -e GCP_ZONE=us-central1-a \
-              bytebites-app-deployment sh -c "set -x; echo 'Starting deploy script'; cd /workspace/src/deployment && sh deploy-k8s-update.sh; echo 'Finished deploy script'"
+            --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
+            --env NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
+            --env CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} \
+            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+            -e GCP_PROJECT=ac215-project-434717 \
+            -e GCP_ZONE=us-central1-a \
+            bytebites-app-deployment sh -c "
+              echo 'Checking deployment.json:' && \
+              ls -l /secrets/deployment.json && \
+              echo 'Checking gcloud auth:' && \
+              gcloud auth list && \
+              set -x && \
+              echo 'Starting deploy script' && \
+              cd /workspace/src/deployment && \
+              sh deploy-k8s-update.sh && \
+              echo 'Finished deploy script'"
 
       - name: Verify Service Account Info
         run: |
