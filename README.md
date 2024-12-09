@@ -192,6 +192,19 @@ We added two separate plays in the `deploy-k8s-cluster.yml` playbook to enable m
   The [Scale Down the Deployment] play will run, and we scale down again to 1 replica:
   ![image](./screenshots/kubernetes_scaled_down.png)   
 
+### Continuous Integration and Deployment (CI/CD)
+We use GitHub Actions to automate test, execute, monitor and deploy our web app. The workflow is defined in `.github/workflows/app-ci-cd-gcp.yml`.
+- Make a change to the codebase:
+  - Backend code in `src/api-service/` 
+  - Frontend code in `src/landing/`.
+- Commit and push your changes to the main branch. Your commit message should include `/deploy-app` to trigger the action. 
+```bash
+   git add .
+   git commit -m "/deploy-app <your message>"
+   git push origin main   
+   ```
+- GitHub Actions will automatically test, execute, monitor and deploy the changes. This usually takes 15-20 minutes.
+- Visit our website to see the changes: http://35.226.149.192.sslip.io/
 
 ## Usage details and Examples
 
