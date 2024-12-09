@@ -54,7 +54,7 @@ jobs:
           docker run --rm --entrypoint "" \
             --name bytebites-app-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -v $HOME/.ssh:/home/app/.ssh \
+            -v $HOME/.config/gcloud:/root/.config/gcloud \
             -v ${{ github.workspace }}/src/landing:/landing \
             -v ${{ github.workspace }}/src/api-service:/api-service \
             --volume $GITHUB_WORKSPACE:/workspace \
@@ -66,4 +66,16 @@ jobs:
               -e GCP_PROJECT=ac215-project-434717 \
               -e GCP_ZONE=us-central1-a \
               bytebites-app-deployment sh -c "set -x; echo 'Starting deploy script'; cd /workspace/src/deployment && sh deploy-k8s-update.sh; echo 'Finished deploy script'"
+
+      - name: Verify Service Account Info
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > /tmp/sa.json
+          # Print service account email (safe to expose)
+          jq -r '.client_email' /tmp/sa.json
+          # Print available roles/permissions (safe to expose)
+          jq -r '.scopes' /tmp/sa.json
+          # Verify it's a valid JSON
+          jq '.' /tmp/sa.json > /dev/null && echo "Valid JSON format"
+          # Clean up
+          rm /tmp/sa.json
         
