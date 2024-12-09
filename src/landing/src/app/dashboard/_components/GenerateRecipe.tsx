@@ -51,14 +51,15 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
         //   }),
         // })
 
-        const response = await fetch("http://34.19.48.150:8080/generate/", { // Updated endpoint
+        const response = await fetch("http://34.82.146.148:8080/generate/", { // Updated endpoint
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             text: `please write a ${dietaryPreferences.join(", ")}, ${mealType} meal recipe that takes approximately ${cookingTime} minutes and includes the following ingredients: ${selectedIngredients.join(", ")}. Include the instructions only.`,
-            max_length: 200
+            
+            
           }),
         })
 
