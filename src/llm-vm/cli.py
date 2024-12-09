@@ -8,6 +8,8 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 import re
 from fastapi.middleware.cors import CORSMiddleware
+import subprocess
+import torch
 
 app = FastAPI()
 
@@ -102,9 +104,58 @@ class RecipeGenerator:
 
     def load_and_prepare_model(self):
         try:
+            current_path = os.getcwd()
+            logger.info(f"Current working directory: {current_path}")
             logger.info(f"Loading model from: {self.model_id}")
+            if os.path.exists(self.model_id):
+                files_in_path = os.listdir(self.model_id)
+                logger.info(f"Files in {self.model_id}: {files_in_path}")
+
+                # Log CPU Memory Usage (using torch)
+                cpu_memory = (
+                    torch.cuda.get_device_properties(0).total_memory
+                    if torch.cuda.is_available()
+                    else None
+                )
+                logger.info(
+                    f"Total GPU Memory: {cpu_memory / (1024**3):.2f} GB"
+                    if cpu_memory
+                    else "No GPU detected."
+                )
+
+                if torch.cuda.is_available():
+                    gpu_memory_stats = torch.cuda.memory_stats()
+                    allocated_memory = gpu_memory_stats[
+                        "allocated_bytes.all.current"
+                    ] / (1024**3)
+                    free_memory = cpu_memory - allocated_memory
+                    logger.info(f"GPU Allocated Memory: {allocated_memory:.2f} GB")
+                    logger.info(f"GPU Free Memory: {free_memory:.2f} GB")
+                    logger.info(
+                        f"GPU Memory Usage: {allocated_memory / cpu_memory:.2%}"
+                    )
+
+                # Log Disk Usage (using subprocess)
+                disk_usage = subprocess.run(
+                    ["df", "-h", self.model_id], capture_output=True, text=True
+                )
+
+                if disk_usage.returncode == 0:
+                    logger.info(f"Disk usage for {self.model_id}:\n{disk_usage.stdout}")
+                else:
+                    logger.error(
+                        f"Failed to get disk usage for {self.model_id}. Error: {disk_usage.stderr}"
+                    )
+            else:
+                logger.error(f"Path {self.model_id} does not exist.")
+                raise HTTPException(
+                    status_code=404, detail=f"Path {self.model_id} does not exist."
+                )
+
+            logger.info("Finish checking...")
+
             self.model, self.tokenizer = FastLanguageModel.from_pretrained(
-                model_name=self.model_id,
+                model_name="finetuned_model/checkpoint-4428",
                 max_seq_length=self.max_seq_length,
                 load_in_4bit=self.load_in_4bit,
             )
@@ -113,6 +164,9 @@ class RecipeGenerator:
             FastLanguageModel.for_inference(self.model)
             self.text_streamer = TextStreamer(self.tokenizer)
 
+        except HTTPException as http_exc:
+            logger.error(f"HTTPException occurred: {http_exc.detail}")
+            raise
         except Exception as e:
             logger.error(f"Failed to load model: {e}")
             raise HTTPException(status_code=500, detail=f"Model loading failed: {e}")
@@ -139,7 +193,7 @@ bucket_name = "ai-recipe-trainer"
 blob_name = "finetuned_models/finetuned_model.zip"
 local_file_path = "finetuned_model.zip"
 destination_folder = "./finetuned_model"
-# model_id = "finetuned_model/checkpoint-500"
+model_id = "finetuned_model/checkpoint-4428"
 max_seq_length = 2048
 load_in_4bit = True
 
@@ -148,7 +202,7 @@ recipe_generator = RecipeGenerator(
     blob_name=blob_name,
     local_file_path=local_file_path,
     destination_folder=destination_folder,
-    model_id=None,
+    model_id=model_id,
     max_seq_length=max_seq_length,
     load_in_4bit=load_in_4bit,
 )
