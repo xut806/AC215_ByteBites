@@ -70,6 +70,8 @@ jobs:
               ls -l /secrets/deployment.json && \
               echo 'Checking gcloud auth:' && \
               gcloud auth list && \
+              gcloud auth activate-service-account --key-file=/secrets/deployment.json && \
+              gcloud auth configure-docker gcr.io -q && \
               set -x && \
               echo 'Starting deploy script' && \
               cd /workspace/src/deployment && \
