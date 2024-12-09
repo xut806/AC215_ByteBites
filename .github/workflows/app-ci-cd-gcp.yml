@@ -72,6 +72,9 @@ jobs:
               gcloud auth list && \
               gcloud auth activate-service-account --key-file=/secrets/deployment.json && \
               gcloud auth configure-docker gcr.io -q && \
+              echo 'Cleaning up disk space' && \
+              docker system prune -af && \
+              docker volume prune -f && \
               set -x && \
               echo 'Starting deploy script' && \
               cd /workspace/src/deployment && \
