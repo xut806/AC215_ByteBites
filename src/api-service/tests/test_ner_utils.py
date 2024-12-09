@@ -8,7 +8,7 @@ import unittest
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from api.utils.ner_utils import convert_ner_entities_to_list
+from api.utils.ner_utils import convert_ner_entities_to_list  # noqa: E402
 
 
 class TestNERUtils(unittest.TestCase):
