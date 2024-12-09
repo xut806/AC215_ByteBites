@@ -24,7 +24,7 @@ app.add_middleware(
 
 # Kubernetes deployment
 app.include_router(ocr_router, prefix="/api")
-#app.include_router(llm_router, prefix="/api")
+# app.include_router(llm_router, prefix="/api")
 app.include_router(nutrition_router, prefix="/api")
 
 # Uncomment for local development
