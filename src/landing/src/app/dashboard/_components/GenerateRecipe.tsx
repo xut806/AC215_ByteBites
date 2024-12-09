@@ -51,7 +51,7 @@ export default function Component({ onStartOver, selectedIngredients, dietaryPre
         //   }),
         // })
 
-        const response = await fetch("http://34.82.146.148:8080/generate/", { // Updated endpoint
+        const response = await fetch("http://34.41.10.102:8080/generate/", { // Updated endpoint
           method: "POST",
           headers: {
             "Content-Type": "application/json",
