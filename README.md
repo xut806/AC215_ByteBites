@@ -200,7 +200,7 @@ In this deployment approach, we deploy our web app using **Kubernetes powered by
 - Navigate to `src/deployment`
 - run `sh docker-shell.sh`
 - Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`, which creates and pushes the web app containers to GCP Artifact Registry
-- Run `ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present`, which deploys our web app on a Kubernetes cluster with NGINX ingress controller, and sets up the necessary GCP secrets and application credentials, and creates deployments and services for the API and frontend components in the specified namespace.
+- Run `ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present`, which deploys our web app on a Kubernetes cluster with NGINX ingress controller, sets up the necessary GCP secrets and application credentials, and creates deployments and services for the API and frontend components in our specified namespace.
 - You should be able to access the web app at http://<YOUR INGRESS IP>.sslip.io.
 * note: if you exit the container and reenter again but kubectl gives a connection error, please run `gcloud container clusters get-credentials byte-bites-app-cluster --zone us-central1-a` to configure the cluster's credentials again.
 
@@ -257,4 +257,4 @@ We use GitHub Actions to automate test, execute, monitor and deploy our web app.
 ## Known Issues and Limitations
 - Our model deployment component is not integrated directly into the ML workflow due to practical considerations and time constraints. Instead, the deployment is handled separately using the `deploy` function within `src/llm-vm/manage.sh`.
 - The recipe generation endpoint is currently not callable on **http://35.226.149.192.sslip.io** because we have shut down the VM that is hosting our finetuned llama model. Please see our demo video for the web app in action, with the recipe generation endpoint being callable. 
-- We will be deleting the Kubernetes cluster on Thursday Dec 12 due to incurring costs. This will make our **http://35.226.149.192.sslip.io** 404 not found. Please see our demo video for the web app in action. 
+- We will be deleting the Kubernetes cluster on Thursday Dec 12, 2024 due to incurring costs. This will make our **http://35.226.149.192.sslip.io** not reachable. Please see our demo video for the web app in action. 
