@@ -53,7 +53,28 @@ Our repo is structured as follows:
 │         ├── Dockerfile
 │         ├── Pipfile
 │         └── Pipfile.lock
-│     
+|    ├── workflow
+│         ├── Dockerfile
+│         ├── Pipfile
+│         ├── Pipfile.lock
+│         ├── cli.py
+│         ├── data_collector.yaml
+│         ├── data_processor.yaml
+│         ├── deploy-docker-images-ml.yml
+│         ├── docker-entrypoint.sh
+│         ├── docker-shell.sh
+│         ├── model.py
+│         ├── model_deploy.yaml
+│         ├── model_finetune.yaml
+│         ├── pipeline.yaml
+│         ├── run-data-collector.sh
+│         ├── run-data-processor.sh
+│         ├── run-ml-pipeline.sh
+│         └── trigger.py
+|    ├── RLHF-DPO
+│         ├── cli.py
+│         ├── data.py
+│         └── spicy_recipes.json
 │    ├── landing/               # Frontend for the application
 │         ├── .env.local        # Secret keys
 │         ├── Dockerfile        # Dockerfile for the frontend
