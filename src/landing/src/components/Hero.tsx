@@ -14,7 +14,7 @@ export const Hero = () => {
             </h1>
             <p className="py-5 text-2lg leading-normal text-gray-500 lg:text-xl xl:text-2lg dark:text-gray-300">
               ByteBites transforms your groceries into personalized, nutritious meals. 
-              Powered by AI and OCR, it creates recipes tailored to your lifestyle, 
+              Powered by LLM and OCR, it creates recipes tailored to your lifestyle, 
               helping you eat smarter, save time, and make every ingredient count.
             </p>
 
