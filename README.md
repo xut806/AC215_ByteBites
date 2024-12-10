@@ -44,7 +44,7 @@ Our repo is structured as follows:
 │         ├── deploy-k8s-update.sh         # shell script to update kubernetes clusters
 │         ├── update-k8s-cluster.yml       # [Ansible Playbook] updates kubernetes clusters
 │         ├── deploy-provision-instance.yml  # [Ansible Playbook] provisions VM instance (ansible deployment)
-│         ├��─ deploy-setup-containers.yml   # [Ansible Playbook] sets up docker containers on VM  (ansible deployment)
+│         ├── deploy-setup-containers.yml   # [Ansible Playbook] sets up docker containers on VM  (ansible deployment)
 │         ├── deploy-setup-webserver.yml    # [Ansible Playbook] sets up nginx configuration on VM (ansible deployment)
 │         ├── inventory.yml
 │         ├── inventory-prod.yml
