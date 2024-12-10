@@ -24,7 +24,7 @@ Our repo is structured as follows:
 │    ├── AC215_webapp_prototype.pdf      
 │    ├── Midterm_Presentation.pdf   # Presentation slides PDF version
 │    ├── Midterm_Presentation.pptx   # Presentation slides PPTX version  
-��    └── prototype_link.md
+│    └── prototype_link.md
 │    
 ├── notebooks/               # [New in MS4] In-progress notebooks demonstrating experiments
 │    ├── rlaif_peft_finetuned_opt125m.ipynb    # We attempt to implement RLAIF (where the LLM labeler is the off-the-shelf llama-3.1-8b model) on top of our finetuned opt125m model with LoRA
@@ -100,8 +100,24 @@ We built backend api service using fast API to expose model functionality to the
 The ML workflow consists of four main stages: **data collection**, **data processing**, **model fine-tuning**, and **model evaluation**. The latter two stages are combined into a single component, where model weights are saved only if the new model outperforms the existing one based on the BLEU evaluation metric. The workflow is automatically triggered when a new dataset JSONL file is uploaded to the data bucket. The trigger script is located at `src/workflow/trigger.py`. The **model deployment** process is managed by the script `src/llm-vm/manage.sh --deploy`, which aligns with practical implementation standards.
 
 <img src="./screenshots/complete_workflow.png" alt="complete workflow" width="350"/>
+Below is the screenshot for workflow trigger:
+<img src="./screenshots/trigger.png" alt="complete workflow" width="350"/>
 
 We also experimented with incorporating the RLHF concept into our project by implementing DPO on top of Llama. The detailed script can be found under `src/RLHF-DPO`. In this approach, we simulate user interaction by having the app generate two recipe responses, allowing the user to select their preferred choice. The prompts, along with the chosen and rejected outputs, are collected to train the DPO model. Note that we did not integrate this component into our workflow due to time constraints.
+
+Below are screenshots of inidividual component's docker container:
+
+Data Collector
+<img src="./screenshots/data_collector.png" alt="complete workflow" width="350"/>
+
+Data Processsor
+<img src="./screenshots/llm-data-preprocessor.png" alt="complete workflow" width="350"/>
+
+Model Finetune and Evaluation
+<img src="./screenshots/llm-fine-tuner.png" alt="complete workflow" width="350"/>
+
+Model Deployment with Output Generation
+<img src="./screenshots/llama_deploy.png" alt="Model Deployment via Terminal" width="350"/>
 
 ## Prerequisites and Setup Instructions
 
