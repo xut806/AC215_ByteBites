@@ -24,7 +24,7 @@ Our repo is structured as follows:
 │    ├── AC215_webapp_prototype.pdf      
 │    ├── Midterm_Presentation.pdf   # Presentation slides PDF version
 │    ├── Midterm_Presentation.pptx   # Presentation slides PPTX version  
-│    └── prototype_link.md
+��    └── prototype_link.md
 │    
 ├── notebooks/               # [New in MS4] In-progress notebooks demonstrating experiments
 │    ├── rlaif_peft_finetuned_opt125m.ipynb    # We attempt to implement RLAIF (where the LLM labeler is the off-the-shelf llama-3.1-8b model) on top of our finetuned opt125m model with LoRA
@@ -96,10 +96,12 @@ We built backend api service using fast API to expose model functionality to the
   
  <img src="./screenshots/fastapi_llm.png" alt="fastapi_llm" width="350"/>
 
-The ML workflow consists of four main stages: **data collection**, **data processing**, **model fine-tuning**, and **model evaluation**. The latter two stages are combined into a single component, where model weights are saved only if the new model outperforms the existing one based on the LLM evaluation metric, BLEU. The **model deployment** process is handled by the script src/`llm-vm/manage.sh --deploy`, as this approach aligns with practical implementation standards.
- <img src="./screenshots/complete_workflow.png" alt="fastapi" width="350"/>
+#### Backend: ML Workflow
+The ML workflow consists of four main stages: **data collection**, **data processing**, **model fine-tuning**, and **model evaluation**. The latter two stages are combined into a single component, where model weights are saved only if the new model outperforms the existing one based on the BLEU evaluation metric. The workflow is automatically triggered when a new dataset JSONL file is uploaded to the data bucket. The trigger script is located at `src/workflow/trigger.py`. The **model deployment** process is managed by the script `src/llm-vm/manage.sh --deploy`, which aligns with practical implementation standards.
 
-We also experimented with incorporating the RLHF concept into our project by implementing DPO on top of Llama. The detailed script can be found under src/RLHF-DPO. In this approach, we simulate user interaction by having the app generate two recipe responses, where the user selects one as their preferred choice. The prompts, along with the chosen and rejected outputs, are collected to train the DPO model. Note that we did not integrate the copoment into our workflow due to time constraints.
+<img src="./screenshots/complete_workflow.png" alt="complete workflow" width="350"/>
+
+We also experimented with incorporating the RLHF concept into our project by implementing DPO on top of Llama. The detailed script can be found under `src/RLHF-DPO`. In this approach, we simulate user interaction by having the app generate two recipe responses, allowing the user to select their preferred choice. The prompts, along with the chosen and rejected outputs, are collected to train the DPO model. Note that we did not integrate this component into our workflow due to time constraints.
 
 ## Prerequisites and Setup Instructions
 
@@ -226,3 +228,4 @@ We use GitHub Actions to automate test, execute, monitor and deploy our web app.
 
 
 ## Known Issues and Limitations
+Our model deployment component is not integrated directly into the ML workflow due to practical considerations and time constraints. Instead, the deployment is handled separately using the `deploy` function within `src/llm-vm/manage.sh`.
