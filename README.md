@@ -180,11 +180,11 @@ In this deployment approach, we deploy our web app using **only Ansible playbook
     - Change `gcp_project` to your project id 
     - Change `gcp_region` and `gcp_zone` as needed
 - Run `ansible-playbook deploy-docker-images.yml -i inventory.yml`. 
-- Run `ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present` which creates the Virtual Machine
-- Run `ansible-playbook deploy-provision-instance.yml -i inventory.yml` after changing details in the `inventory.yml` file
-  - Change `appserver > hosts` to the external IP address of the VM
-- Run `ansible-playbook deploy-setup-containers.yml -i inventory.yml`
-- Run `ansible-playbook deploy-setup-webserver.yml -i inventory.yml` after changing details in the `nginx-conf/nginx/nginx.conf` file
+- Run `ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present`, which creates the Virtual Machine
+- Run `ansible-playbook deploy-provision-instance.yml -i inventory.yml` after changing details in the `inventory.yml` file, which installs necessary dependencies and sets up Docker as well as the necessary environment used for deployment.
+  - Change `appserver > hosts` to the external IP address of the VM in the `inventory.yml` file before running this
+- Run `ansible-playbook deploy-setup-containers.yml -i inventory.yml`, which sets up the front and backend containers on our VM
+- Run `ansible-playbook deploy-setup-webserver.yml -i inventory.yml` after changing details as needed in the `nginx-conf/nginx/nginx.conf` file, which sets up the NGINX web server on the VM to ensure proper traffic handling.
 
 **Our web app is deployed with these Ansible playbooks and ready to be viewed at http://34.68.205.67/** (Note: the VM responsible for this deployment approach is currently being stopped to mitigate costs)
 
