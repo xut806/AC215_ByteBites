@@ -38,7 +38,7 @@ Our repo is structured as follows:
 │         ├── deploy-k8s-update.sh         # shell script to update kubernetes clusters
 │         ├── update-k8s-cluster.yml       # [Ansible Playbook] updates kubernetes clusters
 │         ├── deploy-provision-instance.yml  # [Ansible Playbook] provisions VM instance (ansible deployment)
-│         ├── deploy-setup-containers.yml   # [Ansible Playbook] sets up docker containers on VM  (ansible deployment)
+│         ├��─ deploy-setup-containers.yml   # [Ansible Playbook] sets up docker containers on VM  (ansible deployment)
 │         ├── deploy-setup-webserver.yml    # [Ansible Playbook] sets up nginx configuration on VM (ansible deployment)
 │         ├── inventory.yml
 │         ├── inventory-prod.yml
@@ -57,10 +57,10 @@ Our repo is structured as follows:
 │             ├── routers/
 │             ├── utils/
 │             ├── service.py
-|         ├── Dockerfile        
+│         ├── Dockerfile        
 │         ├── Pipfile            
 │         ├── Pipfile.lock
-|         ├── docker-entrypoint.sh
+│         ├── docker-entrypoint.sh
 │         ├── docker-shell.sh
 │    └── .env
 ├── .gitignore
@@ -101,23 +101,28 @@ The ML workflow consists of four main stages: **data collection**, **data proces
 
 <img src="./screenshots/complete_workflow.png" alt="complete workflow" width="350"/>
 Below is the screenshot for workflow trigger:
+
 <img src="./screenshots/trigger.png" alt="complete workflow" width="350"/>
 
 We also experimented with incorporating the RLHF concept into our project by implementing DPO on top of Llama. The detailed script can be found under `src/RLHF-DPO`. In this approach, we simulate user interaction by having the app generate two recipe responses, allowing the user to select their preferred choice. The prompts, along with the chosen and rejected outputs, are collected to train the DPO model. Note that we did not integrate this component into our workflow due to time constraints.
 
 Below are screenshots of inidividual component's docker container:
 
-Data Collector
-<img src="./screenshots/data_collector.png" alt="complete workflow" width="350"/>
+* Data Collector
+<br>
+<img src="./screenshots/data_collector.png" alt="data collector" width="350"/>
 
-Data Processsor
-<img src="./screenshots/llm-data-preprocessor.png" alt="complete workflow" width="350"/>
+* Data Processor
+<br>
+<img src="./screenshots/llm-data-preprocessor.png" alt="data processor" width="350"/>
 
-Model Finetune and Evaluation
-<img src="./screenshots/llm-fine-tuner.png" alt="complete workflow" width="350"/>
+* Model Finetune and Evaluation
+<br>
+<img src="./screenshots/llm-fine-tuner.png" alt="model finetune and evaluation" width="350"/>
 
-Model Deployment with Output Generation
-<img src="./screenshots/llama_deploy.png" alt="Model Deployment via Terminal" width="350"/>
+* Model Deployment with Output Generation
+<br>
+<img src="./screenshots/llama_deploy.png" alt="Model Deployment with Output Generation" width="350"/>
 
 ## Prerequisites and Setup Instructions
 
