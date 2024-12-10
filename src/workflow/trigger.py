@@ -1,6 +1,6 @@
-import os
 from google.cloud import aiplatform
 import functions_framework
+
 
 @functions_framework.cloud_event
 def hello_gcs(cloud_event):
@@ -16,6 +16,7 @@ def hello_gcs(cloud_event):
     else:
         print("Event is not related to the pipeline YAML. Ignoring.")
 
+
 def trigger_pipeline_logic(file_name):
     """Logic to trigger the pipeline."""
     PROJECT_ID = "ai-recipe-441518"
@@ -29,8 +30,8 @@ def trigger_pipeline_logic(file_name):
             location=REGION,
         )
         job = aiplatform.PipelineJob(
-            display_name='llama-pipeline-cloud-function-invocation',
-            template_path= f"{PIPELINE_ROOT}/{PIPELINE_YAML}",
+            display_name="llama-pipeline-cloud-function-invocation",
+            template_path=f"{PIPELINE_ROOT}/{PIPELINE_YAML}",
             pipeline_root=PIPELINE_ROOT,
             enable_caching=False,
         )
