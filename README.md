@@ -24,15 +24,15 @@ LINK
 Our repo is structured as follows:
 
 ```
-├── reports/                 # Application mock-up and interactive prototype
-│    ├── logo.png            # [New in MS4] new ByteBites logo
-│    ├── logo2.png           # [New in MS4] new ByteBites logo 
+├── reports/                 # Application mock-up, interactive prototype, presentation
+│    ├── logo.png            
+│    ├── logo2.png          
 │    ├── AC215_webapp_prototype.pdf      
-│    ├── Midterm_Presentation.pdf   # Presentation slides PDF version
-│    ├── Midterm_Presentation.pptx   # Presentation slides PPTX version  
+│    ├── Midterm_Presentation.pdf 
+│    ├── Midterm_Presentation.pptx 
 │    └── prototype_link.md
 │    
-├── notebooks/               # [New in MS4] In-progress notebooks demonstrating experiments
+├── notebooks/               
 │    ├── rlaif_peft_finetuned_opt125m.ipynb    # We attempt to implement RLAIF (where the LLM labeler is the off-the-shelf llama-3.1-8b model) on top of our finetuned opt125m model with LoRA
 │    
 ├── src/                     # Source code directory
