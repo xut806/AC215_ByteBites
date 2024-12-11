@@ -1,0 +1,95 @@
+name: CI & CD for App
+run-name: ${{ github.actor }} submitted a CI CD Action
+on:
+  push:
+    branches: [ "mian" ] 
+
+jobs:
+  Deploy-To-GKE:
+    if: contains(github.event.head_commit.message, '/deploy-app')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Deployment Information
+        run: |
+          echo "Commit Message: ${{ github.event.head_commit.message }}"
+          echo "Job triggered by ${{ github.event_name }} event"
+          echo "Running on ${{ runner.os }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Repository: ${{ github.repository }}"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - name: Configure Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker # --quiet #authenticate to gcr
+
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+
+      - name: List files in the repository
+        run: ls ${{ github.workspace }}
+
+      - name: Create .env.local file 
+        run: |
+          cd ${{ github.workspace }}/src/landing
+          echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" > .env.local
+          echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> .env.local
+
+
+      - name: Build Deployment Container
+        run: |
+          cd ${{ github.workspace }}/src/deployment/
+          docker build -t bytebites-app-deployment -f Dockerfile .
+      
+      - name: Run Deploy App
+        run: |
+          docker run --rm --entrypoint "" \
+            --name bytebites-app-deployment \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $HOME/.config/gcloud:/root/.config/gcloud \
+            -v ${{ github.workspace }}/src/landing:/landing \
+            -v ${{ github.workspace }}/src/api-service:/api-service \
+            --volume $GITHUB_WORKSPACE:/workspace \
+            --mount type=bind,source="${GOOGLE_APPLICATION_CREDENTIALS}",target=/secrets/deployment.json \
+            --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
+            --env NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
+            --env CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} \
+            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+            -e GCP_PROJECT=ac215-project-434717 \
+            -e GCP_ZONE=us-central1-a \
+            bytebites-app-deployment sh -c "
+              echo 'Checking deployment.json:' && \
+              ls -l /secrets/deployment.json && \
+              echo 'Checking gcloud auth:' && \
+              gcloud auth list && \
+              gcloud auth activate-service-account --key-file=/secrets/deployment.json && \
+              gcloud auth configure-docker gcr.io -q && \
+              echo 'Cleaning up disk space' && \
+              docker system prune -af && \
+              docker volume prune -f && \
+              set -x && \
+              echo 'Starting deploy script' && \
+              cd /workspace/src/deployment && \
+              sh deploy-k8s-update.sh && \
+              echo 'Finished deploy script'"
+
+      - name: Verify Service Account Info
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > /tmp/sa.json
+          # Print service account email (safe to expose)
+          jq -r '.client_email' /tmp/sa.json
+          # Print available roles/permissions (safe to expose)
+          jq -r '.scopes' /tmp/sa.json
+          # Verify it's a valid JSON
+          jq '.' /tmp/sa.json > /dev/null && echo "Valid JSON format"
+          # Clean up
+          rm /tmp/sa.json
+        

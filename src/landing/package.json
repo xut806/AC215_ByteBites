@@ -1,0 +1,50 @@
+{
+  "name": "bytebites",
+  "version": "1.0.0",
+  "description": "AI-powered recipe generator",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xut806/AC215_ByteBites.git"
+  },
+  "keywords": [
+    "recipe",
+    "food",
+    "generator"
+  ],
+  "author": "ByteBites",
+  "license": "ISC",
+  "dependencies": {
+    "@clerk/nextjs": "^6.3.0",
+    "@headlessui/react": "^2.0.3",
+    "@heroicons/react": "^2.1.3",
+    "@radix-ui/react-icons": "^1.3.2",
+    "lottie-react": "^2.4.0",
+    "next": "^14.2.18",
+    "next-themes": "^0.3.0",
+    "next-transpile-modules": "^10.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.51.4",
+    "sharp": "^0.33.5",
+    "tailwind-merge": "^2.5.5"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

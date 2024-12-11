@@ -1,0 +1,45 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+fastapi = "*"
+uvicorn = "*"
+transformers = "*"
+torch = "*"
+google-cloud-storage = "*"
+opencv-python-headless = "*"
+python-doctr = {extras = ["torch", "viz", "html", "contrib"]}
+regex = "*"
+mplcursors = "*"
+matplotlib = "*"
+requests = "*"
+tf2onnx = "*"
+python-multipart = "*"
+pandas = "*"
+jupyter = "*"
+datasets = "*"
+faiss-cpu = "*"
+langchain = "*"
+huggingface-hub = "*"
+dvc = "*"
+importlib_metadata = "*"
+markupsafe = "*"
+langchain-huggingface = "*"
+langchain-community = "*"
+accelerate = ">=0.26.0"
+peft = "*"
+loralib = "*"
+safetensors = "*"
+python-dotenv = "*"
+bitsandbytes = "*"
+
+[dev-packages]
+flake8 = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+
+[requires]
+python_version = "3.11"
