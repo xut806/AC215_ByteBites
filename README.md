@@ -268,13 +268,17 @@ We use GitHub Actions to automate test, execute, monitor and deploy our web app.
 - You can upload a grocery receipt by clicking on the Upload Receipt button.
 ![image](./screenshots/upload-receipt.png)
 - Our app will automatically extract the ingredients from the receipt and display them in the ingredient list. You can also manually add ingredients to or delete ingredients from the list. Also, you can select the ingredients, your dietary preferences, meal type, and cooking time for the recipe you want to generate. Finally, you can click on the Get Recipe button to generate a recipe.
-![image](./screenshots/edit-ingredients.png)
-![image](./screenshots/select-ingredients2.png)
-![image](./screenshots/select-preference.png)
+<img src="./screenshots/edit-ingredients.png" alt="data collector" width="450"/>
+<img src="./screenshots/select-ingredients2.png" alt="data collector" width="450"/>
+<img src="./screenshots/select-preference.png" alt="data collector" width="450"/>
+
 - Our app will generate a recipe based on users' preferences and you can view the nutrition analysis of the recipe by clicking on the Show Nutrition Analysis button.
-![image](./screenshots/recipe-llama.png)
+<img src="./screenshots/recipe-llama.png" alt="data collector" width="450"/>
+
 - Nutrition analysis of the recipe will be displayed as follows. You can search for the nutrients of interest by typing in the search bar. Also, you can click on the Start Over button to start a new recipe generation.
-![image](./screenshots/nutrition-analysis2.png)
+<img src="./screenshots/nutrition-analysis2.png" alt="data collector" width="450"/>
+
+
 
 
 ## Known Issues and Limitations
