@@ -277,5 +277,6 @@ We use GitHub Actions to automate test, execute, monitor and deploy our web app.
 
 ## Known Issues and Limitations
 - Our model deployment component is not integrated directly into the ML workflow due to practical considerations and time constraints. Instead, the deployment is handled separately using the `deploy` function within `src/llm-vm/manage.sh`.
+- We added a `src/RLHF-DPO` folder to align the Llama with user preferences. However, this component has not yet been integrated into our active ML workflow.
 - The recipe generation endpoint is currently not callable on **http://35.226.149.192.sslip.io** because we have shut down the VM that is hosting our finetuned llama model. Please see our demo video for the web app in action, with the recipe generation endpoint being callable. 
 - We will be deleting the Kubernetes cluster on Thursday Dec 12, 2024 due to incurring costs. This will make our **http://35.226.149.192.sslip.io** not reachable. Please see our demo video for the web app in action. 
