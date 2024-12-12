@@ -6,12 +6,13 @@
 ByteBites is a web application that integrates LLMs with Nutritional Science and provides a user-friendly interface to personalize recipe suggestions based on available ingredients while providing nutritional insights for the user. 
 
 ## Project Presentation Video
-LINK
+https://youtu.be/ebm7Jk1bOio
 
 ## Project Medium Post
-LINK
+https://medium.com/institute-for-applied-computational-science/bytebites-your-smart-cooking-assistant-8d0bd4a7ed34 
 
-### Team Members
+
+## Team Members
 | Name         | GitHub Profile                   |
 |--------------|----------------------------------|
 | Grace Guo     | [@gguo78](https://github.com/gguo78) |
